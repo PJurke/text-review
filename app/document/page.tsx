@@ -2,7 +2,7 @@ export default function Document() {
     return (
         <section className="max-w-[50ch] sm:max-w-[75ch] mx-auto p-4 text-wrap">
             <h1 className="text-3xl">The Impact of Technology on Modern Education</h1>
-            <p className="leading-relaxed mt-4 text-lg">
+            <p className="leading-relaxed mt-6 text-lg">
             In recent years, technology has dramatically transformed the landscape of education,
             influencing how teachers instruct and students learn. With the advent of digital tools and resources,
             the traditional classroom has evolved into a dynamic learning environment that fosters
