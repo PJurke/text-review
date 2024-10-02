@@ -1,9 +1,9 @@
-export default function Document() {
-    return (
-        <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
-            <h1 className="text-3xl">The Impact of Technology on Modern Education</h1>
-            <p className="leading-relaxed mt-6 text-lg">
-            In recent years, technology has dramatically transformed the landscape of education,
+import Document from "../lib/Document";
+
+const sampleDocument: Document = {
+    id: "1234-5678-9123-4567",
+    title: "The Impact of Technology on Modern Education",
+    text: `In recent years, technology has dramatically transformed the landscape of education,
             influencing how teachers instruct and students learn. With the advent of digital tools and resources,
             the traditional classroom has evolved into a dynamic learning environment that fosters
             engagement and accessibility. This shift has not only enhanced the educational
@@ -40,7 +40,15 @@ export default function Document() {
             learning and teaching. While it presents both opportunities and challenges, the key to
             harnessing its full potential lies in finding a balance that addresses the diverse needs of all students.
             As we continue to navigate this evolving landscape, it is essential to prioritize equity, engagement,
-            and effectiveness in our educational practices.
+            and effectiveness in our educational practices.`
+}
+
+export default function DocumentPage() {
+    return (
+        <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
+            <h1 className="text-3xl">{sampleDocument.title}</h1>
+            <p className="leading-relaxed mt-6 text-lg">
+                {sampleDocument.text}
             </p>
         </section>
     );
