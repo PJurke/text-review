@@ -1,4 +1,4 @@
-import { PageProps } from "@/.next/types/app/page";
+import { PageProps } from "@/.next/types/app/document/[id]/page";
 import { getDocument } from "../../lib/data/document-dto";
 import { ObjectId } from "mongodb";
 
