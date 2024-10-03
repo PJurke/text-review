@@ -2,7 +2,7 @@ import { env } from 'node:process'
 import { MongoClient } from 'mongodb'
 
 declare global {
-    var _mongoClientPromise: Promise<MongoClient>;
+    var _mongoClientPromise: Promise<MongoClient>
 }
 
 if (!env.MONGODB_URI) {
@@ -16,7 +16,7 @@ let client
 let clientPromise: Promise<MongoClient>
 
 if (!env.MONGODB_URI) {
-    throw new Error('Please add your Mongo URI to .env.local')
+    throw new Error('Please add the MONGODB_URI variable to your environmental variables.')
 }
 
 if (env.NODE_ENV === 'development') {
