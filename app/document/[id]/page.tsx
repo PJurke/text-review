@@ -19,6 +19,7 @@ export default async function Page({ params }: PageProps) {
 
     // If the id is not defined or not valid, then return NoDocumentFound
     if (!id || !ObjectId.isValid(id)) {
+        // To do: Good user message
         return 'ID is invalid'
     }
 
@@ -27,15 +28,19 @@ export default async function Page({ params }: PageProps) {
     const doc: Document | null = await getDocument(sanitizedId);
 
     if (!doc) {
+        // To do: Good user message
         return 'No document found'
     }
 
     return (
         <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
             <h1 className="text-3xl">{doc?.title}</h1>
-            <p className="font-normal leading-relaxed md:leading-9 mt-6 md:text-xl">
-                {doc?.text}
-            </p>
+            <div className="font-normal leading-relaxed md:leading-9 mt-6 md:text-xl">
+                {doc.text2.map((paragraph, index) => (
+                    // To do: Don't use index as key
+                    <p className="mt-10" key={index}>{paragraph}</p>
+                ))}
+            </div>
         </section>
     );
 }
