@@ -1,18 +1,34 @@
-import { PageProps } from "@/.next/types/app/document/[id]/page";
+import Document from '../../lib/Document';
 import { getDocument } from "../../lib/data/document-dto";
 import { ObjectId } from "mongodb";
 
-export default async function Page(props: PageProps) {
+interface PageParams {
+    id: string
+}
 
-    // Get timeline id from url
-    const { id } = props.params;
+interface PageProps {
+    params: PageParams
+}
+
+// Revalidates the page every 60 seconds
+export const revalidate = 60;
+
+export default async function Page({ params }: PageProps) {
+    
+    const { id } = params;
 
     // If the id is not defined or not valid, then return NoDocumentFound
     if (!id || !ObjectId.isValid(id)) {
-        return 'No document found!';
+        return 'ID is invalid'
     }
 
-    const doc = await getDocument(new ObjectId(props.params.id as string));
+    const sanitizedId = new ObjectId(id);
+
+    const doc: Document | null = await getDocument(sanitizedId);
+
+    if (!doc) {
+        return 'No document found'
+    }
 
     // Check if doc is null
 
