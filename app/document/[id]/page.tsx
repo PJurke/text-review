@@ -30,12 +30,10 @@ export default async function Page({ params }: PageProps) {
         return 'No document found'
     }
 
-    // Check if doc is null
-
     return (
         <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
             <h1 className="text-3xl">{doc?.title}</h1>
-            <p className="leading-relaxed mt-6 text-lg">
+            <p className="font-normal leading-relaxed md:leading-9 mt-6 md:text-xl">
                 {doc?.text}
             </p>
         </section>
