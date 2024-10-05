@@ -2,22 +2,18 @@ import { env } from 'node:process'
 import { MongoClient } from 'mongodb'
 
 declare global {
-    var _mongoClientPromise: Promise<MongoClient>
+    var _mongoClientPromise: Promise<MongoClient>;
 }
 
 if (!env.MONGODB_URI) {
-    throw new Error('Invalid environment variable: "MONGODB_URI"')
+    throw new Error('Please add the MONGODB_URI variable to your environmental variables.')
 }
 
 const uri = env.MONGODB_URI
 const options = {}
 
-let client
+let client: MongoClient
 let clientPromise: Promise<MongoClient>
-
-if (!env.MONGODB_URI) {
-    throw new Error('Please add the MONGODB_URI variable to your environmental variables.')
-}
 
 if (env.NODE_ENV === 'development') {
     // In development mode, use a global variable so that the value

@@ -1,5 +1,5 @@
-import Document from '../../lib/Document';
-import { getDocument } from "../../lib/data/document-dto";
+import Document from '@/app/lib/Document';
+import { getDocument } from '@/app/lib/data/document-dto';
 import { ObjectId } from "mongodb";
 
 interface PageParams {
