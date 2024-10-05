@@ -1,6 +1,5 @@
 export default interface Document {
     id: string
-    text: string
-    text2: string[]
+    paragraphs: string[]
     title: string
 }
