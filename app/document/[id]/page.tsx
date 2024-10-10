@@ -1,6 +1,8 @@
 import Document from '@/app/lib/Document';
 import { getDocument } from '@/app/lib/data/document-dto';
+import Loading from '@/app/loading';
 import { ObjectId } from "mongodb";
+import { Suspense } from 'react';
 
 interface PageParams {
     id: string
@@ -40,14 +42,16 @@ export default async function Page({ params }: PageProps) {
     }
 
     return (
-        <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
-            <h1 className="text-3xl">{doc?.title}</h1>
-            <div className="font-normal leading-relaxed md:leading-9 mt-6 md:text-xl">
-                {doc.paragraphs.map((paragraph, index) => (
-                    // To do: Don't use index as key
-                    <p className="mt-10" key={index}>{paragraph}</p>
-                ))}
-            </div>
-        </section>
+        <Suspense fallback={<Loading />}>
+            <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
+                <h1 className="text-3xl">{doc?.title}</h1>
+                <div className="font-normal leading-relaxed md:leading-9 mt-6 md:text-xl">
+                    {doc.paragraphs.map((paragraph, index) => (
+                        // To do: Don't use index as key
+                        <p className="mt-10" key={index}>{paragraph}</p>
+                    ))}
+                </div>
+            </section>
+        </Suspense>
     );
 }
