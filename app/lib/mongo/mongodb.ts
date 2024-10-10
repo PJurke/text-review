@@ -1,4 +1,3 @@
-// app/lib/mongo/mongodb.ts
 import { env } from 'node:process'
 import { MongoClient, MongoClientOptions } from 'mongodb'
 
@@ -7,25 +6,24 @@ if (!env.MONGODB_URI) {
 }
 
 const uri: string = env.MONGODB_URI
-const options: MongoClientOptions = {}
-
-let client: MongoClient
-let clientPromise: Promise<MongoClient>
-
-if (env.NODE_ENV === 'development') {
-    // In development mode, use a global variable so that the value
-    // is preserved across module reloads caused by HMR (Hot Module Replacement).
-    if (!('_mongoClientPromise' in globalThis)) {
-        client = new MongoClient(uri, options);
-        globalThis._mongoClientPromise = client.connect()
-    }
-    clientPromise = globalThis._mongoClientPromise as Promise<MongoClient>;
-} else {
-    // In production mode, it's best to not use a global variable.
-    client = new MongoClient(uri, options)
-    clientPromise = client.connect()
+const options: MongoClientOptions = {
+    // Try db connection for 5s only. After that, stop it. Functions on Vercel have a limit of 10s.
+    serverSelectionTimeoutMS: 5000
 }
 
-// Export a module-scoped MongoClient promise. By doing this in a
-// separate module, the client can be shared across functions.
+if (!globalThis._mongoClientPromise) {
+    const client = new MongoClient(uri, options);
+
+    globalThis._mongoClientPromise = client.connect()
+    .then((client) => {
+        return client
+    })
+    .catch((error) => {
+        console.error('mongodb.ts: Connection error.', error);
+        throw error
+    })
+}
+
+const clientPromise = globalThis._mongoClientPromise
+
 export default clientPromise

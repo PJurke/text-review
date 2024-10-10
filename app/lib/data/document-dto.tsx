@@ -1,5 +1,4 @@
 import 'server-only';
-
 import { env } from 'node:process'
 import clientPromise from '../mongo/mongodb';
 import Document from '../Document';
@@ -9,29 +8,30 @@ export async function getDocument(id: ObjectId): Promise<Document | null> {
 
     // To do: If the id is not defined or not valid, then throw an exception
     if (!id || !ObjectId.isValid(id)) {
-        throw new Error('Invalid document ID');
+        throw new Error('Invalid document ID')
     }
 
     try {
-        const client = await clientPromise;
-        const db = client.db(env.DB_NAME || 'text-review-db');
+        const client = await clientPromise
+        const db = client.db(env.DB_NAME || 'text-review-db')
 
         const document = await db
             .collection<Document>('documents')
-            .findOne({
-                _id: id
-            });
+            .findOne({ _id: id })
 
         // To do: Error message in case document has not been found.
         if (!document) {
-            console.log(`Document with ID ${id} not found.`);
-            return null;
+            console.log(`Document with ID ${id} not found.`)
+            return null
         }
 
-        return document;
+        return document
+
     } catch (error) {
-        console.log('Error retrieving document:', error);
-        throw new Error('Failed to retrieve document');
+
+        console.log('Error retrieving document:', error)
+        throw error
+
     }
 
 }

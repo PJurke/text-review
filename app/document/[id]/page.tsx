@@ -24,8 +24,15 @@ export default async function Page({ params }: PageProps) {
     }
 
     const sanitizedId = new ObjectId(id);
+    let doc: Document | null
 
-    const doc: Document | null = await getDocument(sanitizedId);
+    try {
+        doc = await getDocument(sanitizedId);
+    } catch (error) {
+        // To do: Add proper error message
+        console.error('app/document/[id]/page.tsx:', error);
+        return;
+    }
 
     if (!doc) {
         // To do: Good user message
