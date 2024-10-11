@@ -1,10 +1,10 @@
 import 'server-only';
 import { env } from 'node:process'
 import clientPromise from '../mongo/mongodb';
-import Document from '../Document';
+import TextDocument from '../TextDocument';
 import { ObjectId } from 'mongodb';
 
-export async function getDocument(id: ObjectId): Promise<Document | null> {
+export async function getDocument(id: ObjectId): Promise<TextDocument | null> {
 
     // To do: If the id is not defined or not valid, then throw an exception
     if (!id || !ObjectId.isValid(id)) {
@@ -16,7 +16,7 @@ export async function getDocument(id: ObjectId): Promise<Document | null> {
         const db = client.db(env.DB_NAME || 'text-review-db')
 
         const document = await db
-            .collection<Document>('documents')
+            .collection<TextDocument>('documents')
             .findOne({ _id: id })
 
         // To do: Error message in case document has not been found.

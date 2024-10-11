@@ -1,4 +1,4 @@
-import Document from '@/app/lib/Document';
+import TextDocument from '@/app/lib/TextDocument';
 import { getDocument } from '@/app/lib/data/document-dto';
 import { ObjectId } from "mongodb";
 
@@ -24,7 +24,7 @@ export default async function Page({ params }: PageProps) {
     }
 
     const sanitizedId = new ObjectId(id);
-    let doc: Document | null
+    let doc: TextDocument | null
 
     try {
         doc = await getDocument(sanitizedId);
