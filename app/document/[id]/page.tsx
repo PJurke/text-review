@@ -1,6 +1,8 @@
 import TextDocument from '@/app/lib/TextDocument';
 import { getDocument } from '@/app/lib/data/document-dto';
 import { ObjectId } from "mongodb";
+import InvalidIdMessage from './InvalidIdMessage';
+import DocumentNotFoundMessage from './DocumentNotFoundMessage';
 
 interface PageParams {
     id: string
@@ -19,8 +21,7 @@ export default async function Page({ params }: PageProps) {
 
     // If the id is not defined or not valid, then return NoDocumentFound
     if (!id || !ObjectId.isValid(id)) {
-        // To do: Good user message
-        return 'ID is invalid'
+        return <InvalidIdMessage />
     }
 
     const sanitizedId = new ObjectId(id);
@@ -35,8 +36,7 @@ export default async function Page({ params }: PageProps) {
     }
 
     if (!doc) {
-        // To do: Good user message
-        return 'No document found'
+        return <DocumentNotFoundMessage />
     }
 
     return (
