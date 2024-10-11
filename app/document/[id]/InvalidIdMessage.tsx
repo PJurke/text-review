@@ -4,8 +4,8 @@ export default function InvalidIdMessage() {
     
     return <UserMessageComponent
         icon={{
-            alt: 'Search Failed',
-            url: '/search-failed.png'
+            alt: 'ID Invalid',
+            url: '/id-invalid.png'
         }}
         title='Document ID invalid'
         message='Each document is identified by a unique id. The given document id is invalid.'
