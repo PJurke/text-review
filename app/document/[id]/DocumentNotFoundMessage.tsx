@@ -4,8 +4,8 @@ export default function DocumentNotFoundMessage() {
 
     return <UserMessageComponent
         icon={{
-            alt: 'Search Failed',
-            url: '/search-failed.png'
+            alt: 'Document not found',
+            url: '/document-not-found.png'
         }}
         title='Document not found'
         message='A document with the given ID could not be found.'
