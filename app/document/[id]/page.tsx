@@ -19,7 +19,7 @@ export default async function Page({ params }: PageProps) {
     
     const { id } = params;
 
-    // If the id is not defined or not valid, then return NoDocumentFound
+    // If the id is not defined or invalid
     if (!id || !ObjectId.isValid(id)) {
         return <InvalidIdMessage />
     }
@@ -35,6 +35,7 @@ export default async function Page({ params }: PageProps) {
         return;
     }
 
+    // If there is no document with the given id
     if (!doc) {
         return <DocumentNotFoundMessage />
     }
