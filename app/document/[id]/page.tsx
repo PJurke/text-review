@@ -1,6 +1,7 @@
 import TextDocument from '@/app/lib/TextDocument';
 import { getDocument } from '@/app/lib/data/document-dto';
 import { ObjectId } from "mongodb";
+import TextViewer from './text-viewer';
 import InvalidIdMessage from './InvalidIdMessage';
 import DocumentNotFoundMessage from './DocumentNotFoundMessage';
 
@@ -43,12 +44,7 @@ export default async function Page({ params }: PageProps) {
     return (
         <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
             <h1 className="text-3xl">{doc?.title}</h1>
-            <div className="font-normal leading-relaxed md:leading-9 mt-6 md:text-xl">
-                {doc.paragraphs.map((paragraph, index) => (
-                    // To do: Don't use index as key
-                    <p className="mt-10" key={index}>{paragraph}</p>
-                ))}
-            </div>
+            <TextViewer paragraphs={doc?.paragraphs} />
         </section>
     );
 }
