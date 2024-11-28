@@ -41,7 +41,7 @@ export default async function Page({ params }: PageProps) {
             {
                 id: "h1",
                 start: { paragraphId: "p1", offset: 5 },
-                end: { paragraphId: "p2", offset: 10 },
+                end: { paragraphId: "p1", offset: 10 },
             },
             {
                 id: "h2",
