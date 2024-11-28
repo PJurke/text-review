@@ -10,52 +10,26 @@ interface TooltipProps {
 }
 
 export default function Tooltip({ position, onHighlight, onRemove, hasExistingHighlight}: TooltipProps) {
+
+    const handleButtonClick = () => {
+        if (hasExistingHighlight) {
+            onRemove && onRemove();
+        } else {
+            onHighlight();
+        }
+    };
+
+    const buttonLabel = hasExistingHighlight ? 'Remove' : 'Highlight';
+
     return (
-        <div
-            style={{
-                position: 'absolute',
-                top: position.top,
-                left: position.left,
-                backgroundColor: '#333',
-                color: '#fff',
-                padding: '5px 10px',
-                borderRadius: '4px',
-                zIndex: 1000,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-            }}
+        <div className="absolute bg-gray-100 text-white px-3 py-1.5 rounded z-50 flex items-center gap-2"
+            style={{ top: position.top, left: position.left }}
         >
-            {!hasExistingHighlight && (
-                <button
-                    onClick={onHighlight}
-                    style={{
-                        backgroundColor: '#fff',
-                        color: '#333',
-                        border: 'none',
-                        padding: '5px 10px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Highlight
-                </button>
-            )}
-            {hasExistingHighlight && (
-                <button
-                    onClick={onRemove}
-                    style={{
-                        backgroundColor: '#fff',
-                        color: '#333',
-                        border: 'none',
-                        padding: '5px 10px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Remove
-                </button>
-            )}
+            <button onClick={handleButtonClick}
+                className="bg-blue-500 text-white px-3 py-1 border-none rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-blue-600 transition-colors"
+            >
+                {buttonLabel}
+            </button>
         </div>
     );
 }
