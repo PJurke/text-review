@@ -24,9 +24,18 @@ export default async function Page({ params }: PageProps) {
         id: 'abc',
         title: 'This is a title',
         paragraphs: [
-            { id: "p1", text: "Dies ist der erste Absatz." },
-            { id: "p2", text: "Dies ist der zweite Absatz." },
-            { id: "p3", text: "Dies ist der dritte Absatz." },
+            { 
+                "id": "p1", 
+                "text": "Im ersten Absatz wird das Thema vorgestellt und die grundlegenden Aspekte erläutert. Dies schafft eine solide Basis für das Verständnis der folgenden Inhalte." 
+            },
+            { 
+                "id": "p2", 
+                "text": "Der zweite Absatz vertieft das Thema durch detaillierte Informationen und relevante Beispiele. Dadurch wird das Verständnis weiter gefördert und die Thematik aus verschiedenen Perspektiven beleuchtet." 
+            },
+            { 
+                "id": "p3", 
+                "text": "Im dritten Absatz werden die wichtigsten Erkenntnisse zusammengefasst und abschließende Gedanken präsentiert. Dies rundet das Thema ab und bietet dem Leser eine klare Schlussfolgerung." 
+            }
         ],
         highlights: [
             {

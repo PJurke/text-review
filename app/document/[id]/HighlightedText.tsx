@@ -1,8 +1,13 @@
+'use client'
+
 import { Paragraph, Highlight } from "@/app/lib/TextDocument";
+import React, { useState, useRef, useEffect } from "react";
+import Tooltip from "./Tooltip";
 
 interface HighlightedTextProps {
     paragraph: Paragraph;
     highlights: Highlight[];
+    onAddHighlight: (highlight: Highlight) => void;
 }
 
 interface TextSegment {
@@ -10,7 +15,10 @@ interface TextSegment {
     highlight: Highlight | null;
 }
 
-export default function HighlightedText({paragraph, highlights}: HighlightedTextProps) {
+export default function HighlightedText({paragraph, highlights, onAddHighlight}: HighlightedTextProps) {
+    const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
+    const [selectedRange, setSelectedRange] = useState<{ start: number; end: number } | null>(null);
+    const paragraphRef = useRef<HTMLSpanElement>(null);
 
     const segments: TextSegment[] = [];
     const text = paragraph.text;
@@ -30,8 +38,10 @@ export default function HighlightedText({paragraph, highlights}: HighlightedText
             end = highlight.end.offset;
         }
 
+        start = Math.max(0, Math.min(start, length));
+        end = Math.max(start, Math.min(end, length));
+
         for (let i = start; i < end && i < length; i++) {
-            // Bei Überschneidungen priorisieren Sie beispielsweise den ersten Highlight
             if (!highlightMap[i]) {
                 highlightMap[i] = highlight;
             }
@@ -43,15 +53,17 @@ export default function HighlightedText({paragraph, highlights}: HighlightedText
 
     for (let i = 0; i < length; i++) {
         if (highlightMap[i] !== currentHighlight) {
-            segments.push({
-                text: currentText,
-                highlight: currentHighlight,
-            });
-            currentText = text[i];
+            if (currentText) {
+                segments.push({
+                    text: currentText,
+                    highlight: currentHighlight,
+                });
+                currentText = '';
+            }
+            
             currentHighlight = highlightMap[i];
-        } else {
-            currentText += text[i];
         }
+        currentText += text[i];
     }
 
     if (currentText) {
@@ -61,9 +73,65 @@ export default function HighlightedText({paragraph, highlights}: HighlightedText
         });
     }
 
-    return (
+    const handleMouseUp = (event: React.MouseEvent) => {
+        const selection = window.getSelection();
 
-        <>
+        if (selection && selection.rangeCount > 0 && paragraphRef.current) {
+            const range = selection.getRangeAt(0);
+            const startOffset = range.startOffset;
+            const endOffset = range.endOffset;
+
+            if (startOffset === endOffset) {
+                // Kein Bereich ausgewählt
+                setTooltipPosition(null);
+                return;
+            }
+
+            // Hole das Rechteck des selektierten Bereichs
+            const selectionRect = range.getBoundingClientRect();
+            const paragraphRect = paragraphRef.current.getBoundingClientRect();
+
+            const tooltipPos = {
+                // Positioniere zentriert über dem selektierten Bereich
+                left: selectionRect.left - paragraphRect.left + selectionRect.width / 2,
+                top: selectionRect.top - paragraphRect.top - 40 // 40px über dem selektierten Bereich
+            };
+
+            setTooltipPosition(tooltipPos);
+            setSelectedRange({ start: startOffset, end: endOffset });
+        }
+    };
+
+    const handleHighlight = () => {
+        if (selectedRange) {
+            const selection = window.getSelection();
+            if (selection) {
+                const selectedText = selection.toString();
+                
+                const newHighlight: Highlight = {
+                    id: `h${Date.now()}`,
+                    start: { 
+                        paragraphId: paragraph.id, 
+                        offset: paragraph.text.indexOf(selectedText) 
+                    },
+                    end: { 
+                        paragraphId: paragraph.id, 
+                        offset: paragraph.text.indexOf(selectedText) + selectedText.length 
+                    },
+                };
+    
+                onAddHighlight(newHighlight);
+                setTooltipPosition(null);
+            }
+        }
+    };
+
+    return (
+        <span 
+            ref={paragraphRef}
+            onMouseUp={handleMouseUp} 
+            className="relative inline-block w-full"
+        >
             {segments.map((segment, index) => {
                 if (segment.highlight) {
                     return (
@@ -72,8 +140,25 @@ export default function HighlightedText({paragraph, highlights}: HighlightedText
                 }
                 return <span key={index}>{segment.text}</span>;
             })}
-        </>
-
+            
+            {tooltipPosition && (
+                <div 
+                    style={{
+                        position: 'absolute',
+                        left: `${tooltipPosition.left}px`,
+                        top: `${tooltipPosition.top}px`,
+                    }}
+                    className="z-50"
+                >
+                    <Tooltip 
+                        position={{
+                            top: 0,
+                            left: 0
+                        }}
+                        onHighlight={handleHighlight}
+                    />
+                </div>
+            )}
+        </span>
     )
-
 }
