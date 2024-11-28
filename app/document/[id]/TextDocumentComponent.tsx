@@ -36,7 +36,16 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
     }, [highlights, document.paragraphs]);
     
     const handleAddHighlight = (highlight: Highlight) => {
-        setHighlights(prev => [...prev, highlight]);
+        // Prüfe auf Überlappungen vor dem Hinzufügen
+        const overlappingHighlight = highlights.find(h => 
+            h.start.paragraphId === highlight.start.paragraphId &&
+            h.start.offset <= highlight.end.offset &&
+            h.end.offset >= highlight.start.offset
+        );
+
+        if (!overlappingHighlight) {
+            setHighlights(prev => [...prev, highlight]);
+        }
     };
 
     const handleRemoveHighlight = (highlightToRemove: Highlight) => {

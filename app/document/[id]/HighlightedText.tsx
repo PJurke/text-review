@@ -1,7 +1,7 @@
 'use client'
 
 import { Paragraph, Highlight } from "@/app/lib/TextDocument";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Tooltip from "./Tooltip";
 
 interface HighlightedTextProps {
@@ -16,16 +16,16 @@ interface TextSegment {
     highlight: Highlight | null;
 }
 
-export default function HighlightedText({ paragraph, highlights, onAddHighlight, onRemoveHighlight}: HighlightedTextProps) {
+export default function HighlightedText({ paragraph, highlights, onAddHighlight, onRemoveHighlight }: HighlightedTextProps) {
     const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
     const [selectedRange, setSelectedRange] = useState<{ start: number; end: number } | null>(null);
     const [existingHighlight, setExistingHighlight] = useState<Highlight | null>(null);
     const paragraphRef = useRef<HTMLSpanElement>(null);
 
-    const segments: TextSegment[] = [];
     const text = paragraph.text;
     const length = text.length;
 
+    // Segmentierungslogik
     const highlightMap: (Highlight | null)[] = Array(length).fill(null);
 
     highlights.forEach(highlight => {
@@ -50,6 +50,7 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
         }
     });
 
+    const segments: TextSegment[] = [];
     let currentHighlight = highlightMap[0];
     let currentText = '';
 
@@ -88,7 +89,6 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
                 return;
             }
 
-            // Prüfe auf existierende Highlights im selektierten Bereich
             const selectedText = selection.toString();
             const overlappingHighlight = highlights.find(h => 
                 h.start.paragraphId === paragraph.id && 
@@ -106,6 +106,22 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
             setTooltipPosition(tooltipPos);
             setSelectedRange({ start: startOffset, end: endOffset });
             setExistingHighlight(overlappingHighlight || null);
+        }
+    };
+
+    const handleMarkClick = (highlight: Highlight, event: React.MouseEvent) => {
+        event.stopPropagation();
+        
+        const paragraphRect = paragraphRef.current?.getBoundingClientRect();
+        
+        if (paragraphRect) {
+            const tooltipPos = {
+                left: event.clientX - paragraphRect.left,
+                top: event.clientY - paragraphRect.top - 40
+            };
+
+            setTooltipPosition(tooltipPos);
+            setExistingHighlight(highlight);
         }
     };
 
@@ -149,7 +165,13 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
             {segments.map((segment, index) => {
                 if (segment.highlight) {
                     return (
-                        <mark key={index}>{segment.text}</mark>
+                        <mark 
+                            key={index} 
+                            onClick={(e) => handleMarkClick(segment.highlight!, e)}
+                            className="cursor-pointer bg-yellow-200 hover:bg-yellow-300 transition-colors"
+                        >
+                            {segment.text}
+                        </mark>
                     )
                 }
                 return <span key={index}>{segment.text}</span>;
