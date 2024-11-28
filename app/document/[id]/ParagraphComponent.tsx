@@ -8,10 +8,10 @@ interface ParagraphProps {
     paragraph: Paragraph;
     highlights: Highlight[];
     onAddHighlight: (highlight: Highlight) => void;
+    onRemoveHighlight: (highlight: Highlight) => void;
 }
 
-// Renders the single paragraph
-export default function ParagraphComponent({ paragraph, highlights, onAddHighlight }: ParagraphProps) {
+export default function ParagraphComponent({ paragraph, highlights, onAddHighlight, onRemoveHighlight }: ParagraphProps) {
     
     const sortedHighlights = React.useMemo(() => {
         return [...highlights].sort((a, b) => {
@@ -23,8 +23,13 @@ export default function ParagraphComponent({ paragraph, highlights, onAddHighlig
     }, [highlights])
 
     return (
-        <p className="mt-8">
-            <HighlightedText paragraph={paragraph} highlights={sortedHighlights} onAddHighlight={onAddHighlight} />
+        <p>
+            <HighlightedText 
+                paragraph={paragraph} 
+                highlights={sortedHighlights} 
+                onAddHighlight={onAddHighlight}
+                onRemoveHighlight={onRemoveHighlight}
+            />
         </p>
     )
 }

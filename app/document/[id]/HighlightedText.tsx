@@ -8,6 +8,7 @@ interface HighlightedTextProps {
     paragraph: Paragraph;
     highlights: Highlight[];
     onAddHighlight: (highlight: Highlight) => void;
+    onRemoveHighlight: (highlight: Highlight) => void;
 }
 
 interface TextSegment {
@@ -15,9 +16,10 @@ interface TextSegment {
     highlight: Highlight | null;
 }
 
-export default function HighlightedText({paragraph, highlights, onAddHighlight}: HighlightedTextProps) {
+export default function HighlightedText({ paragraph, highlights, onAddHighlight, onRemoveHighlight}: HighlightedTextProps) {
     const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
     const [selectedRange, setSelectedRange] = useState<{ start: number; end: number } | null>(null);
+    const [existingHighlight, setExistingHighlight] = useState<Highlight | null>(null);
     const paragraphRef = useRef<HTMLSpanElement>(null);
 
     const segments: TextSegment[] = [];
@@ -82,23 +84,28 @@ export default function HighlightedText({paragraph, highlights, onAddHighlight}:
             const endOffset = range.endOffset;
 
             if (startOffset === endOffset) {
-                // Kein Bereich ausgewählt
                 setTooltipPosition(null);
                 return;
             }
 
-            // Hole das Rechteck des selektierten Bereichs
+            // Prüfe auf existierende Highlights im selektierten Bereich
+            const selectedText = selection.toString();
+            const overlappingHighlight = highlights.find(h => 
+                h.start.paragraphId === paragraph.id && 
+                text.slice(h.start.offset, h.end.offset) === selectedText
+            );
+
             const selectionRect = range.getBoundingClientRect();
             const paragraphRect = paragraphRef.current.getBoundingClientRect();
 
             const tooltipPos = {
-                // Positioniere zentriert über dem selektierten Bereich
                 left: selectionRect.left - paragraphRect.left + selectionRect.width / 2,
-                top: selectionRect.top - paragraphRect.top - 40 // 40px über dem selektierten Bereich
+                top: selectionRect.top - paragraphRect.top - 40
             };
 
             setTooltipPosition(tooltipPos);
             setSelectedRange({ start: startOffset, end: endOffset });
+            setExistingHighlight(overlappingHighlight || null);
         }
     };
 
@@ -119,10 +126,17 @@ export default function HighlightedText({paragraph, highlights, onAddHighlight}:
                         offset: paragraph.text.indexOf(selectedText) + selectedText.length 
                     },
                 };
-    
+
                 onAddHighlight(newHighlight);
                 setTooltipPosition(null);
             }
+        }
+    };
+
+    const handleRemoveHighlight = () => {
+        if (existingHighlight) {
+            onRemoveHighlight(existingHighlight);
+            setTooltipPosition(null);
         }
     };
 
@@ -156,6 +170,8 @@ export default function HighlightedText({paragraph, highlights, onAddHighlight}:
                             left: 0
                         }}
                         onHighlight={handleHighlight}
+                        onRemove={handleRemoveHighlight}
+                        hasExistingHighlight={!!existingHighlight}
                     />
                 </div>
             )}

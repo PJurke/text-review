@@ -1,4 +1,3 @@
-// components/Tooltip.tsx
 'use client';
 
 import React from 'react';
@@ -6,9 +5,11 @@ import React from 'react';
 interface TooltipProps {
     position: { top: number; left: number };
     onHighlight: () => void;
+    onRemove?: () => void;
+    hasExistingHighlight: boolean;
 }
 
-export default function Tooltip({ position, onHighlight }: TooltipProps) {
+export default function Tooltip({ position, onHighlight, onRemove, hasExistingHighlight}: TooltipProps) {
     return (
         <div
             style={{
@@ -25,19 +26,36 @@ export default function Tooltip({ position, onHighlight }: TooltipProps) {
                 gap: '5px',
             }}
         >
-            <button
-                onClick={onHighlight}
-                style={{
-                    backgroundColor: '#fff',
-                    color: '#333',
-                    border: 'none',
-                    padding: '5px 10px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                }}
-            >
-                Highlight
-            </button>
+            {!hasExistingHighlight && (
+                <button
+                    onClick={onHighlight}
+                    style={{
+                        backgroundColor: '#fff',
+                        color: '#333',
+                        border: 'none',
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    Highlight
+                </button>
+            )}
+            {hasExistingHighlight && (
+                <button
+                    onClick={onRemove}
+                    style={{
+                        backgroundColor: '#fff',
+                        color: '#333',
+                        border: 'none',
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    Remove
+                </button>
+            )}
         </div>
     );
-};
+}

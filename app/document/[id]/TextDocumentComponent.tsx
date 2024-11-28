@@ -9,7 +9,6 @@ interface TextDocumentProps {
     document: TextDocument;
 }
 
-// Renders the full document
 export default function TextDocumentComponent({document}: TextDocumentProps) {
     
     const [highlights, setHighlights] = React.useState<Highlight[]>(document.highlights);
@@ -40,6 +39,12 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
         setHighlights(prev => [...prev, highlight]);
     };
 
+    const handleRemoveHighlight = (highlightToRemove: Highlight) => {
+        setHighlights(prev => 
+            prev.filter(highlight => highlight.id !== highlightToRemove.id)
+        );
+    };
+
     return (
         <div>
             <h1 className="text-3xl">{document.title}</h1>
@@ -50,9 +55,9 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
                     paragraph={paragraph}
                     highlights={highlightsByParagraph[paragraph.id] || []}
                     onAddHighlight={handleAddHighlight}
+                    onRemoveHighlight={handleRemoveHighlight}
                 />
             ))}
-
         </div>
     )
 }
