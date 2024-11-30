@@ -2,7 +2,7 @@
 
 import { Paragraph, Highlight } from "@/app/lib/TextDocument";
 import React, { useState, useRef } from "react";
-import Tooltip from "./Tooltip";
+import TextHighlightToggle from "./TextHighlightToggle";
 
 interface HighlightedTextProps {
     paragraph: Paragraph;
@@ -186,7 +186,7 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
                     }}
                     className="z-50"
                 >
-                    <Tooltip 
+                    <TextHighlightToggle 
                         position={{
                             top: 0,
                             left: 0
