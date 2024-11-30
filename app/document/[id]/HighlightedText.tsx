@@ -1,13 +1,11 @@
 'use client'
 
 import { Paragraph, Highlight } from "@/app/lib/TextDocument";
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 
 interface HighlightedTextProps {
     paragraph: Paragraph;
     highlights: Highlight[];
-    onAddHighlight: (highlight: Highlight) => void;
-    onRemoveHighlight: (highlight: Highlight) => void;
     onShowTooltip: (
         position: { top: number; left: number }, 
         selectedRange?: { start: number; end: number },
@@ -22,9 +20,7 @@ interface TextSegment {
 
 export default function HighlightedText({ 
     paragraph, 
-    highlights, 
-    onAddHighlight, 
-    onRemoveHighlight,
+    highlights,
     onShowTooltip
 }: HighlightedTextProps) {
     const paragraphRef = useRef<HTMLSpanElement>(null);

@@ -7,8 +7,6 @@ import HighlightedText from "./HighlightedText";
 interface ParagraphProps {
     paragraph: Paragraph;
     highlights: Highlight[];
-    onAddHighlight: (highlight: Highlight) => void;
-    onRemoveHighlight: (highlight: Highlight) => void;
     onShowTooltip: (
         position: { top: number; left: number }, 
         selectedRange?: { start: number; end: number },
@@ -17,11 +15,9 @@ interface ParagraphProps {
 }
 
 export default function ParagraphComponent({ 
-    paragraph, 
-    highlights, 
-    onAddHighlight, 
-    onRemoveHighlight,
-    onShowTooltip 
+    paragraph,
+    highlights,
+    onShowTooltip
 }: ParagraphProps) {
     
     const sortedHighlights = React.useMemo(() => {
@@ -38,8 +34,6 @@ export default function ParagraphComponent({
             <HighlightedText 
                 paragraph={paragraph} 
                 highlights={sortedHighlights} 
-                onAddHighlight={onAddHighlight}
-                onRemoveHighlight={onRemoveHighlight}
                 onShowTooltip={onShowTooltip}
             />
         </p>

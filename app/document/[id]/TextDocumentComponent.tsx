@@ -114,8 +114,6 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
                             existingHighlight
                         })
                     }
-                    onAddHighlight={handleAddHighlight}
-                    onRemoveHighlight={handleRemoveHighlight}
                 />
             ))}
 
