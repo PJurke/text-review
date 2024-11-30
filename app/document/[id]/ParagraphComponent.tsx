@@ -9,9 +9,20 @@ interface ParagraphProps {
     highlights: Highlight[];
     onAddHighlight: (highlight: Highlight) => void;
     onRemoveHighlight: (highlight: Highlight) => void;
+    onShowTooltip: (
+        position: { top: number; left: number }, 
+        selectedRange?: { start: number; end: number },
+        existingHighlight?: Highlight | null
+    ) => void;
 }
 
-export default function ParagraphComponent({ paragraph, highlights, onAddHighlight, onRemoveHighlight }: ParagraphProps) {
+export default function ParagraphComponent({ 
+    paragraph, 
+    highlights, 
+    onAddHighlight, 
+    onRemoveHighlight,
+    onShowTooltip 
+}: ParagraphProps) {
     
     const sortedHighlights = React.useMemo(() => {
         return [...highlights].sort((a, b) => {
@@ -29,6 +40,7 @@ export default function ParagraphComponent({ paragraph, highlights, onAddHighlig
                 highlights={sortedHighlights} 
                 onAddHighlight={onAddHighlight}
                 onRemoveHighlight={onRemoveHighlight}
+                onShowTooltip={onShowTooltip}
             />
         </p>
     )

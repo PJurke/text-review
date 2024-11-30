@@ -2,13 +2,17 @@
 
 import { Paragraph, Highlight } from "@/app/lib/TextDocument";
 import React, { useState, useRef } from "react";
-import TextHighlightToggle from "./TextHighlightToggle";
 
 interface HighlightedTextProps {
     paragraph: Paragraph;
     highlights: Highlight[];
     onAddHighlight: (highlight: Highlight) => void;
     onRemoveHighlight: (highlight: Highlight) => void;
+    onShowTooltip: (
+        position: { top: number; left: number }, 
+        selectedRange?: { start: number; end: number },
+        existingHighlight?: Highlight | null
+    ) => void;
 }
 
 interface TextSegment {
@@ -16,10 +20,13 @@ interface TextSegment {
     highlight: Highlight | null;
 }
 
-export default function HighlightedText({ paragraph, highlights, onAddHighlight, onRemoveHighlight }: HighlightedTextProps) {
-    const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
-    const [selectedRange, setSelectedRange] = useState<{ start: number; end: number } | null>(null);
-    const [existingHighlight, setExistingHighlight] = useState<Highlight | null>(null);
+export default function HighlightedText({ 
+    paragraph, 
+    highlights, 
+    onAddHighlight, 
+    onRemoveHighlight,
+    onShowTooltip
+}: HighlightedTextProps) {
     const paragraphRef = useRef<HTMLSpanElement>(null);
 
     const text = paragraph.text;
@@ -84,10 +91,7 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
             const startOffset = range.startOffset;
             const endOffset = range.endOffset;
 
-            if (startOffset === endOffset) {
-                setTooltipPosition(null);
-                return;
-            }
+            if (startOffset === endOffset) return;
 
             const selectedText = selection.toString();
             const overlappingHighlight = highlights.find(h => 
@@ -103,9 +107,11 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
                 top: selectionRect.top - paragraphRect.top - 40
             };
 
-            setTooltipPosition(tooltipPos);
-            setSelectedRange({ start: startOffset, end: endOffset });
-            setExistingHighlight(overlappingHighlight || null);
+            onShowTooltip(
+                tooltipPos, 
+                { start: startOffset, end: endOffset },
+                overlappingHighlight || null
+            );
         }
     };
 
@@ -120,39 +126,11 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
                 top: event.clientY - paragraphRect.top - 40
             };
 
-            setTooltipPosition(tooltipPos);
-            setExistingHighlight(highlight);
-        }
-    };
-
-    const handleHighlight = () => {
-        if (selectedRange) {
-            const selection = window.getSelection();
-            if (selection) {
-                const selectedText = selection.toString();
-                
-                const newHighlight: Highlight = {
-                    id: `h${Date.now()}`,
-                    start: { 
-                        paragraphId: paragraph.id, 
-                        offset: paragraph.text.indexOf(selectedText) 
-                    },
-                    end: { 
-                        paragraphId: paragraph.id, 
-                        offset: paragraph.text.indexOf(selectedText) + selectedText.length 
-                    },
-                };
-
-                onAddHighlight(newHighlight);
-                setTooltipPosition(null);
-            }
-        }
-    };
-
-    const handleRemoveHighlight = () => {
-        if (existingHighlight) {
-            onRemoveHighlight(existingHighlight);
-            setTooltipPosition(null);
+            onShowTooltip(
+                tooltipPos, 
+                undefined, 
+                highlight
+            );
         }
     };
 
@@ -176,27 +154,6 @@ export default function HighlightedText({ paragraph, highlights, onAddHighlight,
                 }
                 return <span key={index}>{segment.text}</span>;
             })}
-            
-            {tooltipPosition && (
-                <div 
-                    style={{
-                        position: 'absolute',
-                        left: `${tooltipPosition.left}px`,
-                        top: `${tooltipPosition.top}px`,
-                    }}
-                    className="z-50"
-                >
-                    <TextHighlightToggle 
-                        position={{
-                            top: 0,
-                            left: 0
-                        }}
-                        onHighlight={handleHighlight}
-                        onRemove={handleRemoveHighlight}
-                        hasExistingHighlight={!!existingHighlight}
-                    />
-                </div>
-            )}
         </span>
     )
 }
