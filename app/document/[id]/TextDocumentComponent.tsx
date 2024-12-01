@@ -2,9 +2,10 @@
 
 import TextDocument from "@/app/lib/TextDocument";
 import { Highlight } from "@/app/lib/TextDocument";
-import React from "react";
+import React, { useEffect } from "react";
 import ParagraphComponent from "./ParagraphComponent";
 import TextHighlightToggle from "./TextHighlightToggle";
+import { useStore } from "./TextDocumentStore";
 
 interface TextDocumentProps {
     document: TextDocument;
@@ -12,21 +13,20 @@ interface TextDocumentProps {
 
 export default function TextDocumentComponent({document}: TextDocumentProps) {
     
-    const [highlights, setHighlights] = React.useState<Highlight[]>(document.highlights);
+    const highlights = useStore((state) => state.highlights);
+    const addHighlight = useStore((state) => state.addHighlight);
+    const removeHighlight = useStore((state) => state.removeHighlight);
+    const setHighlights = useStore((state) => state.setHighlights);
 
-    const [tooltipState, setTooltipState] = React.useState<{
-        visible: boolean;
-        position: { top: number; left: number };
-        selectedRange: { start: number; end: number } | null;
-        paragraphId: string | null;
-        existingHighlight: Highlight | null;
-    }>({
-        visible: false,
-        position: { top: 0, left: 0 },
-        selectedRange: null,
-        paragraphId: null,
-        existingHighlight: null
-    });
+    const tooltipState = useStore((state) => state.tooltipState);
+    const showTooltip = useStore((state) => state.showTooltip);
+    const hideTooltip = useStore((state) => state.hideTooltip);
+    const setDocument = useStore((state) => state.setDocument);
+
+    useEffect(() => {
+        setDocument(document);
+        setHighlights(document.highlights);
+    }, [document, setDocument, setHighlights]);
 
     const documentRef = React.useRef<HTMLDivElement>(null);
 
@@ -51,30 +51,6 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
         return map;
 
     }, [highlights, document.paragraphs]);
-    
-    const showTooltip = (params: {
-        position: { top: number; left: number };
-        paragraphId: string;
-        selectedRange?: { start: number; end: number };
-        existingHighlight?: Highlight | null;
-    }) => {
-        setTooltipState({
-            visible: true,
-            position: params.position,
-            paragraphId: params.paragraphId,
-            selectedRange: params.selectedRange || null,
-            existingHighlight: params.existingHighlight || null
-        });
-    };
-
-    const hideTooltip = () => {
-        setTooltipState(prev => ({
-            ...prev,
-            visible: false,
-            selectedRange: null,
-            existingHighlight: null
-        }));
-    };
 
     const handleAddHighlight = (highlight: Highlight) => {
         // Prüfe auf Überlappungen vor dem Hinzufügen
@@ -85,15 +61,13 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
         );
 
         if (!overlappingHighlight) {
-            setHighlights(prev => [...prev, highlight]);
+            addHighlight(highlight)
             hideTooltip();
         }
     };
 
     const handleRemoveHighlight = (highlightToRemove: Highlight) => {
-        setHighlights(prev => 
-            prev.filter(highlight => highlight.id !== highlightToRemove.id)
-        );
+        removeHighlight(highlightToRemove.id)
         hideTooltip();
     };
 
@@ -114,6 +88,7 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
                             existingHighlight
                         })
                     }
+                    containerRef={documentRef}
                 />
             ))}
 
@@ -135,10 +110,6 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
                             if (tooltipState.selectedRange) {
                                 const paragraph = document.paragraphs.find(p => p.id === tooltipState.paragraphId);
                                 if (paragraph && tooltipState.selectedRange) {
-                                    const selectedText = paragraph.text.slice(
-                                        tooltipState.selectedRange.start, 
-                                        tooltipState.selectedRange.end
-                                    );
                                     
                                     const newHighlight: Highlight = {
                                         id: `h${Date.now()}`,
@@ -150,6 +121,7 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
                                             paragraphId: paragraph.id, 
                                             offset: tooltipState.selectedRange.end 
                                         },
+
                                     };
 
                                     handleAddHighlight(newHighlight);

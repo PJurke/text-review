@@ -11,6 +11,7 @@ interface HighlightedTextProps {
         selectedRange?: { start: number; end: number },
         existingHighlight?: Highlight | null
     ) => void;
+    containerRef: React.RefObject<HTMLDivElement>;
 }
 
 interface TextSegment {
@@ -21,7 +22,8 @@ interface TextSegment {
 export default function HighlightedText({ 
     paragraph, 
     highlights,
-    onShowTooltip
+    onShowTooltip,
+    containerRef
 }: HighlightedTextProps) {
     const paragraphRef = useRef<HTMLSpanElement>(null);
 
@@ -82,7 +84,7 @@ export default function HighlightedText({
     const handleMouseUp = (event: React.MouseEvent) => {
         const selection = window.getSelection();
 
-        if (selection && selection.rangeCount > 0 && paragraphRef.current) {
+        if (selection && selection.rangeCount > 0 && paragraphRef.current && containerRef.current) {
             const range = selection.getRangeAt(0);
             const startOffset = range.startOffset;
             const endOffset = range.endOffset;
@@ -96,11 +98,11 @@ export default function HighlightedText({
             );
 
             const selectionRect = range.getBoundingClientRect();
-            const paragraphRect = paragraphRef.current.getBoundingClientRect();
+            const containerRect = containerRef.current.getBoundingClientRect();
 
             const tooltipPos = {
-                left: selectionRect.left - paragraphRect.left + selectionRect.width / 2,
-                top: selectionRect.top - paragraphRect.top - 40
+                left: (selectionRect.left + (selectionRect.width * 0.5)),
+                top: selectionRect.top - containerRect.top - 35,
             };
 
             onShowTooltip(
@@ -118,8 +120,8 @@ export default function HighlightedText({
         
         if (paragraphRect) {
             const tooltipPos = {
-                left: event.clientX - paragraphRect.left,
-                top: event.clientY - paragraphRect.top - 40
+                left: paragraphRect.left,
+                top: event.clientY - 60
             };
 
             onShowTooltip(

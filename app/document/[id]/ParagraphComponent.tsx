@@ -12,12 +12,14 @@ interface ParagraphProps {
         selectedRange?: { start: number; end: number },
         existingHighlight?: Highlight | null
     ) => void;
+    containerRef: React.RefObject<HTMLDivElement>;
 }
 
 export default function ParagraphComponent({ 
     paragraph,
     highlights,
-    onShowTooltip
+    onShowTooltip,
+    containerRef
 }: ParagraphProps) {
     
     const sortedHighlights = React.useMemo(() => {
@@ -35,6 +37,7 @@ export default function ParagraphComponent({
                 paragraph={paragraph} 
                 highlights={sortedHighlights} 
                 onShowTooltip={onShowTooltip}
+                containerRef={containerRef}
             />
         </p>
     )
