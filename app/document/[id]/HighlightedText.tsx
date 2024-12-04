@@ -5,13 +5,13 @@ import React, { useRef } from "react";
 
 interface HighlightedTextProps {
     paragraph: Paragraph;
-    highlights: Highlight[];
-    onShowTooltip: (
+    sortedHighlights: Highlight[];
+    /*onShowTooltip: (
         position: { top: number; left: number }, 
         selectedRange?: { start: number; end: number },
         existingHighlight?: Highlight | null
     ) => void;
-    containerRef: React.RefObject<HTMLDivElement>;
+    containerRef: React.RefObject<HTMLDivElement>;*/
 }
 
 interface TextSegment {
@@ -20,100 +20,76 @@ interface TextSegment {
 }
 
 export default function HighlightedText({ 
-    paragraph, 
-    highlights,
-    onShowTooltip,
-    containerRef
+    paragraph,
+    sortedHighlights
+    //onShowTooltip,
+    //containerRef
 }: HighlightedTextProps) {
-    const paragraphRef = useRef<HTMLSpanElement>(null);
 
-    const text = paragraph.text;
+    const paragraphRef = useRef<HTMLSpanElement>(null);
+    const text = paragraph.text
+    const highlights = sortedHighlights
     const length = text.length;
 
-    // Segmentierungslogik
-    const highlightMap: (Highlight | null)[] = Array(length).fill(null);
+    const elements = [];
+    let lastIndex = 0;
 
-    highlights.forEach(highlight => {
-        let start = 0;
-        let end = length;
+    sortedHighlights.forEach((highlight, index) => {
+        const { start, end, id } = highlight;
 
-        if (highlight.start.paragraphId === paragraph.id) {
-            start = highlight.start.offset;
+        // Add text before the highlight
+        if (lastIndex < start) {
+            elements.push(<span key={`${id}-before`}>{text.slice(lastIndex, start)}</span>);
         }
 
-        if (highlight.end.paragraphId === paragraph.id) {
-            end = highlight.end.offset;
-        }
+        // Add the highlighted text
+        elements.push(
+            <mark key={`${id}-highlight`}>{text.slice(start, end)}</mark>
+        );
 
-        start = Math.max(0, Math.min(start, length));
-        end = Math.max(start, Math.min(end, length));
-
-        for (let i = start; i < end && i < length; i++) {
-            if (!highlightMap[i]) {
-                highlightMap[i] = highlight;
-            }
-        }
+        lastIndex = end;
     });
 
-    const segments: TextSegment[] = [];
-    let currentHighlight = highlightMap[0];
-    let currentText = '';
-
-    for (let i = 0; i < length; i++) {
-        if (highlightMap[i] !== currentHighlight) {
-            if (currentText) {
-                segments.push({
-                    text: currentText,
-                    highlight: currentHighlight,
-                });
-                currentText = '';
-            }
-            
-            currentHighlight = highlightMap[i];
-        }
-        currentText += text[i];
-    }
-
-    if (currentText) {
-        segments.push({
-            text: currentText,
-            highlight: currentHighlight,
-        });
+    // Add any remaining text after the last highlight
+    if (lastIndex < text.length) {
+        elements.push(<span key={`after-${paragraph.id}`}>{text.slice(lastIndex)}</span>);
     }
 
     const handleMouseUp = (event: React.MouseEvent) => {
         const selection = window.getSelection();
 
-        if (selection && selection.rangeCount > 0 && paragraphRef.current && containerRef.current) {
+        if (selection && selection.rangeCount > 0 && paragraphRef.current /* && containerRef.current*/) {
             const range = selection.getRangeAt(0);
             const startOffset = range.startOffset;
             const endOffset = range.endOffset;
 
             if (startOffset === endOffset) return;
 
+            console.log('handleMouseUp', startOffset, endOffset)
+
             const selectedText = selection.toString();
-            const overlappingHighlight = highlights.find(h => 
+            /*const overlappingHighlight = highlights.find(h => 
                 h.start.paragraphId === paragraph.id && 
                 text.slice(h.start.offset, h.end.offset) === selectedText
-            );
+            );*/
 
-            const selectionRect = range.getBoundingClientRect();
+            /*const selectionRect = range.getBoundingClientRect();
             const containerRect = containerRef.current.getBoundingClientRect();
 
             const tooltipPos = {
                 left: (selectionRect.left + (selectionRect.width * 0.5)),
                 top: selectionRect.top - containerRect.top - 35,
-            };
+            };*/
 
-            onShowTooltip(
+            /*onShowTooltip(
                 tooltipPos, 
                 { start: startOffset, end: endOffset },
                 overlappingHighlight || null
-            );
+            );*/
         }
     };
 
-    const handleMarkClick = (highlight: Highlight, event: React.MouseEvent) => {
+    /*const handleMarkClick = (highlight: Highlight, event: React.MouseEvent) => {
         event.stopPropagation();
         
         const paragraphRect = paragraphRef.current?.getBoundingClientRect();
@@ -130,9 +106,9 @@ export default function HighlightedText({
                 highlight
             );
         }
-    };
+    };*/
 
-    return (
+    /*return (
         <span 
             ref={paragraphRef}
             onMouseUp={handleMouseUp} 
@@ -143,7 +119,7 @@ export default function HighlightedText({
                     return (
                         <mark 
                             key={index} 
-                            onClick={(e) => handleMarkClick(segment.highlight!, e)}
+                            //onClick={(e) => handleMarkClick(segment.highlight!, e)}
                             className="cursor-pointer bg-yellow-200 hover:bg-yellow-300 transition-colors"
                         >
                             {segment.text}
@@ -153,5 +129,5 @@ export default function HighlightedText({
                 return <span key={index}>{segment.text}</span>;
             })}
         </span>
-    )
+    )*/
 }

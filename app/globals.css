@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.highlight {
+    background-color: yellow;
+    transition: background-color 0.3s;
+    cursor: pointer;
+  }
+  
+.highlight.hovered {
+    background-color: orange;
+}

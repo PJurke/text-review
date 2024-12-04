@@ -1,4 +1,4 @@
-import TextDocument, { Highlight } from "@/app/lib/TextDocument";
+import { Highlight } from "@/app/lib/TextDocument";
 import { create } from "zustand/react";
 
 interface HighlightsState {
@@ -22,10 +22,7 @@ interface TooltipActions {
     hideTooltip: () => void
 }
 
-interface StoreState extends HighlightsState, TooltipActions {
-    document: TextDocument | null;
-    setDocument: (document: TextDocument) => void;
-}
+interface StoreState extends HighlightsState, TooltipActions {}
 
 export const useStore = create<StoreState>((set) => ({
 
@@ -33,13 +30,17 @@ export const useStore = create<StoreState>((set) => ({
 
     highlights: [],
 
-    addHighlight: (highlight) => set((state) => ({
-        highlights: [...state.highlights, highlight]
-    })),
+    addHighlight: (highlight) => set((state) => {
+        return {
+            highlights: [...state.highlights, highlight]
+        }
+    }),
 
-    removeHighlight: (highlightId) => set((state) => ({
-        highlights: state.highlights.filter(h => h.id !== highlightId)
-    })),
+    removeHighlight: (highlightId) => set((state) => {
+        return {
+            highlights: state.highlights.filter(h => h.id !== highlightId)
+        }
+    }),
 
     setHighlights: (highlights) => set({ highlights }),
 
@@ -59,11 +60,6 @@ export const useStore = create<StoreState>((set) => ({
 
     hideTooltip: () => set((state) => ({
         tooltipState: { ...state.tooltipState, visible: false, selectedRange: null, existingHighlight: null }
-    })),
-
-    // Document State
-
-    document: null,
-    setDocument: (document: TextDocument) => set({ document })
+    }))
 
 }))
