@@ -65,33 +65,6 @@ export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: Par
         return tempSegments;
     }, [text, highlights]);
 
-    /*const renderSegments = segments.map((segment, index) => {
-        const { text: segmentText, highlightIds } = segment;
-    
-        if (highlightIds.length > 0) {
-            // Generieren der Klassen als String
-            const classNames = highlightIds.map(id => `highlight-${id}`).join(' ');
-    
-            // Prüfen, ob eines der Highlight-IDs gehovt wird
-            const isHovered = highlightIds.some(id => hoveredHighlightIds.has(id));
-            const combinedClassNames = `${classNames} ${isHovered ? 'hovered' : ''}`;
-    
-            return (
-                <mark
-                    key={index}
-                    className={combinedClassNames}
-                    onMouseEnter={() => handleMarkMouseEnter(highlightIds)}
-                    onMouseLeave={() => handleMarkMouseLeave(highlightIds)}
-                    onClick={() => handleHighlightClick(highlightIds)}
-                >
-                    {segmentText}
-                </mark>
-            );
-        } else {
-            return <React.Fragment key={index}>{segmentText}</React.Fragment>;
-        }
-    });*/
-
     /*const getGlobalOffset = (node: Node, localOffset: number): number => {
         let offset = 0;
         const traverse = (currentNode: Node) => {
@@ -166,7 +139,7 @@ export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: Par
     };*/
 
     return (
-        <p ref={paragraphRef} className="leading-7 mt-8" /* onMouseUp={handleMouseUp}*/>
+        <p ref={paragraphRef} className="leading-9 mt-8 text-lg" /* onMouseUp={handleMouseUp}*/>
             {segments.map((segment, index) => {
 
                 if (segment.highlightIds.length === 0)
