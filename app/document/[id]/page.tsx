@@ -26,13 +26,11 @@ export default async function Page({ params }: PageProps) {
         paragraphs: [
             { 
                 "id": "p1", 
-                "text": "Im ersten Absatz wird das Thema vorgestellt und die grundlegenden Aspekte erläutert. Dies schafft eine solide Basis für das Verständnis der folgenden Inhalte.",
+                "text": "Do a quick search. Im ersten Absatz wird das Thema vorgestellt und die grundlegenden Aspekte erläutert. Dies schafft eine solide Basis für das Verständnis der folgenden Inhalte.",
                 highlights: [
-                    {
-                        id: "h1",
-                        start: 0,
-                        end: 16,
-                    }
+                    { id: "h1", start: 0, end: 4 },
+                    { id: "h2", start: 3, end: 10 },
+                    { id: "h3", start: 5, end: 17 }
                 ]
             },
             { 
@@ -40,7 +38,7 @@ export default async function Page({ params }: PageProps) {
                 "text": "Der zweite Absatz vertieft das Thema durch detaillierte Informationen und relevante Beispiele. Dadurch wird das Verständnis weiter gefördert und die Thematik aus verschiedenen Perspektiven beleuchtet.",
                 highlights: [
                     {
-                        id: "h1",
+                        id: "h4",
                         start: 18,
                         end: 36,
                     }
@@ -51,7 +49,7 @@ export default async function Page({ params }: PageProps) {
                 "text": "Im dritten Absatz werden die wichtigsten Erkenntnisse zusammengefasst und abschließende Gedanken präsentiert. Dies rundet das Thema ab und bietet dem Leser eine klare Schlussfolgerung.",
                 highlights: [
                     {
-                        id: "h1",
+                        id: "h5",
                         start: 0,
                         end: 17,
                     }

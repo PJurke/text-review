@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.highlight {
+mark {
     background-color: yellow;
     transition: background-color 0.3s;
     cursor: pointer;
   }
   
-.highlight.hovered {
+mark.active {
     background-color: orange;
 }

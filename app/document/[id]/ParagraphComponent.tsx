@@ -1,7 +1,12 @@
 'use client'
 
 import { Paragraph, Highlight } from "@/app/lib/TextDocument";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+
+interface Segment {
+    text: string;
+    highlightIds: string[]
+}
 
 interface ParagraphProps {
     paragraph: Paragraph;
@@ -12,45 +17,55 @@ interface ParagraphProps {
     ) => void;*/
 }
 
-export default function ParagraphComponent({ 
-    paragraph,
-    /*onShowTooltip*/
-}: ParagraphProps) {
+export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: ParagraphProps) {
     
+    // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
+
+    // All existing highlights in the paragraph
     const [highlights, setHighlights] = useState<Highlight[]>(paragraph.highlights);
-    const [hoveredHighlightIds, setHoveredHighlightIds] = useState<Set<string>>(new Set());
 
-    const sortedHighlights = [...highlights].sort((a, b) => a.start - b.start);
-
-    let positions = new Set<number>();
-    highlights.forEach(highlight => {
-        positions.add(highlight.start);
-        positions.add(highlight.end);
-    });
-    positions.add(0);
-    positions.add(text.length);
-    let sortedPositions = Array.from(positions).sort((a, b) => a - b);
+    // Currently active highlight (ID = string)
+    const [activeHighlight, setActiveHighlight] = useState<string>('');
     
-    let segments = [];
-    for (let i = 0; i < sortedPositions.length - 1; i++) {
-        const start = sortedPositions[i];
-        const end = sortedPositions[i + 1];
-        const segmentText = text.slice(start, end);
+    // Segmenting mechanism for working active highlighting
+    const segments: Segment[] = useMemo(() => {
+        
+        // Start and end positions of all existing highlights + text boundaries (=segment positions)
+        let boundaries = new Set<number>();
 
-        // Bestimmen der aktiven Highlights für das Segment
-        const activeHighlightIds = highlights
-            .filter(highlight => highlight.start < end && highlight.end > start)
-            .map(highlight => highlight.id);
-
-        segments.push({
-            text: segmentText,
-            highlightIds: activeHighlightIds
+        highlights.forEach(highlight => {
+            boundaries.add(highlight.start);
+            boundaries.add(highlight.end);
         });
-    }
+        boundaries.add(0);
+        boundaries.add(text.length);
 
-    const renderSegments = segments.map((segment, index) => {
+        // Sorting segment positions ASC for algorithm
+        const sortedBoundaries = Array.from(boundaries).sort((a, b) => a - b);
+        const tempSegments: Segment[] = [];
+
+        for (let i = 0; i < sortedBoundaries.length - 1; i++) {
+            const segmentStart = sortedBoundaries[i];
+            const segmentEnd = sortedBoundaries[i + 1];
+            const segmentText = text.slice(segmentStart, segmentEnd);
+
+            // Find all highlights that completely cover the current segment + store their highlight ids
+            const coveringHighlights= highlights
+                .filter(highlight => highlight.start <= segmentStart && highlight.end >= segmentEnd)
+                .map(highlight => highlight.id);
+
+            tempSegments.push({
+                text: segmentText,
+                highlightIds: coveringHighlights
+            });
+        }
+
+        return tempSegments;
+    }, [text, highlights]);
+
+    /*const renderSegments = segments.map((segment, index) => {
         const { text: segmentText, highlightIds } = segment;
     
         if (highlightIds.length > 0) {
@@ -75,9 +90,9 @@ export default function ParagraphComponent({
         } else {
             return <React.Fragment key={index}>{segmentText}</React.Fragment>;
         }
-    });
+    });*/
 
-    const getGlobalOffset = (node: Node, localOffset: number): number => {
+    /*const getGlobalOffset = (node: Node, localOffset: number): number => {
         let offset = 0;
         const traverse = (currentNode: Node) => {
             if (currentNode === node) {
@@ -101,9 +116,9 @@ export default function ParagraphComponent({
             traverse(paragraphRef.current);
 
         return offset;
-    };
+    };*/
 
-    const handleMouseUp = (event: React.MouseEvent) => {
+    /*const handleMouseUp = (event: React.MouseEvent) => {
         const selection = window.getSelection();
 
         if (selection && selection.rangeCount > 0) {
@@ -132,9 +147,9 @@ export default function ParagraphComponent({
         setHighlights(oldHighlights =>
             oldHighlights.filter(highlight => highlight.id !== highlightIdToRemove)
         );
-    };
+    };*/
 
-    const handleMarkMouseEnter = (highlightIds: string[]) => {
+    /*const handleMarkMouseEnter = (highlightIds: string[]) => {
         setHoveredHighlightIds(prev => {
             const newSet = new Set(prev);
             highlightIds.forEach(id => newSet.add(id));
@@ -148,40 +163,34 @@ export default function ParagraphComponent({
             highlightIds.forEach(id => newSet.delete(id));
             return newSet;
         });
-    };
-
-    useEffect(() => {
-        const styleElement = document.createElement('style');
-        const uniqueHighlightIds = new Set(highlights.map(h => h.id));
-
-        let styleContent = '';
-
-        uniqueHighlightIds.forEach(id => {
-            styleContent += `
-                .highlight-${id} {
-                    background-color: yellow;
-                    transition: background-color 0.3s;
-                }
-                .highlight-${id}:hover,
-                .highlight-${id}.hovered {
-                    background-color: orange;
-                    cursor: pointer;
-                }
-            `;
-        });
-
-        styleElement.textContent = styleContent;
-        document.head.appendChild(styleElement);
-
-        // Cleanup-Funktion, um das Style-Element zu entfernen, wenn die Komponente unmountet wird
-        return () => {
-            document.head.removeChild(styleElement);
-        };
-    }, [highlights]);
+    };*/
 
     return (
-        <p ref={paragraphRef} onMouseUp={handleMouseUp}>
-            {renderSegments}
+        <p ref={paragraphRef} /* onMouseUp={handleMouseUp}*/>
+            {segments.map((segment, index) => {
+
+                if (segment.highlightIds.length === 0)
+                    return <React.Fragment key={index}>{segment.text}</React.Fragment>;
+
+                // Determine if the current segment is part of the active highlight
+                const isActive = segment.highlightIds.includes(activeHighlight);
+
+                return (
+                    <mark
+                        key={index}
+                        className={`${isActive ? 'active' : ''}`}
+                        onMouseEnter={() => {
+                        if (segment.highlightIds.length > 0) {
+                            // Set the first existing highlight ID as active when the segment is hovered
+                            setActiveHighlight(segment.highlightIds[0]);
+                        }
+                        }}
+                        onMouseLeave={() => setActiveHighlight('')}
+                    >
+                        {segment.text}
+                    </mark>
+                );
+            })}
         </p>
     );
 }
