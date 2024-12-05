@@ -166,7 +166,7 @@ export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: Par
     };*/
 
     return (
-        <p ref={paragraphRef} /* onMouseUp={handleMouseUp}*/>
+        <p ref={paragraphRef} className="leading-7 mt-8" /* onMouseUp={handleMouseUp}*/>
             {segments.map((segment, index) => {
 
                 if (segment.highlightIds.length === 0)
