@@ -1,7 +1,7 @@
 'use client'
 
 import { Paragraph, Highlight } from "@/app/lib/TextDocument";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 interface Segment {
     text: string;
@@ -12,7 +12,7 @@ interface ParagraphProps {
     paragraph: Paragraph;
 }
 
-export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: ParagraphProps) {
+export default function ParagraphComponent({ paragraph }: ParagraphProps) {
     
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
