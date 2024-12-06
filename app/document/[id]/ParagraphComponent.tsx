@@ -10,11 +10,6 @@ interface Segment {
 
 interface ParagraphProps {
     paragraph: Paragraph;
-    /*onShowTooltip: (
-        position: { top: number; left: number }, 
-        selectedRange?: { start: number; end: number },
-        existingHighlight?: Highlight | null
-    ) => void;*/
 }
 
 export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: ParagraphProps) {
@@ -91,34 +86,6 @@ export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: Par
         return offset;
     };*/
 
-    /*const handleMouseUp = (event: React.MouseEvent) => {
-        const selection = window.getSelection();
-
-        if (selection && selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const startOffset = getGlobalOffset(range.startContainer, range.startOffset);
-            const endOffset = getGlobalOffset(range.endContainer, range.endOffset);
-
-            if (startOffset === endOffset) return;
-
-            addHighlight({
-                id: `h${Date.now()}`,
-                start: startOffset,
-                end: endOffset
-            });
-        }
-    };
-
-    const addHighlight = (highlight: Highlight) => {
-        setHighlights([...highlights, highlight]);
-    };*/
-
-    const handleHighlightClick = (highlightId: string) => {
-        setHighlights(oldHighlights =>
-            oldHighlights.filter(highlight => highlight.id !== highlightId)
-        );
-    };
-
     const handleMouseEnter = (segment: Segment) => {
         if (segment.highlightIds.length > 0) {
             // Set the first existing highlight ID as active when the segment is hovered
@@ -126,24 +93,8 @@ export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: Par
         }
     };
 
-    /*const handleMarkMouseEnter = (highlightIds: string[]) => {
-        setHoveredHighlightIds(prev => {
-            const newSet = new Set(prev);
-            highlightIds.forEach(id => newSet.add(id));
-            return newSet;
-        });
-    };
-    
-    const handleMarkMouseLeave = (highlightIds: string[]) => {
-        setHoveredHighlightIds(prev => {
-            const newSet = new Set(prev);
-            highlightIds.forEach(id => newSet.delete(id));
-            return newSet;
-        });
-    };*/
-
     return (
-        <p ref={paragraphRef} className="leading-9 mt-8 text-lg" /* onMouseUp={handleMouseUp}*/>
+        <p ref={paragraphRef} className="leading-9 mt-8 text-lg">
             {segments.map((segment, index) => {
 
                 if (segment.highlightIds.length === 0)
