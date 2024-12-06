@@ -112,9 +112,12 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
                 // Determine if the current segment is part of the active highlight
                 const isActive = segment.highlightIds.includes(activeHighlight);
 
+                // Create a unique key for the `mark` element
+                const markKey = `${index}-${segment.highlightIds.join('-')}`;
+
                 return (
                     <mark
-                        key={index}
+                        key={markKey}
                         className={`${isActive ? 'active' : ''}`}
                         onMouseEnter={() => handleMouseEnter(segment)}
                         onMouseLeave={() => setActiveHighlight('')}
