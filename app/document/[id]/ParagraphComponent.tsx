@@ -18,11 +18,15 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
-    const { getHighlightsByParagraph } = useStore();
+    const removeHighlight = useStore((state) => state.removeHighlight);
+
+    const allHighlights = useStore(state => state.highlights);
 
     // All existing highlights in the paragraph
-
-    const highlights = getHighlightsByParagraph(paragraph.id);
+    const highlights = useMemo(() => 
+        allHighlights.filter(highlight => highlight.paragraphId === paragraph.id),
+        [allHighlights, paragraph.id]
+    );
 
     // Currently active highlight (ID = string)
     const [activeHighlight, setActiveHighlight] = useState<string>('');
@@ -96,6 +100,11 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
         }
     };
 
+    const handleRemoveHighlight = (highlightId: string) => {
+        removeHighlight(highlightId);
+        setActiveHighlight('');
+    };
+
     return (
         <p ref={paragraphRef} className="leading-9 mt-8 text-lg">
             {segments.map((segment, index) => {
@@ -112,6 +121,10 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
                         className={`${isActive ? 'active' : ''}`}
                         onMouseEnter={() => handleMouseEnter(segment)}
                         onMouseLeave={() => setActiveHighlight('')}
+                        onClick={() => {
+                            if (isActive && activeHighlight)
+                                handleRemoveHighlight(activeHighlight);
+                        }}
                     >
                         {segment.text}
                     </mark>

@@ -4,8 +4,8 @@ import { Highlight } from "../TextDocument";
 interface HighlightState {
     highlights: Highlight[];
     addHighlight: (highlight: Highlight) => void;
+    removeHighlight: (highlightId: string) => void;
     setHighlights: (highlights: Highlight[]) => void;
-    getHighlightsByParagraph: (paragraphId: string) => Highlight[];
 }
 
 export const useStore = create<HighlightState>((set, get) => ({
@@ -18,12 +18,14 @@ export const useStore = create<HighlightState>((set, get) => ({
         }));
     },
 
-    setHighlights: (allHighlights: Highlight[]) => {
-        set({ highlights: allHighlights });
+    removeHighlight: (highlightId: string) => {
+        set((state) => ({
+            highlights: state.highlights.filter(highlight => highlight.id !== highlightId),
+        }));
     },
 
-    getHighlightsByParagraph: (paragraphId: string) => {
-        return get().highlights.filter(highlight => highlight.paragraphId === paragraphId);
+    setHighlights: (allHighlights: Highlight[]) => {
+        set({ highlights: allHighlights });
     },
 
 }));
