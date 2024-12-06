@@ -1,6 +1,7 @@
 'use client'
 
-import { Paragraph, Highlight } from "@/app/lib/TextDocument";
+import { useStore } from "@/app/lib/store/AppStore";
+import { Paragraph } from "@/app/lib/TextDocument";
 import React, { useMemo, useRef, useState } from "react";
 
 interface Segment {
@@ -17,9 +18,11 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
+    const { getHighlightsByParagraph } = useStore();
 
     // All existing highlights in the paragraph
-    const [highlights, setHighlights] = useState<Highlight[]>(paragraph.highlights);
+
+    const highlights = getHighlightsByParagraph(paragraph.id);
 
     // Currently active highlight (ID = string)
     const [activeHighlight, setActiveHighlight] = useState<string>('');
@@ -47,7 +50,7 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
             const segmentText = text.slice(segmentStart, segmentEnd);
 
             // Find all highlights that completely cover the current segment + store their highlight ids
-            const coveringHighlights= highlights
+            const coveringHighlights = highlights
                 .filter(highlight => highlight.start <= segmentStart && highlight.end >= segmentEnd)
                 .map(highlight => highlight.id);
 
