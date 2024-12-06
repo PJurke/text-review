@@ -111,16 +111,20 @@ export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: Par
 
     const addHighlight = (highlight: Highlight) => {
         setHighlights([...highlights, highlight]);
+    };*/
+
+    const handleHighlightClick = (highlightId: string) => {
+        setHighlights(oldHighlights =>
+            oldHighlights.filter(highlight => highlight.id !== highlightId)
+        );
     };
 
-    const handleHighlightClick = (highlightIds: string[]) => {
-        // Entfernen des ersten Highlights (oder passen Sie dies nach Bedarf an)
-        const highlightIdToRemove = highlightIds[0];
-
-        setHighlights(oldHighlights =>
-            oldHighlights.filter(highlight => highlight.id !== highlightIdToRemove)
-        );
-    };*/
+    const handleMouseEnter = (segment: Segment) => {
+        if (segment.highlightIds.length > 0) {
+            // Set the first existing highlight ID as active when the segment is hovered
+            setActiveHighlight(segment.highlightIds[0]);
+        }
+    };
 
     /*const handleMarkMouseEnter = (highlightIds: string[]) => {
         setHoveredHighlightIds(prev => {
@@ -152,12 +156,7 @@ export default function ParagraphComponent({ paragraph, /*onShowTooltip*/ }: Par
                     <mark
                         key={index}
                         className={`${isActive ? 'active' : ''}`}
-                        onMouseEnter={() => {
-                        if (segment.highlightIds.length > 0) {
-                            // Set the first existing highlight ID as active when the segment is hovered
-                            setActiveHighlight(segment.highlightIds[0]);
-                        }
-                        }}
+                        onMouseEnter={() => handleMouseEnter(segment)}
                         onMouseLeave={() => setActiveHighlight('')}
                     >
                         {segment.text}
