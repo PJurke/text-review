@@ -67,32 +67,6 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
         return tempSegments;
     }, [text, highlights]);
 
-    /*const getGlobalOffset = (node: Node, localOffset: number): number => {
-        let offset = 0;
-        const traverse = (currentNode: Node) => {
-            if (currentNode === node) {
-                // Wir haben den Start-/Endknoten erreicht
-                offset += localOffset;
-                return true; // Beende die Rekursion
-            } else if (currentNode.nodeType === Node.TEXT_NODE) {
-                // Textknoten: Länge zum Offset hinzufügen
-                offset += currentNode.textContent?.length || 0;
-            } else if (currentNode.childNodes) {
-                for (let i = 0; i < currentNode.childNodes.length; i++) {
-                    if (traverse(currentNode.childNodes[i])) {
-                        return true;
-                    }
-                }
-            }
-            return false; // Knoten nicht gefunden
-        };
-        
-        if (paragraphRef.current)
-            traverse(paragraphRef.current);
-
-        return offset;
-    };*/
-
     const handleMouseEnter = (segment: Segment) => {
         if (segment.highlightIds.length > 0) {
             // Set the first existing highlight ID as active when the segment is hovered
