@@ -1,8 +1,10 @@
 'use client'
 
+import { v4 as uuidv4 } from 'uuid';
 import { useStore } from "@/app/lib/store/AppStore";
 import { Paragraph } from "@/app/lib/TextDocument";
 import React, { useMemo, useRef, useState } from "react";
+import { getSelectionIndices } from "./utils";
 
 interface Segment {
     text: string;
@@ -18,9 +20,10 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
-    const removeHighlight = useStore((state) => state.removeHighlight);
 
     const allHighlights = useStore(state => state.highlights);
+    const addHighlight = useStore(state => state.addHighlight);
+    const removeHighlight = useStore((state) => state.removeHighlight);
 
     // All existing highlights in the paragraph
     const highlights = useMemo(() => 
@@ -79,8 +82,28 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
         setActiveHighlight('');
     };
 
+    const handleMouseUp = () => {
+        
+        if (!paragraphRef.current)
+            return
+
+        const indices = getSelectionIndices(paragraphRef);
+        if (!indices || indices.start === indices.end)
+            return;
+
+        addHighlight({
+            id: uuidv4(),
+            paragraphId: paragraph.id,
+            start: indices.start,
+            end: indices.end,
+        });
+
+        window.getSelection()?.removeAllRanges();
+
+    };
+
     return (
-        <p ref={paragraphRef} className="leading-9 mt-8 text-lg">
+        <p ref={paragraphRef} onMouseUp={handleMouseUp} className="leading-9 mt-8 text-lg">
             {segments.map((segment, index) => {
 
                 if (segment.highlightIds.length === 0)
