@@ -8,7 +8,7 @@ interface HighlightState {
     setHighlights: (highlights: Highlight[]) => void;
 }
 
-export const useStore = create<HighlightState>((set, get) => ({
+export const useStore = create<HighlightState>((set) => ({
 
     highlights: [],
 
