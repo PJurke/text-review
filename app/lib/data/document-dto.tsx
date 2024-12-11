@@ -25,7 +25,11 @@ export async function getDocument(id: ObjectId): Promise<TextDocument | null> {
             return null
         }
 
-        return document
+        // Remove _id by MongoDb
+        const { _id, ...plainDocument } = document;
+        plainDocument.id = _id.toString();
+
+        return plainDocument;
 
     } catch (error) {
 

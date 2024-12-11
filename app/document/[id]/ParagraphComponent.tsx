@@ -16,7 +16,7 @@ interface ParagraphProps {
 }
 
 export default function ParagraphComponent({ paragraph }: ParagraphProps) {
-    
+
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
@@ -38,7 +38,7 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
     const segments: Segment[] = useMemo(() => {
         
         // Start and end positions of all existing highlights + text boundaries (=segment positions)
-        let boundaries = new Set<number>();
+        const boundaries = new Set<number>();
 
         highlights.forEach(highlight => {
             boundaries.add(highlight.start);

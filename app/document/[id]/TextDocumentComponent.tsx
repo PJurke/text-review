@@ -17,7 +17,7 @@ export default function TextDocumentComponent({document}: TextDocumentProps) {
     useEffect(() => {
         setHighlights(document.highlights);
     }, [document.highlights, setHighlights]);
-    
+
     return (
         <div ref={documentRef}>
             <h1 className="text-3xl">{document.title}</h1>
