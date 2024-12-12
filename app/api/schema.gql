@@ -1,0 +1,22 @@
+type Query {
+    textDocument(id: ID!): TextDocument
+}
+
+type TextDocument {
+    id: ID!
+    title: String!
+    paragraphs: [Paragraph!]!
+    highlights: [Highlight!]!
+}
+
+type Paragraph {
+    id: ID!
+    text: String!
+}
+
+type Highlight {
+    id: ID!
+    paragraphId: ID!
+    start: Int!
+    end: Int!
+}
