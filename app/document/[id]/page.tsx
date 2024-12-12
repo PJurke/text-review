@@ -10,15 +10,15 @@ interface PageParams {
 }
 
 interface PageProps {
-    params: PageParams
+    params: Promise<PageParams>
 }
 
 // Revalidates the page every 60 seconds
 export const revalidate = 60;
 
-export default async function Page(props: PageProps) {
+export default async function Page({ params }: PageProps) {
     
-    const { id } = await props.params;
+    const { id } = await params;
 
     // If the id is not defined or invalid
     if (!id || !ObjectId.isValid(id)) {
