@@ -1,19 +1,12 @@
-import TextDocument from "../../lib/TextDocument"
+import { getDocument } from "@/app/lib/data/document-dto";
 
 export const resolvers = {
     Query: {
-        TextDocument: () => {
-            const doc: TextDocument = {
-                id: 'abc',
-                title: 'test doc',
-                paragraphs: [
-                    { id: '1', text: 'Hello' }
-                ],
-                highlights: [
-                    { id: 'a', paragraphId: '1', start: 1, end: 3 }
-                ]
-            }
-            return doc;
+        TextDocument: async (_: any, args: any) => {
+
+            const { id } = args
+            return getDocument(id);
+
         }
     }
 }

@@ -1,15 +1,18 @@
 import 'server-only';
+
 import { env } from 'node:process'
-import clientPromise from '../mongo/mongodb';
-import TextDocument from '../TextDocument';
+import clientPromise from '@/app/lib/mongo/mongodb';
+import TextDocument from '@/app/lib/TextDocument';
 import { ObjectId } from 'mongodb';
 
-export async function getDocument(id: ObjectId): Promise<TextDocument | null> {
+export async function getDocument(id: string): Promise<TextDocument | null> {
 
     // To do: If the id is not defined or not valid, then throw an exception
     if (!id || !ObjectId.isValid(id)) {
         throw new Error('Invalid document ID')
     }
+
+    const oid = new ObjectId(id);
 
     try {
         const client = await clientPromise
@@ -17,11 +20,11 @@ export async function getDocument(id: ObjectId): Promise<TextDocument | null> {
 
         const document = await db
             .collection<TextDocument>('documents')
-            .findOne({ _id: id })
+            .findOne({ _id: oid })
 
         // To do: Error message in case document has not been found.
         if (!document) {
-            console.log(`Document with ID ${id} not found.`)
+            console.log(`Document with ID ${oid} not found.`)
             return null
         }
 

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Highlight } from "../TextDocument";
+import { Highlight } from "@/app/lib/TextDocument";
 
 interface HighlightState {
     highlights: Highlight[];
