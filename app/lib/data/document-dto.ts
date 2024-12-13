@@ -1,10 +1,12 @@
 import 'server-only';
 
 import { env } from 'node:process'
+import { v4 as uuidv4 } from 'uuid';
 import clientPromise from '@/app/lib/mongo/mongodb';
-import TextDocument from '@/app/lib/TextDocument';
+import TextDocument, { Highlight } from '@/app/lib/TextDocument';
 import { ObjectId } from 'mongodb';
 import { DocumentNotFoundError, InvalidDocumentIdError } from './errors';
+import { AddHighlightArgs } from '@/app/api/graphql/Resolvers';
 
 export async function getDocument(id: string): Promise<TextDocument> {
 
@@ -37,4 +39,38 @@ export async function getDocument(id: string): Promise<TextDocument> {
 
     }
 
+}
+
+export async function addHighlight(args: AddHighlightArgs): Promise<Highlight> {
+
+    try {
+
+        const client = await clientPromise
+        const db = client.db(env.DB_NAME || 'text-review-db')
+
+        const filter = { _id: new ObjectId(args.textDocumentId) }
+        const newHighlight: Highlight = {
+            id: uuidv4(),
+            paragraphId: args.paragraphId,
+            start: args.start,
+            end: args.end
+        }
+        const update = {
+            $push: {
+                highlights: newHighlight
+            }
+        }
+
+        const result = await db.collection<TextDocument>('documents').updateOne(filter, update)
+
+    } catch(error) {
+
+    }
+
+    return {
+        id: 'abc',
+        paragraphId: args.paragraphId,
+        start: args.start,
+        end: args.end
+    };
 }

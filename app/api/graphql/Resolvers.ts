@@ -1,10 +1,17 @@
-import { getDocument } from "@/app/lib/data/document-dto";
+import { addHighlight, getDocument } from "@/app/lib/data/document-dto";
 import { InternalServerError, InvalidDocumentIdError } from "@/app/lib/data/errors";
-import TextDocument from "@/app/lib/TextDocument";
+import TextDocument, { Highlight } from "@/app/lib/TextDocument";
 import { GraphQLResolveInfo } from "graphql";
 
 interface TextDocumentArgs {
     id: string
+}
+
+export interface AddHighlightArgs {
+    textDocumentId: string
+    paragraphId: string
+    start: number
+    end: number
 }
 
 export const resolvers = {
@@ -26,5 +33,20 @@ export const resolvers = {
 
         }
 
+    },
+
+    Mutation: {
+        addHighlight: async(_parent: unknown, args: AddHighlightArgs, context: any, _info: GraphQLResolveInfo) => {
+            
+            let result: Highlight;
+
+            try {
+                result = await addHighlight(args);
+                return result;
+            } catch(error) {
+
+            }
+
+        }
     }
 }

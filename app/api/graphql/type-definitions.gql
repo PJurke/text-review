@@ -2,6 +2,10 @@ type Query {
     TextDocument(id: ID!): TextDocument
 }
 
+type Mutation {
+    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
+}
+
 type TextDocument {
     id: ID!
     title: String!
