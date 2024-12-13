@@ -1,9 +1,9 @@
-import TextDocument from '@/app/lib/TextDocument';
-import { getDocument } from '@/app/lib/data/document-dto';
+import TextDocument from '@/types/TextDocument';
+import getDocument from '@/services/get-document';
 import { ObjectId } from "mongodb";
-import InvalidIdMessage from './InvalidIdMessage';
-import DocumentNotFoundMessage from './DocumentNotFoundMessage';
-import TextDocumentComponent from './TextDocumentComponent';
+import InvalidIdMessage from './components/InvalidIdMessage';
+import DocumentNotFoundMessage from './components/DocumentNotFoundMessage';
+import TextDocumentComponent from './components/TextDocumentComponent';
 
 interface PageParams {
     id: string
@@ -25,11 +25,10 @@ export default async function Page({ params }: PageProps) {
         return <InvalidIdMessage />
     }
 
-    const sanitizedId = new ObjectId(id);
     let doc: TextDocument | null
 
     try {
-        doc = await getDocument(sanitizedId);
+        doc = await getDocument(id);
     } catch (error) {
         // To do: Add proper error message
         console.error('app/document/[id]/page.tsx:', error);

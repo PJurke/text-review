@@ -1,4 +1,4 @@
-import UserMessageComponent from "@/app/lib/common/UserMessage";
+import UserMessageComponent from "@/components/UserMessage";
 
 export default function InvalidIdMessage() {
     

@@ -1,6 +1,6 @@
 'use client'
 
-import TextDocument from "@/app/lib/TextDocument";
+import TextDocument from "@/types/TextDocument";
 import React, { useEffect } from "react";
 import ParagraphComponent from "./ParagraphComponent";
 import { useStore } from "@/app/lib/store/AppStore";

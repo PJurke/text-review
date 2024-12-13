@@ -2,9 +2,9 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { useStore } from "@/app/lib/store/AppStore";
-import { Paragraph } from "@/app/lib/TextDocument";
+import Paragraph from "@/types/Paragraph";
 import React, { useMemo, useRef, useState } from "react";
-import { getSelectionIndices } from "./utils";
+import { getSelectionIndices } from "../utils";
 
 interface Segment {
     text: string;

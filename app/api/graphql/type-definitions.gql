@@ -1,10 +1,36 @@
+# ----- OPERATIONS
+
 type Query {
     TextDocument(id: ID!): TextDocument
 }
 
 type Mutation {
-    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
+    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): DefaultMutationResponse
 }
+
+# ----- DEFAULT TYPES
+
+"""
+The default response to all mutations
+"""
+interface DefaultMutationResponse {
+    """
+    Status of the response, similar to an HTTP status code
+    """
+    code: Int
+
+    """
+    Human-readable message for the UI
+    """
+    message: String
+
+    """
+    Returns whether a mutation was successful or not
+    """
+    success: Boolean
+}
+
+# ----- MAIN TYPES
 
 type TextDocument {
     id: ID!
