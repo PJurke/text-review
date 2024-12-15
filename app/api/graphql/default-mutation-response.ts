@@ -1,5 +1,5 @@
 export default interface DefaultMutationResponse {
     code: number
-    message: string
+    message?: string
     success: boolean
 }
