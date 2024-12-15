@@ -1,13 +1,16 @@
-import { DocumentNotFoundError, InvalidDocumentIdError } from "@/app/lib/data/errors";
+import { DocumentNotFoundError } from "@/app/lib/data/errors";
 import clientPromise from "@/app/lib/mongo/mongodb";
-import TextDocument from "@/types/TextDocument";
+import TextDocument, { TextDocumentSchema } from "@/types/TextDocument";
 import { ObjectId } from "mongodb";
 import { env } from "process";
 
 export default async function getDocument(id: string): Promise<TextDocument> {
 
-    if (!id || !ObjectId.isValid(id))
-        throw new InvalidDocumentIdError();
+    // 1. Validate arguments
+
+    TextDocumentSchema.shape.id.parse(id)
+
+    // 2. Database operations
 
     const oid = new ObjectId(id);
 
@@ -22,7 +25,8 @@ export default async function getDocument(id: string): Promise<TextDocument> {
         if (!document)
             throw new DocumentNotFoundError();
 
-        // Remove _id by MongoDb
+        // 3. Remove _id by MongoDb
+
         const { _id, ...plainDocument } = document;
         plainDocument.id = _id.toString();
 
