@@ -4,7 +4,6 @@ import TextDocument, { TextDocumentSchema } from "@/types/TextDocument"
 import Highlight, { HighlightSchema } from '@/types/Highlight'
 import { ObjectId, UpdateResult } from "mongodb"
 import { env } from "process"
-import { v4 as uuidv4 } from 'uuid'
 import DefaultMutationResponse from "@/app/api/graphql/default-mutation-response"
 import { z } from "zod"
 
@@ -56,7 +55,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<Defa
         // 5. Create new highlight
         
         const newHighlight: Highlight = {
-            id: uuidv4(),
+            id: new ObjectId().toString(),
             paragraphId: args.paragraphId,
             start: args.start,
             end: args.end

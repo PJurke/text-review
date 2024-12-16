@@ -1,10 +1,10 @@
 'use client'
 
-import { v4 as uuidv4 } from 'uuid';
 import { useStore } from "@/app/lib/store/AppStore";
 import Paragraph from "@/types/Paragraph";
 import React, { useMemo, useRef, useState } from "react";
 import { getSelectionIndices } from "../utils";
+import { ObjectId } from "mongodb";
 
 interface Segment {
     text: string;
@@ -92,7 +92,7 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
             return;
 
         addHighlight({
-            id: uuidv4(),
+            id: new ObjectId().toString(),
             paragraphId: paragraph.id,
             start: indices.start,
             end: indices.end,
