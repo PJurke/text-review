@@ -1,7 +1,5 @@
-import TextDocument from '@/types/TextDocument';
+import TextDocument, { TextDocumentSchema } from '@/types/TextDocument';
 import getDocument from '@/services/get-document';
-import { ObjectId } from "mongodb";
-import InvalidIdMessage from './components/InvalidIdMessage';
 import DocumentNotFoundMessage from './components/DocumentNotFoundMessage';
 import TextDocumentComponent from './components/TextDocumentComponent';
 
@@ -19,11 +17,7 @@ export const revalidate = 60;
 export default async function Page({ params }: PageProps) {
     
     const { id } = await params;
-
-    // If the id is not defined or invalid
-    if (!id || !ObjectId.isValid(id)) {
-        return <InvalidIdMessage />
-    }
+    TextDocumentSchema.shape.id.parse(id)
 
     let doc: TextDocument | null
 
