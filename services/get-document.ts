@@ -1,10 +1,9 @@
-import { DocumentNotFoundError } from "@/app/lib/data/errors";
 import clientPromise from "@/app/lib/mongo/mongodb";
 import TextDocument, { TextDocumentSchema } from "@/types/TextDocument";
 import { ObjectId } from "mongodb";
 import { env } from "process";
 
-export default async function getDocument(id: string): Promise<TextDocument> {
+export default async function getDocument(id: string): Promise<TextDocument | null> {
 
     // 1. Validate arguments
 
@@ -23,7 +22,7 @@ export default async function getDocument(id: string): Promise<TextDocument> {
             .findOne({ _id: oid })
 
         if (!document)
-            throw new DocumentNotFoundError();
+            return null
 
         // 3. Remove _id by MongoDb
 
