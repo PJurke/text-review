@@ -4,7 +4,7 @@ import { useStore } from "@/app/lib/store/AppStore";
 import Paragraph from "@/types/Paragraph";
 import React, { useMemo, useRef, useState } from "react";
 import { getSelectionIndices } from "../utils";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 interface Segment {
     text: string;
@@ -92,7 +92,7 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
             return;
 
         addHighlight({
-            id: new ObjectId().toString(),
+            id: new ObjectId().toHexString(), // Creates a provisional OID
             paragraphId: paragraph.id,
             start: indices.start,
             end: indices.end,
