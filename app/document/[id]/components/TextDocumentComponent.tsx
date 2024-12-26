@@ -1,28 +1,36 @@
 'use client'
 
-import TextDocument from "@/types/TextDocument";
+import { TextDocumentSchema } from "@/types/TextDocument";
 import React, { useEffect } from "react";
 import ParagraphComponent from "./ParagraphComponent";
 import { useStore } from "@/app/lib/store/AppStore";
+import useTextDocument from "@/app/api/graphql/hooks/useTextDocument";
+import { useParams } from "next/navigation";
+import DocumentNotFoundMessage from "./DocumentNotFoundMessage";
 
-interface TextDocumentProps {
-    document: TextDocument;
-}
+export default function TextDocumentComponent() {
 
-export default function TextDocumentComponent({document}: TextDocumentProps) {
+    const { id } = useParams<{id: string}>();
+    TextDocumentSchema.shape.id.parse(id)
 
+    const { textDocument, loading, error } = useTextDocument(id);
     const documentRef = React.useRef<HTMLDivElement>(null);
     const setHighlights = useStore(state => state.setHighlights);
 
     useEffect(() => {
-        setHighlights(document.highlights);
-    }, [document.highlights, setHighlights]);
+        if (textDocument)
+            setHighlights(textDocument.highlights);
+    }, [textDocument?.highlights, setHighlights]);
+
+    if (loading) return <div>Loading...</div>
+    if (error) return <div>Error: {error.message}</div>
+    if (!textDocument) return <DocumentNotFoundMessage />
 
     return (
         <div ref={documentRef}>
-            <h1 className="text-3xl">{document.title}</h1>
+            <h1 className="text-3xl">{textDocument.title}</h1>
 
-            {document.paragraphs.map(paragraph => (
+            {textDocument.paragraphs.map(paragraph => (
                 <ParagraphComponent
                     key={paragraph.id}
                     paragraph={paragraph}
