@@ -1,10 +1,13 @@
-'use client'
+'use client';
 
-import { useStore } from "@/app/lib/store/AppStore";
-import Paragraph from "@/types/Paragraph";
 import React, { useMemo, useRef, useState } from "react";
+
+import useAddHighlight from "@/services/add-highlight/client/use-add-highlight-hook";
+import useTextDocument from "@/services/get-document/client/use-text-document-hook";
+
+import Paragraph from "@/types/Paragraph";
 import { getSelectionIndices } from "../utils";
-import { ObjectId } from "bson";
+
 
 interface Segment {
     text: string;
@@ -12,26 +15,32 @@ interface Segment {
 }
 
 interface ParagraphProps {
+    documentId: string;
     paragraph: Paragraph;
 }
 
-export default function ParagraphComponent({ paragraph }: ParagraphProps) {
+export default function ParagraphComponent({ documentId, paragraph }: ParagraphProps) {
 
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
 
-    const allHighlights = useStore(state => state.highlights);
-    const addHighlight = useStore(state => state.addHighlight);
-    const removeHighlight = useStore((state) => state.removeHighlight);
+    const { textDocument, loading, error } = useTextDocument(documentId);
+    const { addHighlight, highlight, loading: addHighlightLoading, error: addHighlightError } = useAddHighlight();
 
     // All existing highlights in the paragraph
-    const highlights = useMemo(() => 
-        allHighlights.filter(highlight => highlight.paragraphId === paragraph.id),
-        [allHighlights, paragraph.id]
-    );
+
+    const highlights = useMemo(() => {
+
+        if (!textDocument)
+            return [];
+
+        return textDocument.highlights.filter(highlight => highlight.paragraphId === paragraph.id);
+
+    }, [textDocument, paragraph.id]);
 
     // Currently active highlight (ID = string)
+
     const [activeHighlight, setActiveHighlight] = useState<string>('');
     
     // Segmenting mechanism for working active highlighting
@@ -78,7 +87,7 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
     };
 
     const handleRemoveHighlight = (highlightId: string) => {
-        removeHighlight(highlightId);
+        //removeHighlight(highlightId);
         setActiveHighlight('');
     };
 
@@ -91,12 +100,12 @@ export default function ParagraphComponent({ paragraph }: ParagraphProps) {
         if (!indices || indices.start === indices.end)
             return;
 
-        addHighlight({
-            id: new ObjectId().toHexString(), // Creates a provisional OID
+        addHighlight({ variables: {
+            textDocumentId: documentId,
             paragraphId: paragraph.id,
             start: indices.start,
-            end: indices.end,
-        });
+            end: indices.end
+        } });
 
         window.getSelection()?.removeAllRanges();
 

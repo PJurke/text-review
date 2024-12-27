@@ -1,26 +1,26 @@
-'use client'
+'use client';
+
+import React from "react";
+import { useParams } from "next/navigation";
 
 import { TextDocumentSchema } from "@/types/TextDocument";
-import React, { useEffect } from "react";
-import ParagraphComponent from "./ParagraphComponent";
-import { useStore } from "@/app/lib/store/AppStore";
 import useTextDocument from "@/services/get-document/client/use-text-document-hook";
-import { useParams } from "next/navigation";
+
+import ParagraphComponent from "./ParagraphComponent";
 import DocumentNotFoundMessage from "./DocumentNotFoundMessage";
 
 export default function TextDocumentComponent() {
 
+    // 1. Extract id and validate it
+
     const { id } = useParams<{id: string}>();
     TextDocumentSchema.shape.id.parse(id)
 
-    const { textDocument, loading, error } = useTextDocument(id);
-    const documentRef = React.useRef<HTMLDivElement>(null);
-    const setHighlights = useStore(state => state.setHighlights);
+    // 2. Use text document and add highlight hooks
 
-    useEffect(() => {
-        if (textDocument)
-            setHighlights(textDocument.highlights);
-    }, [textDocument?.highlights, setHighlights]);
+    const { textDocument, loading, error } = useTextDocument(id);
+
+    const documentRef = React.useRef<HTMLDivElement>(null);
 
     if (loading) return <div>Loading...</div>
     if (error) return <div>Error: {error.message}</div>
@@ -34,6 +34,7 @@ export default function TextDocumentComponent() {
                 <ParagraphComponent
                     key={paragraph.id}
                     paragraph={paragraph}
+                    documentId={id}
                 />
             ))}
 
