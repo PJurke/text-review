@@ -7,6 +7,7 @@ import useTextDocument from "@/services/get-document/client/use-text-document-ho
 
 import Paragraph from "@/types/Paragraph";
 import { getSelectionIndices } from "../utils";
+import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
 
 
 interface Segment {
@@ -27,6 +28,7 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
 
     const { textDocument, loading, error } = useTextDocument(documentId);
     const { addHighlight, highlight, loading: addHighlightLoading, error: addHighlightError } = useAddHighlight();
+    const { removeHighlight, loading: removeHighlightLoading, error: removeHighlightError } = useRemoveHighlight();
 
     // All existing highlights in the paragraph
 
@@ -87,8 +89,14 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
     };
 
     const handleRemoveHighlight = (highlightId: string) => {
-        //removeHighlight(highlightId);
+
+        removeHighlight({ variables: {
+            textDocumentId: documentId,
+            highlightId: highlightId
+        } });
+
         setActiveHighlight('');
+        
     };
 
     const handleMouseUp = () => {

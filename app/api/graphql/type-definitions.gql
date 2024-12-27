@@ -6,6 +6,7 @@ type Query {
 
 type Mutation {
     addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): AddHighlightResponse
+    removeHighlight(textDocumentId: ID!, highlightId: ID!): RemoveHighlightResponse
 }
 
 # ----- MAIN TYPES
@@ -35,4 +36,9 @@ type AddHighlightResponse {
     success: Boolean!
     message: String
     highlight: Highlight
+}
+
+type RemoveHighlightResponse {
+    success: Boolean!
+    message: String
 }
