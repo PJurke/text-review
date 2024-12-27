@@ -10,6 +10,7 @@ export const ADD_HIGHLIGHT = gql`
         paragraphId
         start
         end
+      }
     }
   }
 `;
