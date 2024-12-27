@@ -6,7 +6,7 @@ export interface ResolverRequest {
     id: string
 }
 
-export default async function getTextDocument(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<TextDocument> {
+export default async function getTextDocumentResolver(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<TextDocument> {
 
     try {
 
