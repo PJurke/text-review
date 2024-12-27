@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { GET_TEXT_DOCUMENT } from "../queries/get-text-document";
+import { GET_TEXT_DOCUMENT } from "@/services/get-document/client/get-text-document-client-request";
 import TextDocument from "@/types/TextDocument";
 
 interface GetTextDocumentData {

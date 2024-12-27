@@ -1,0 +1,46 @@
+import clientPromise from "@/app/lib/mongo/mongodb";
+import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity";
+import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
+import { mapTextDocumentEntityToTextDocument } from "@/shared/TextDocumentMapper";
+import TextDocument, { TextDocumentSchema } from "@/types/TextDocument";
+import { ObjectId } from "mongodb";
+import { env } from "process";
+
+export default async function getDocument(id: string): Promise<TextDocument> {
+
+    // 1. Validate all arguments
+
+    TextDocumentSchema.shape.id.parse(id)
+
+    // 2. Mapping (GraphQL -> MongoDB)
+
+    const documentId = new ObjectId(id);
+
+    try {
+
+        // 3. Establish database connection
+
+        const client = await clientPromise
+        const db = client.db(env.DB_NAME || 'text-review-db')
+
+        // 4. Check if referred TextDocument exists
+
+        const document = await db
+            .collection<TextDocumentEntity>('documents')
+            .findOne({ _id: documentId })
+
+        if (!document)
+            throw new DocumentNotFoundError(`Document with id ${id} not found`);
+
+        // 5. Map Text Document (MongoDB -> GraphQL)
+
+        return mapTextDocumentEntityToTextDocument(document);
+
+    } catch (error) {
+
+        console.log('Error retrieving document:', error)
+        throw error
+
+    }
+
+}

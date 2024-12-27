@@ -4,7 +4,7 @@ import { TextDocumentSchema } from "@/types/TextDocument";
 import React, { useEffect } from "react";
 import ParagraphComponent from "./ParagraphComponent";
 import { useStore } from "@/app/lib/store/AppStore";
-import useTextDocument from "@/app/api/graphql/hooks/useTextDocument";
+import useTextDocument from "@/services/get-document/client/use-text-document-hook";
 import { useParams } from "next/navigation";
 import DocumentNotFoundMessage from "./DocumentNotFoundMessage";
 

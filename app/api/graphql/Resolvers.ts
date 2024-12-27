@@ -1,14 +1,11 @@
-import TextDocumentQuery from "./resolvers/text-document-query";
-import addHighlightMutation from "./resolvers/add-highlight-mutation";
+import addHighlightResolver from "@/services/add-highlight/graphql/add-highlight-resolver";
+import getTextDocument from "@/services/get-document/graphql/get-text-document-resolver";
 
 export const resolvers = {
     Query: {
-        TextDocument: TextDocumentQuery
+        TextDocument: getTextDocument
     },
     Mutation: {
-        addHighlight: addHighlightMutation
+        addHighlight: addHighlightResolver
     }
 }
-
-export type { AddHighlightArgs } from './resolvers/add-highlight-mutation'
-export type { TextDocumentQueryArgs } from './resolvers/text-document-query'
