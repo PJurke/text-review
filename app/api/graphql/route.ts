@@ -8,7 +8,7 @@ import path from "path";
 let typeDefs: string;
 
 try {
-    typeDefs = readFileSync(path.join(process.cwd(), 'app', 'api', 'graphql', 'type-definitions.gql'), "utf8");
+    typeDefs = readFileSync(path.join(process.cwd(), 'app', 'api', 'graphql', 'graphql-schema.gql'), "utf8");
     console.log("Schema loaded successfully");
 } catch (error) {
     console.error("Error loading schema:", error);
