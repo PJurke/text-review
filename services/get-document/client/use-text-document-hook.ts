@@ -3,7 +3,7 @@ import { GET_TEXT_DOCUMENT } from "@/services/get-document/client/get-text-docum
 import TextDocument from "@/types/TextDocument";
 
 interface GetTextDocumentData {
-    TextDocument: TextDocument;
+    textDocument: TextDocument;
 }
 
 const useTextDocument = (textDocumentId: string) => {
@@ -14,7 +14,7 @@ const useTextDocument = (textDocumentId: string) => {
     });
 
     return {
-        textDocument: data?.TextDocument || null,
+        textDocument: data?.textDocument || null,
         loading,
         error
     };

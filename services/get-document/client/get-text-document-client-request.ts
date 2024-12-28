@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_TEXT_DOCUMENT = gql`
-    query TextDocument($textDocumentId: ID!) {
-        TextDocument(id: $textDocumentId) {
+    query getTextDocument($textDocumentId: ID!) {
+        textDocument(id: $textDocumentId) {
             id
             title
             highlights {
