@@ -4,7 +4,7 @@ import removeHighlightResolver from "@/services/remove-highlight/graphql/remove-
 
 export const resolvers = {
     Query: {
-        TextDocument: getTextDocumentResolver,
+        textDocument: getTextDocumentResolver,
     },
     Mutation: {
         addHighlight: addHighlightResolver,

@@ -1,16 +1,25 @@
 # ----- OPERATIONS
 
 type Query {
-    TextDocument(id: ID!): TextDocument
+
+    """ Get a text document by its ID """
+    textDocument(id: ID!): TextDocument
+
 }
 
 type Mutation {
-    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): AddHighlightResponse
-    removeHighlight(textDocumentId: ID!, highlightId: ID!): RemoveHighlightResponse
+
+    """ Add a highlight to a text document """
+    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): AddHighlightResponse!
+
+    """ Remove an existing highlight from a text document """
+    removeHighlight(textDocumentId: ID!, highlightId: ID!): RemoveHighlightResponse!
+
 }
 
 # ----- MAIN TYPES
 
+""" A text document with paragraphs and highlights """
 type TextDocument {
     id: ID!
     title: String!
@@ -18,11 +27,13 @@ type TextDocument {
     highlights: [Highlight!]!
 }
 
+""" A single paragraph of a text document """
 type Paragraph {
     id: ID!
     text: String!
 }
 
+""" A highlighted text range within a paragraph """
 type Highlight {
     id: ID!
     paragraphId: ID!
@@ -32,12 +43,14 @@ type Highlight {
 
 # ----- RESPONSE TYPES
 
+""" Response for adding a highlight """
 type AddHighlightResponse {
     success: Boolean!
     message: String
     highlight: Highlight
 }
 
+""" Response for removing a highlight """
 type RemoveHighlightResponse {
     success: Boolean!
     message: String
