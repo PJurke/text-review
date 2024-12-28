@@ -57,8 +57,6 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         // 5. Check if referred HighlightId exists
 
-        console.log(document.highlights)
-
         const highlightExists = document.highlights.some(highlight => highlight._id.equals(removableHighlight.highlightId));
 
         if (!highlightExists)
