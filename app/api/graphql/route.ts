@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ApolloServer } from "@apollo/server";
 import { readFileSync } from "fs";
-import { resolvers } from "./resolvers";
+import { resolvers } from "./graphql-resolver-hub";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import path from "path";
 
