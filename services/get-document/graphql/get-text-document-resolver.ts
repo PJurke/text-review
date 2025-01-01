@@ -1,6 +1,7 @@
-import { GraphQLResolveInfo } from "graphql";
+import { GraphQLError, GraphQLResolveInfo } from "graphql";
 import getDocument from "@/services/get-document/business-logic/get-document-logic";
 import TextDocument from "@/types/TextDocument";
+import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
 
 export interface ResolverRequest {
     id: string
@@ -15,8 +16,16 @@ export default async function getTextDocumentResolver(_parent: unknown, args: Re
 
     } catch (error) {
 
+        if (error instanceof DocumentNotFoundError) {
+            throw new GraphQLError('Document not found', {
+                extensions: { code: 'DOCUMENT_NOT_FOUND', details: error.message },
+            });
+        }
+
         console.error('Error getting document:', error);
-        throw error
+        throw new GraphQLError('An unexpected error occurred', {
+            extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        });
 
     }
 

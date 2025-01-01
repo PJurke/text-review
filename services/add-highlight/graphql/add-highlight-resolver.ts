@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLError, GraphQLResolveInfo } from 'graphql';
 import Highlight from '@/types/Highlight';
 import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError";
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError";
@@ -37,15 +37,22 @@ export default async function addHighlightResolver(_parent: unknown, args: Resol
 
     } catch (error) {
 
-        if (error instanceof DocumentNotFoundError || error instanceof ParagraphNotFoundError) {
-            return {
-                success: false,
-                message: error.message
-            };
+        if (error instanceof DocumentNotFoundError) {
+            throw new GraphQLError('Document not found', {
+                extensions: { code: 'DOCUMENT_NOT_FOUND', details: error.message },
+            });
+        }
+
+        if (error instanceof ParagraphNotFoundError) {
+            throw new GraphQLError('Paragraph not found', {
+                extensions: { code: 'PARAGRAPH_NOT_FOUND', details: error.message },
+            });
         }
 
         console.error('Error adding highlight:', error);
-        return { success: false, message: 'Unknown error' };
+        throw new GraphQLError('An unexpected error occurred', {
+            extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        });
 
     }
 
