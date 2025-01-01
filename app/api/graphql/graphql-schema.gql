@@ -10,7 +10,7 @@ type Query {
 type Mutation {
 
     """ Add a highlight to a text document """
-    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): AddHighlightResponse!
+    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
 
     """ Remove an existing highlight from a text document """
     removeHighlight(textDocumentId: ID!, highlightId: ID!): RemoveHighlightResponse!
@@ -43,15 +43,7 @@ type Highlight {
 
 # ----- RESPONSE TYPES
 
-""" Response for adding a highlight """
-type AddHighlightResponse {
-    success: Boolean!
-    message: String
-    highlight: Highlight
-}
-
 """ Response for removing a highlight """
 type RemoveHighlightResponse {
     success: Boolean!
-    message: String
 }

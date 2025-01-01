@@ -1,20 +1,54 @@
-import { useMutation } from "@apollo/client";
+import { ApolloCache, Reference, useMutation } from "@apollo/client";
 import { REMOVE_HIGHLIGHT } from "./remove-highlight-client-request";
-import { GET_TEXT_DOCUMENT } from "../../get-document/client/get-text-document-client-request";
 
 export interface RemoveHighlightVariables {
     textDocumentId: string;
     highlightId: string;
 }
 
-interface RemoveHighlightResponse {
-    success: boolean;
+export interface RemoveHighlightResponse {
+    removeHighlight: {
+        success: boolean;
+        __typename: string;
+    }
 }
 
 const useRemoveHighlight = () => {
 
     const [removeHighlight, { data, loading, error }] = useMutation<RemoveHighlightResponse, RemoveHighlightVariables>(REMOVE_HIGHLIGHT, {
-        refetchQueries: [ GET_TEXT_DOCUMENT, 'TextDocument' ]
+
+        update(cache: ApolloCache<RemoveHighlightResponse>, { data, errors }, { variables }) {
+
+            if (!data?.removeHighlight?.success || errors) {
+                console.error("Remove highlight error:", errors);
+                return;
+            }
+
+            const { textDocumentId, highlightId } = variables || {};
+            if (!textDocumentId || !highlightId) {
+                console.error("Invalid mutation variables:", variables);
+                return;
+            }
+
+            const textDocumentCacheId = cache.identify({ __typename: 'TextDocument', id: textDocumentId });
+            if (!textDocumentCacheId) {
+                console.error("Cache identification not possible:", textDocumentId);
+                return;
+            }
+
+            cache.modify({
+                id: textDocumentCacheId,
+                fields: {
+                    highlights(existingHighlights: readonly Reference[] = [], { readField }) {
+                        return existingHighlights.filter(
+                            (highlightRef) => readField('id', highlightRef) !== highlightId
+                        );
+                    }
+                }
+            });
+
+        }
+
     });
 
     return {

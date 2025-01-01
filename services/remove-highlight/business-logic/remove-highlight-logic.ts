@@ -1,13 +1,12 @@
-import clientPromise from "@/app/lib/mongo/mongodb"
-import { HighlightSchema } from '@/types/Highlight'
-import { ObjectId, UpdateResult } from "mongodb"
 import { env } from "process"
+import { z } from "zod"
+import clientPromise from "@/app/lib/mongo/mongodb"
+import { ObjectId, UpdateResult } from "mongodb"
+
+import { HighlightSchema } from '@/types/Highlight'
 import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError"
-import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError"
-import { z } from "zod"
 import { TextDocumentSchema } from "@/types/TextDocument"
-import { ParagraphSchema } from "@/types/Paragraph"
 import { HighlightNotFoundError } from "@/services/shared/errors/HighlightNotFoundError"
 
 interface RemoveHighlightArgs {

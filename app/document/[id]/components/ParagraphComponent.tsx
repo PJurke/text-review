@@ -92,10 +92,18 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
 
     const handleRemoveHighlight = async (highlightId: string) => {
 
-        const removeResult = await removeHighlight({ variables: {
-            textDocumentId: documentId,
-            highlightId: highlightId
-        } });
+        const removeResult = await removeHighlight({
+            variables: {
+                textDocumentId: documentId,
+                highlightId: highlightId
+            },
+            optimisticResponse: {
+                removeHighlight: {
+                    success: true,
+                    __typename: 'RemoveHighlightResponse'
+                }
+            }
+        });
 
         if (!removeResult.errors)
             setActiveHighlight('');
@@ -111,13 +119,24 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
         if (!indices || indices.start === indices.end)
             return;
 
-        const addResult = await addHighlight({ variables: {
-            textDocumentId: documentId,
-            paragraphId: paragraph.id,
-            start: indices.start,
-            end: indices.end
-        } });
-
+        const addResult = await addHighlight({
+            variables: {
+                textDocumentId: documentId,
+                paragraphId: paragraph.id,
+                start: indices.start,
+                end: indices.end
+            },
+            optimisticResponse: {
+                addHighlight: {
+                    id: 'temp-id', // Provisional Id for optimistic UI
+                    paragraphId: paragraph.id,
+                    start: indices.start,
+                    end: indices.end,
+                    __typename: 'Highlight',
+                }
+            }
+        });
+        
         if (!addResult.errors)
             window.getSelection()?.removeAllRanges();
 

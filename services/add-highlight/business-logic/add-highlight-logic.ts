@@ -1,9 +1,11 @@
+import { env } from "process"
+import { ObjectId, UpdateResult } from "mongodb"
+import { z } from "zod"
+
 import clientPromise from "@/app/lib/mongo/mongodb"
 import { TextDocumentSchema } from "@/types/TextDocument"
 import Highlight, { HighlightSchema } from '@/types/Highlight'
-import { ObjectId, UpdateResult } from "mongodb"
-import { env } from "process"
-import { z } from "zod"
+
 import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError"
 import HighlightEntity from "@/services/shared/models/HighlightEntity"
@@ -73,6 +75,8 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
         // 5. Add new highlight
 
         const result: UpdateResult = await db.collection<TextDocumentEntity>('documents').updateOne(textDocumentFilter, update)
+
+        // 6. Return the new highlight
 
         if (result.acknowledged)
             return {

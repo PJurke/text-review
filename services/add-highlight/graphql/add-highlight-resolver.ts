@@ -1,9 +1,10 @@
 import { GraphQLError, GraphQLResolveInfo } from 'graphql';
+import { ZodError } from 'zod';
+
 import Highlight from '@/types/Highlight';
 import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError";
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError";
 import addHighlight from '../business-logic/add-highlight-logic';
-import { ZodError } from 'zod';
 
 export interface ResolverRequest {
     textDocumentId: string;
@@ -12,13 +13,7 @@ export interface ResolverRequest {
     end: number;
 }
 
-interface ResolverResponse {
-    success: boolean
-    message?: string
-    highlight?: Highlight
-}
-
-export default async function addHighlightResolver(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<ResolverResponse> {
+export default async function addHighlightResolver(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<Highlight> {
 
     try {
 
@@ -27,13 +22,10 @@ export default async function addHighlightResolver(_parent: unknown, args: Resol
 
         // Map data structure (Mongo > GraphQL) and return it
         return {
-            success: true,
-            highlight: {
-                id: createdHighlight.id,
-                paragraphId: createdHighlight.paragraphId,
-                start: createdHighlight.start,
-                end: createdHighlight.end
-            }
+            id: createdHighlight.id,
+            paragraphId: createdHighlight.paragraphId,
+            start: createdHighlight.start,
+            end: createdHighlight.end
         };
 
     } catch (error) {

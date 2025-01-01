@@ -13,7 +13,6 @@ export interface ResolverRequest {
 
 interface ResolverResponse {
     success: boolean
-    message?: string
 }
 
 export default async function removeHighlightResolver(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<ResolverResponse> {
@@ -21,11 +20,11 @@ export default async function removeHighlightResolver(_parent: unknown, args: Re
     try {
 
         // Map data structure (GraphQL > Mongo) and call business logic
-        await removeHighlight(args);
+        const response = await removeHighlight(args);
 
         // Map data structure (Mongo > GraphQL) and return it
         return {
-            success: true
+            success: response
         };
 
     } catch (error) {

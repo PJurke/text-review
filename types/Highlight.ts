@@ -5,6 +5,7 @@ export default interface Highlight {
     paragraphId: string
     start: number
     end: number
+    __typename?: string
 }
 
 export const HighlightSchema = z.object({
