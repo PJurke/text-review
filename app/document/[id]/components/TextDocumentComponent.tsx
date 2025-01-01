@@ -8,13 +8,17 @@ import useTextDocument from "@/services/get-document/client/use-text-document-ho
 
 import ParagraphComponent from "./ParagraphComponent";
 import DocumentNotFoundMessage from "./DocumentNotFoundMessage";
+import InvalidIdMessage from "./InvalidIdMessage";
 
 export default function TextDocumentComponent() {
 
     // 1. Extract id and validate it
 
     const { id } = useParams<{id: string}>();
-    TextDocumentSchema.shape.id.parse(id)
+    const parseResult = TextDocumentSchema.shape.id.safeParse(id)
+
+    if (parseResult.error)
+        return <InvalidIdMessage />
 
     // 2. Use text document and add highlight hooks
 
