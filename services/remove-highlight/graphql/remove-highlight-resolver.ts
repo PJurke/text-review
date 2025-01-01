@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLError, GraphQLResolveInfo } from 'graphql';
 
 import removeHighlight from '../business-logic/remove-highlight-logic';
 
@@ -29,15 +29,22 @@ export default async function removeHighlightResolver(_parent: unknown, args: Re
 
     } catch (error) {
 
-        if (error instanceof DocumentNotFoundError || error instanceof HighlightNotFoundError) {
-            return {
-                success: false,
-                message: error.message
-            };
+        if (error instanceof DocumentNotFoundError) {
+            throw new GraphQLError('Document not found', {
+                extensions: { code: 'DOCUMENT_NOT_FOUND', details: error.message },
+            });
+        }
+
+        if (error instanceof HighlightNotFoundError) {
+            throw new GraphQLError('Highlight not found', {
+                extensions: { code: 'HIGHLIGHT_NOT_FOUND', details: error.message },
+            });
         }
 
         console.error('Error removing highlight:', error);
-        return { success: false, message: 'Unknown error' };
+        throw new GraphQLError('An unexpected error occurred', {
+            extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        });
 
     }
 
