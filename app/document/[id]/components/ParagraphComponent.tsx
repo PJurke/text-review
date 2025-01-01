@@ -76,24 +76,33 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
     }, [text, paragraphHighlights]);
 
     const handleMouseEnter = (segment: Segment) => {
-        if (segment.highlightIds.length > 0) {
-            // Set the first existing highlight ID as active when the segment is hovered
+        // Set the first existing highlight ID as active when the segment is hovered
+        if (segment.highlightIds.length > 0)
             setActiveHighlight(segment.highlightIds[0]);
-        }
     };
 
-    const handleRemoveHighlight = (highlightId: string) => {
+    const handleMouseLeave = () => {
+        setActiveHighlight('');
+    };
 
-        removeHighlight({ variables: {
+    const handleClick = (segment: Segment) => {
+        if (segment.highlightIds.includes(activeHighlight) && activeHighlight)
+            handleRemoveHighlight(activeHighlight);
+    };
+
+    const handleRemoveHighlight = async (highlightId: string) => {
+
+        const removeResult = await removeHighlight({ variables: {
             textDocumentId: documentId,
             highlightId: highlightId
         } });
 
-        setActiveHighlight('');
+        if (!removeResult.errors)
+            setActiveHighlight('');
         
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = async () => {
         
         if (!paragraphRef.current)
             return;
@@ -102,18 +111,20 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
         if (!indices || indices.start === indices.end)
             return;
 
-        addHighlight({ variables: {
+        const addResult = await addHighlight({ variables: {
             textDocumentId: documentId,
             paragraphId: paragraph.id,
             start: indices.start,
             end: indices.end
         } });
 
-        window.getSelection()?.removeAllRanges();
+        if (!addResult.errors)
+            window.getSelection()?.removeAllRanges();
 
     };
 
     return (
+
         <p ref={paragraphRef} onMouseUp={handleMouseUp} className="leading-9 mt-8 text-lg">
             {segments.map((segment, index) => {
 
@@ -131,16 +142,14 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
                         key={markKey}
                         className={`${isActive ? 'active' : ''}`}
                         onMouseEnter={() => handleMouseEnter(segment)}
-                        onMouseLeave={() => setActiveHighlight('')}
-                        onClick={() => {
-                            if (isActive && activeHighlight)
-                                handleRemoveHighlight(activeHighlight);
-                        }}
+                        onMouseLeave={handleMouseLeave}
+                        onClick={() => handleClick(segment)}
                     >
                         {segment.text}
                     </mark>
                 );
             })}
         </p>
+
     );
 }
