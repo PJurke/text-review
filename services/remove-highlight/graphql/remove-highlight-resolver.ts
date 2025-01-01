@@ -4,6 +4,7 @@ import removeHighlight from '../business-logic/remove-highlight-logic';
 
 import { DocumentNotFoundError } from '@/services/shared/errors/DocumentNotFoundError';
 import { HighlightNotFoundError } from '@/services/shared/errors/HighlightNotFoundError';
+import { ZodError } from 'zod';
 
 export interface ResolverRequest {
     textDocumentId: string
@@ -38,6 +39,12 @@ export default async function removeHighlightResolver(_parent: unknown, args: Re
         if (error instanceof HighlightNotFoundError) {
             throw new GraphQLError('Highlight not found', {
                 extensions: { code: 'HIGHLIGHT_NOT_FOUND', details: error.message },
+            });
+        }
+
+        if (error instanceof ZodError) {
+            throw new GraphQLError('Invalid input', {
+                extensions: { code: 'INVALID_INPUT', details: error.errors },
             });
         }
 

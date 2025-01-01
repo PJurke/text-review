@@ -3,6 +3,7 @@ import Highlight from '@/types/Highlight';
 import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError";
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError";
 import addHighlight from '../business-logic/add-highlight-logic';
+import { ZodError } from 'zod';
 
 export interface ResolverRequest {
     textDocumentId: string;
@@ -46,6 +47,12 @@ export default async function addHighlightResolver(_parent: unknown, args: Resol
         if (error instanceof ParagraphNotFoundError) {
             throw new GraphQLError('Paragraph not found', {
                 extensions: { code: 'PARAGRAPH_NOT_FOUND', details: error.message },
+            });
+        }
+
+        if (error instanceof ZodError) {
+            throw new GraphQLError('Invalid input', {
+                extensions: { code: 'INVALID_INPUT', details: error.errors },
             });
         }
 

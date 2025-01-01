@@ -2,6 +2,7 @@ import { GraphQLError, GraphQLResolveInfo } from "graphql";
 import getDocument from "@/services/get-document/business-logic/get-document-logic";
 import TextDocument from "@/types/TextDocument";
 import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
+import { ZodError } from "zod";
 
 export interface ResolverRequest {
     id: string
@@ -19,6 +20,12 @@ export default async function getTextDocumentResolver(_parent: unknown, args: Re
         if (error instanceof DocumentNotFoundError) {
             throw new GraphQLError('Document not found', {
                 extensions: { code: 'DOCUMENT_NOT_FOUND', details: error.message },
+            });
+        }
+
+        if (error instanceof ZodError) {
+            throw new GraphQLError('Invalid input', {
+                extensions: { code: 'INVALID_INPUT', details: error.errors },
             });
         }
 
