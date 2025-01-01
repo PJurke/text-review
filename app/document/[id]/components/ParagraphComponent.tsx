@@ -3,12 +3,11 @@
 import React, { useMemo, useRef, useState } from "react";
 
 import useAddHighlight from "@/services/add-highlight/client/use-add-highlight-hook";
-import useTextDocument from "@/services/get-document/client/use-text-document-hook";
+import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
 
 import Paragraph from "@/types/Paragraph";
 import { getSelectionIndices } from "../utils";
-import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
-
+import Highlight from "@/types/Highlight";
 
 interface Segment {
     text: string;
@@ -18,28 +17,23 @@ interface Segment {
 interface ParagraphProps {
     documentId: string;
     paragraph: Paragraph;
+    highlights: Highlight[];
 }
 
-export default function ParagraphComponent({ documentId, paragraph }: ParagraphProps) {
+export default function ParagraphComponent({ documentId, paragraph, highlights }: ParagraphProps) {
 
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
 
-    const { textDocument, loading, error } = useTextDocument(documentId);
     const { addHighlight, highlight, loading: addHighlightLoading, error: addHighlightError } = useAddHighlight();
     const { removeHighlight, loading: removeHighlightLoading, error: removeHighlightError } = useRemoveHighlight();
 
     // All existing highlights in the paragraph
 
-    const highlights = useMemo(() => {
-
-        if (!textDocument)
-            return [];
-
-        return textDocument.highlights.filter(highlight => highlight.paragraphId === paragraph.id);
-
-    }, [textDocument, paragraph.id]);
+    const paragraphHighlights = useMemo(() => {
+        return highlights.filter(highlight => highlight.paragraphId === paragraph.id);
+    }, [highlights, paragraph.id]);
 
     // Currently active highlight (ID = string)
 
@@ -51,7 +45,7 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
         // Start and end positions of all existing highlights + text boundaries (=segment positions)
         const boundaries = new Set<number>();
 
-        highlights.forEach(highlight => {
+        paragraphHighlights.forEach(highlight => {
             boundaries.add(highlight.start);
             boundaries.add(highlight.end);
         });
@@ -68,7 +62,7 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
             const segmentText = text.slice(segmentStart, segmentEnd);
 
             // Find all highlights that completely cover the current segment + store their highlight ids
-            const coveringHighlights = highlights
+            const coveringHighlights = paragraphHighlights
                 .filter(highlight => highlight.start <= segmentStart && highlight.end >= segmentEnd)
                 .map(highlight => highlight.id);
 
@@ -79,7 +73,7 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
         }
 
         return tempSegments;
-    }, [text, highlights]);
+    }, [text, paragraphHighlights]);
 
     const handleMouseEnter = (segment: Segment) => {
         if (segment.highlightIds.length > 0) {
@@ -102,7 +96,7 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
     const handleMouseUp = () => {
         
         if (!paragraphRef.current)
-            return
+            return;
 
         const indices = getSelectionIndices(paragraphRef);
         if (!indices || indices.start === indices.end)

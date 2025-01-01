@@ -1,6 +1,5 @@
 'use client';
 
-import React from "react";
 import { useParams } from "next/navigation";
 
 import { TextDocumentSchema } from "@/types/TextDocument";
@@ -24,14 +23,12 @@ export default function TextDocumentComponent() {
 
     const { textDocument, loading, error } = useTextDocument(id);
 
-    const documentRef = React.useRef<HTMLDivElement>(null);
-
     if (loading) return <div>Loading...</div>
     if (error) return <div>Error: {error.message}</div>
     if (!textDocument) return <DocumentNotFoundMessage />
 
     return (
-        <div ref={documentRef}>
+        <div>
             <h1 className="text-3xl">{textDocument.title}</h1>
 
             {textDocument.paragraphs.map(paragraph => (
@@ -39,6 +36,7 @@ export default function TextDocumentComponent() {
                     key={paragraph.id}
                     paragraph={paragraph}
                     documentId={id}
+                    highlights={textDocument.highlights}
                 />
             ))}
 
