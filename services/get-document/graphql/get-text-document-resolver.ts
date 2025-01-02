@@ -3,6 +3,7 @@ import getDocument from "@/services/get-document/business-logic/get-document-log
 import TextDocument from "@/types/TextDocument";
 import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
 import { ZodError } from "zod";
+import logger from "@/lib/logger";
 
 export interface ResolverRequest {
     id: string
@@ -29,7 +30,7 @@ export default async function getTextDocumentResolver(_parent: unknown, args: Re
             });
         }
 
-        console.error('Error getting document:', error);
+        logger.error('Error getting document:', error);
         throw new GraphQLError('An unexpected error occurred', {
             extensions: { code: 'INTERNAL_SERVER_ERROR' },
         });
