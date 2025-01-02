@@ -5,6 +5,7 @@ import { mapTextDocumentEntityToTextDocument } from "@/shared/TextDocumentMapper
 import TextDocument, { TextDocumentSchema } from "@/types/TextDocument";
 import { ObjectId } from "mongodb";
 import { env } from "process";
+import logger from "@/lib/logger";
 
 export default async function getDocument(id: string): Promise<TextDocument> {
 
@@ -38,8 +39,8 @@ export default async function getDocument(id: string): Promise<TextDocument> {
 
     } catch (error) {
 
-        console.log('Error retrieving document:', error)
-        throw error
+        logger.error('Error retrieving document:', error);
+        throw error;
 
     }
 
