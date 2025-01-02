@@ -18,7 +18,9 @@ export default function TextDocumentComponent() {
 
     // 2. Use text document and add highlight hooks
 
-    const { textDocument, loading, error } = useTextDocument(id);
+    const { textDocument, loading, error } = useTextDocument(
+        parseResult.success ? id : ''
+    );
 
     if (parseResult.error) return <InvalidIdMessage />
     if (loading) return <div>Loading...</div>
