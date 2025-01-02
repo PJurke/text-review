@@ -5,6 +5,7 @@ import removeHighlight from '../business-logic/remove-highlight-logic';
 import { DocumentNotFoundError } from '@/services/shared/errors/DocumentNotFoundError';
 import { HighlightNotFoundError } from '@/services/shared/errors/HighlightNotFoundError';
 import { ZodError } from 'zod';
+import logger from '@/lib/logger';
 
 export interface ResolverRequest {
     textDocumentId: string
@@ -47,7 +48,7 @@ export default async function removeHighlightResolver(_parent: unknown, args: Re
             });
         }
 
-        console.error('Error removing highlight:', error);
+        logger.error('Error removing highlight:', error);
         throw new GraphQLError('An unexpected error occurred', {
             extensions: { code: 'INTERNAL_SERVER_ERROR' },
         });

@@ -8,6 +8,7 @@ import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError"
 import { TextDocumentSchema } from "@/types/TextDocument"
 import { HighlightNotFoundError } from "@/services/shared/errors/HighlightNotFoundError"
+import logger from "@/lib/logger"
 
 interface RemoveHighlightArgs {
     textDocumentId: string
@@ -81,7 +82,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
         throw new Error('An error occurred while removing a highlight');
 
     } catch(error) {
-        console.error('An error occurred while removing a highlight:', error);
+        logger.error('An error occurred while removing a highlight:', error);
         throw error;
     }
 
