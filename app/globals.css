@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 mark {
-    background-color: yellow;
+    background-color: #FFFF99;
     transition: background-color 0.3s;
     cursor: pointer;
   }
   
 mark.active {
-    background-color: orange;
+    background-color: #FFD580;
 }
