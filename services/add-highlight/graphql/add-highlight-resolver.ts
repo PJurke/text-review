@@ -5,6 +5,7 @@ import Highlight from '@/types/Highlight';
 import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError";
 import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
 import addHighlight from '../business-logic/add-highlight-logic';
+import logger from '@/lib/logger';
 
 export interface ResolverRequest {
     textDocumentId: string;
@@ -48,7 +49,7 @@ export default async function addHighlightResolver(_parent: unknown, args: Resol
             });
         }
 
-        console.error('Error adding highlight:', error);
+        logger.error('Error adding highlight:', error);
         throw new GraphQLError('An unexpected error occurred', {
             extensions: { code: 'INTERNAL_SERVER_ERROR' },
         });
