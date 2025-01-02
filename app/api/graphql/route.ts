@@ -4,14 +4,15 @@ import { readFileSync } from "fs";
 import { resolvers } from "./graphql-resolver-hub";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import path from "path";
+import logger from '@/lib/logger';
 
 let typeDefs: string;
 
 try {
     typeDefs = readFileSync(path.join(process.cwd(), 'app', 'api', 'graphql', 'graphql-schema.gql'), "utf8");
-    console.log("Schema loaded successfully");
+    logger.info("Schema loaded successfully");
 } catch (error) {
-    console.error("Error loading schema:", error);
+    logger.error("Error loading schema:", error);
     throw error;
 }
 
@@ -32,6 +33,8 @@ const ALLOWED_ORIGINS = [
 const getAllowedOrigin = (origin: string | null): string | null => {
     if (origin && ALLOWED_ORIGINS.includes(origin))
         return origin;
+
+    logger.warn(`Blocked origin: ${origin}`);
     return null;
 };
 
@@ -58,13 +61,20 @@ export const GET = async (req: NextRequest) => {
                 },
             });
         } else {
+            logger.warn("OPTIONS request forbidden for origin:", origin);
             return new NextResponse(null, { status: 403 }); // Forbidden
         }
     }
 
-    const response = await handler(req);
-    setCORSHeaders(response, allowedOrigin);
-    return response;
+    try {
+        const response = await handler(req);
+        setCORSHeaders(response, allowedOrigin);
+        return response;
+    } catch (error) {
+        logger.error("Error processing GET request:", error);
+        throw error;
+    }
+    
 };
 
 export const POST = async (req: NextRequest) => {
@@ -83,11 +93,18 @@ export const POST = async (req: NextRequest) => {
                 },
             });
         } else {
+            logger.warn("OPTIONS request forbidden for origin:", origin);
             return new NextResponse(null, { status: 403 }); // Forbidden
         }
     }
 
-    const response = await handler(req);
-    setCORSHeaders(response, allowedOrigin);
-    return response;
+    try {
+        const response = await handler(req);
+        setCORSHeaders(response, allowedOrigin);
+        return response;
+    } catch (error) {
+        logger.error("Error processing POST request:", error);
+        throw error;
+    }
+    
 };
