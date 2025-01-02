@@ -10,6 +10,7 @@ import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError"
 import HighlightEntity from "@/services/shared/models/HighlightEntity"
 import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError"
+import logger from "@/lib/logger"
 
 interface AddHighlightArgs {
     textDocumentId: string,
@@ -89,7 +90,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
         throw new Error('An error occurred while adding a highlight');
 
     } catch(error) {
-        console.error('An error occurred while adding a highlight:', error);
+        logger.error('An error occurred while adding a highlight:', error);
         throw error;
     }
 
