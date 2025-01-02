@@ -1,7 +1,7 @@
 import { createLogger, format, transports } from 'winston';
 
 const logger = createLogger({
-    level: 'info',
+    level: process.env.LOG_LEVEL || 'info',
     format: format.combine(
         format.colorize(),
         format.timestamp(),
