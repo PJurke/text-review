@@ -2,8 +2,8 @@ import { GraphQLError, GraphQLResolveInfo } from 'graphql';
 import { ZodError } from 'zod';
 
 import Highlight from '@/types/Highlight';
-import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError";
-import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError";
+import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError";
+import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
 import addHighlight from '../business-logic/add-highlight-logic';
 
 export interface ResolverRequest {

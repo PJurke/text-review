@@ -16,20 +16,18 @@ export default function TextDocumentComponent() {
     const { id } = useParams<{id: string}>();
     const parseResult = TextDocumentSchema.shape.id.safeParse(id)
 
-    if (parseResult.error)
-        return <InvalidIdMessage />
-
     // 2. Use text document and add highlight hooks
 
     const { textDocument, loading, error } = useTextDocument(id);
 
+    if (parseResult.error) return <InvalidIdMessage />
     if (loading) return <div>Loading...</div>
     if (error) return <div>Error: {error.message}</div>
     if (!textDocument) return <DocumentNotFoundMessage />
 
     return (
         <div>
-            
+
             <h1 className="text-3xl">{textDocument.title}</h1>
 
             {textDocument.paragraphs.map(paragraph => (

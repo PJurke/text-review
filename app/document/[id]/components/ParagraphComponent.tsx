@@ -26,8 +26,8 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
 
-    const { addHighlight, highlight, loading: addHighlightLoading, error: addHighlightError } = useAddHighlight();
-    const { removeHighlight, loading: removeHighlightLoading, error: removeHighlightError } = useRemoveHighlight();
+    const { addHighlight } = useAddHighlight();
+    const { removeHighlight } = useRemoveHighlight();
 
     // All existing highlights in the paragraph
 
