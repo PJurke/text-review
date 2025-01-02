@@ -35,3 +35,12 @@
 - Does the respective database operations
 - Return the database response
 - Throws exceptions
+
+## Logging
+- **error** Critical errors, e.g. failed database connection, API errors
+- **warn** Important warnings, e.g. old APIs usage, high resource usage
+- **info** General information, e.g. successful API requests, user login
+- **http** Incoming http requests, e.g. http method and status code
+- **verbose** Detailed information, e.g. process steps
+- **debug** Developer information, e.g. variable values, function steps
+- **silly** Most detailed information, e.g. raw data
