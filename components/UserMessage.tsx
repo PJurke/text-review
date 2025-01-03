@@ -1,21 +1,17 @@
 import Image from "next/image"
 import Link from "next/link"
 
-interface MessageImage {
-    alt: string
-    url: string
-}
-
-interface MessageAction {
-    label: string
-    url: string
-}
-
 interface UserMessage {
-    icon: MessageImage
+    icon: {
+        alt: string
+        url: string
+    },
     title: string
     message: string
-    action?: MessageAction
+    action?: {
+        label: string
+        url: string
+    }
 }
 
 export default function UserMessageComponent({ icon, title, message, action }: UserMessage) {
@@ -36,5 +32,5 @@ export default function UserMessageComponent({ icon, title, message, action }: U
                 }
             </footer>
         </section>
-    )
+    );
 }
