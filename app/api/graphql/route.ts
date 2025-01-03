@@ -95,6 +95,7 @@ const handleGraphQLRequest = async (req: NextRequest, allowedOrigin: string | nu
     }
 };
 
+// Main handler for GET and POST requests
 const handleGetAndPostRequest = async (req: NextRequest) => {
     const origin = req.headers.get("origin");
     const allowedOrigin = getAllowedOrigin(origin);
