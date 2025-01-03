@@ -9,7 +9,7 @@ import ParagraphComponent from "./ParagraphComponent";
 import DocumentNotFoundMessage from "./DocumentNotFoundMessage";
 import InvalidIdMessage from "./InvalidIdMessage";
 
-export default function TextDocumentComponent() {
+export default function TextDocumentComponent(): JSX.Element {
 
     // 1. Extract id and validate it
 
