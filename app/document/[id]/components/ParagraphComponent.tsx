@@ -20,7 +20,7 @@ interface ParagraphProps {
     highlights: Highlight[];
 }
 
-export default function ParagraphComponent({ documentId, paragraph, highlights }: ParagraphProps) {
+export default function ParagraphComponent({ documentId, paragraph, highlights }: ParagraphProps): JSX.Element {
 
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
