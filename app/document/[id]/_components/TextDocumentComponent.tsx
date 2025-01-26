@@ -33,6 +33,7 @@ export default function TextDocumentComponent(): JSX.Element {
         <div>
 
             <h1 className="text-3xl">{textDocument.title}</h1>
+            <div className="text-neutral-500">by {textDocument.author}</div>
 
             {textDocument.paragraphs.map(paragraph => (
                 <ParagraphComponent
