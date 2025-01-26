@@ -8,10 +8,14 @@ import { startServerAndCreateNextHandler } from "@as-integrations/next";
 
 import logger from '@/lib/logger';
 
-const ALLOWED_ORIGINS: Set<string> = new Set ([
-    "http://192.168.0.12:3000",
-    "http://localhost:3000",
-]);
+const { ALLOWED_ORIGINS } = process.env;
+
+if (!ALLOWED_ORIGINS) {
+    logger.error('ALLOWED_ORIGINS environment variable is not set');
+    throw new Error('Please add the ALLOWED_ORIGINS variable to your environmental variables.');
+}
+
+const allowedOrigins = new Set(ALLOWED_ORIGINS.split(','));
 
 let typeDefs: string;
 
@@ -49,7 +53,7 @@ const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {
 // Returns the origin if it is allowed, otherwise null
 const getAllowedOrigin = (origin: string | null): string | null => {
 
-    if (origin && ALLOWED_ORIGINS.has(origin))
+    if (origin && allowedOrigins.has(origin))
       return origin;
 
     logger.warn(`Blocked origin: ${origin}`);
