@@ -10,12 +10,14 @@ import logger from '@/lib/logger';
 
 const { ALLOWED_ORIGINS } = process.env;
 
+logger.debug('route.ts: Allowed Origins: ' + ALLOWED_ORIGINS);
+
 if (!ALLOWED_ORIGINS) {
     logger.error('ALLOWED_ORIGINS environment variable is not set');
     throw new Error('Please add the ALLOWED_ORIGINS variable to your environmental variables.');
 }
 
-const allowedOrigins = new Set(ALLOWED_ORIGINS.split(','));
+const allowedOrigins = new Set(ALLOWED_ORIGINS.split(','));;
 
 let typeDefs: string;
 
