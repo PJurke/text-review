@@ -5,6 +5,7 @@ export const GET_TEXT_DOCUMENT = gql`
         textDocument(id: $textDocumentId) {
             id
             title
+            author
             highlights {
                 id
                 paragraphId
