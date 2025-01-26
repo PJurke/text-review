@@ -2,13 +2,17 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+// Hooks
 import useAddHighlight from "@/services/add-highlight/client/use-add-highlight-hook";
 import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
-
 import useErrorOverlay from "@/components/ErrorOverlay/useErrorOverlay";
+
+// Types
 import Paragraph from "@/types/Paragraph";
-import { getSelectionIndices } from "../utils";
 import Highlight from "@/types/Highlight";
+
+// Utils
+import { getSelectionIndices } from "../utils";
 import segmentParagraph, { Segment } from "../_utils/segmentParagraph";
 
 interface ParagraphProps {
