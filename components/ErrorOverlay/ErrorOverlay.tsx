@@ -13,7 +13,7 @@ export interface ErrorOverlayContent {
 /**
  * Props for the ErrorOverlay component, extending the ErrorOverlayContent.
  */
-interface ErrorOverlayProps extends ErrorOverlayContent {
+export interface ErrorOverlayProps extends ErrorOverlayContent {
     onClose: () => void;
 }
 
