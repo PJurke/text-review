@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import useAddHighlight from "@/services/add-highlight/client/use-add-highlight-hook";
 import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
 
+import useErrorOverlay from "@/components/ErrorOverlay/useErrorOverlay";
 import Paragraph from "@/types/Paragraph";
 import { getSelectionIndices } from "../utils";
 import Highlight from "@/types/Highlight";
@@ -26,9 +27,50 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
 
-    const { addHighlight } = useAddHighlight();
-    const { removeHighlight } = useRemoveHighlight();
+    const { showErrorOverlay } = useErrorOverlay();
+    const { addHighlight, error: addError } = useAddHighlight();
+    const { removeHighlight, error: removeError } = useRemoveHighlight();
 
+    useEffect(() => {
+        if (addError) {
+            switch (addError.message) {
+                case 'Document not found':
+                case 'Paragraph not found':
+                case 'Invalid input':
+                default: {
+                    showErrorOverlay({
+                        title: 'Error Saving Highlight',
+                        message: 'An unknown server error occurred while saving the highlight.',
+                        action: {
+                            handler: () => window.location.reload(),
+                            label: 'Please try reloading the page.'
+                        }
+                    });
+                }
+            }
+        }
+    }, [addError, showErrorOverlay]);
+
+    useEffect(() => {
+        if (removeError) {
+            switch (removeError.message) {
+                case 'Document not found':
+                case 'Highlight not found':
+                case 'Invalid input':
+                default: {
+                    showErrorOverlay({
+                        title: 'Error Removing Highlight',
+                        message: 'An unknown server error occurred while removing the highlight.',
+                        action: {
+                            handler: () => window.location.reload(),
+                            label: 'Please try reloading the page.'
+                        }
+                    });
+                }
+            }
+        }
+    }, [removeError, showErrorOverlay])
+    
     // All existing highlights in the paragraph
 
     const paragraphHighlights = useMemo(() => {

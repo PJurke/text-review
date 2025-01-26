@@ -8,13 +8,15 @@ import useTextDocument from "@/services/get-document/client/use-text-document-ho
 import ParagraphComponent from "./ParagraphComponent";
 import DocumentNotFoundMessage from "./DocumentNotFoundMessage";
 import InvalidIdMessage from "./InvalidIdMessage";
+import DocumentRetrievalErrorMessage from "./DocumentRetrievalErrorMessage";
+import LoadingSkeleton from "./LoadingSkeleton";
 
 export default function TextDocumentComponent(): JSX.Element {
 
     // 1. Extract id and validate it
 
     const { id } = useParams<{id: string}>();
-    const parseResult = TextDocumentSchema.shape.id.safeParse(id)
+    const parseResult = TextDocumentSchema.shape.id.safeParse(id);
 
     // 2. Use text document and add highlight hooks
 
@@ -23,8 +25,8 @@ export default function TextDocumentComponent(): JSX.Element {
     );
 
     if (parseResult.error) return <InvalidIdMessage />
-    if (loading) return <div>Loading...</div>
-    if (error) return <div>Error: {error.message}</div>
+    if (loading) return <LoadingSkeleton />
+    if (error) return <DocumentRetrievalErrorMessage />
     if (!textDocument) return <DocumentNotFoundMessage />
 
     return (
@@ -42,5 +44,5 @@ export default function TextDocumentComponent(): JSX.Element {
             ))}
 
         </div>
-    )
+    );
 }
