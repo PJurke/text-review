@@ -11,7 +11,7 @@ import Paragraph from "@/types/Paragraph";
 import Highlight from "@/types/Highlight";
 
 // Utils
-import { getSelectionIndices } from "../utils";
+import { getSelectionIndices } from "../_utils/selectionIndices";
 import segmentParagraph, { Segment } from "../_utils/segmentParagraph";
 import { useAddHighlightError, useRemoveHighlightError } from "../_hooks/useHandleClientError";
 
