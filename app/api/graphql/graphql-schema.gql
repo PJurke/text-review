@@ -23,6 +23,7 @@ type Mutation {
 type TextDocument {
     id: ID!
     title: String!
+    author: String
     paragraphs: [Paragraph!]!
     highlights: [Highlight!]!
 }
