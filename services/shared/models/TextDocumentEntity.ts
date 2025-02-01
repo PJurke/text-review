@@ -1,5 +1,4 @@
 import { ObjectId } from "mongodb"
-import HighlightEntity from "./HighlightEntity"
 import ParagraphEntity from "./ParagraphEntity"
 
 export default interface TextDocumentEntity {
@@ -7,5 +6,4 @@ export default interface TextDocumentEntity {
     title: string
     author: string
     paragraphs: ParagraphEntity[]
-    highlights: HighlightEntity[]
 }
