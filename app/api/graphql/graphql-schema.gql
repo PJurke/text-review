@@ -25,19 +25,18 @@ type TextDocument {
     title: String!
     author: String
     paragraphs: [Paragraph!]!
-    highlights: [Highlight!]!
 }
 
 """ A single paragraph of a text document """
 type Paragraph {
     id: ID!
     text: String!
+    highlights: [Highlight!]!
 }
 
 """ A highlighted text range within a paragraph """
 type Highlight {
     id: ID!
-    paragraphId: ID!
     start: Int!
     end: Int!
 }
