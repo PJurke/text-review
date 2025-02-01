@@ -1,10 +1,9 @@
 import { gql } from '@apollo/client';
 
 export const ADD_HIGHLIGHT = gql`
-  mutation AddHighlight($textDocumentId: ID!, $paragraphId: ID!, $start: Int!, $end: Int!) {
-    addHighlight(textDocumentId: $textDocumentId, paragraphId: $paragraphId, start: $start, end: $end) {
+  mutation AddHighlight($textDocumentId: ID!, $start: Int!, $end: Int!) {
+    addHighlight(textDocumentId: $textDocumentId, start: $start, end: $end) {
       id
-      paragraphId
       start
       end
       __typename

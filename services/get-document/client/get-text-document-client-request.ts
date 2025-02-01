@@ -6,15 +6,14 @@ export const GET_TEXT_DOCUMENT = gql`
             id
             title
             author
-            highlights {
-                id
-                paragraphId
-                start
-                end
-            }
             paragraphs {
                 id
                 text
+                highlights {
+                    id
+                    start
+                    end
+                }
             }
         }
     }
