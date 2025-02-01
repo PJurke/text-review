@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb"
 import TextDocument from "@/types/TextDocument"
 import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
-import { mapHighlightEntityToHighlight, mapHighlightToHighlightEntity } from "./HighlightMapper"
 import { mapParagraphEntityToParagraph, mapParagraphToParagraphEntity } from "./ParagraphMapper"
 
 export function mapTextDocumentToTextDocumentEntity(textDocument: TextDocument): TextDocumentEntity {
@@ -10,7 +9,6 @@ export function mapTextDocumentToTextDocumentEntity(textDocument: TextDocument):
         title: textDocument.title,
         author: textDocument.author,
         paragraphs: textDocument.paragraphs.map(paragraph => mapParagraphToParagraphEntity(paragraph)),
-        highlights: textDocument.highlights.map(highlight => mapHighlightToHighlightEntity(highlight))
     }
 }
 
@@ -20,6 +18,5 @@ export function mapTextDocumentEntityToTextDocument(textDocument: TextDocumentEn
         title: textDocument.title,
         author: textDocument.author,
         paragraphs: textDocument.paragraphs.map(paragraph => mapParagraphEntityToParagraph(paragraph)),
-        highlights: textDocument.highlights.map(highlight => mapHighlightEntityToHighlight(highlight))
     }
 }

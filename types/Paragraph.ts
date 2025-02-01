@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { HighlightSchema } from "./Highlight"
+import Highlight, { HighlightSchema } from "./Highlight"
 
 export default interface Paragraph {
     id: string
