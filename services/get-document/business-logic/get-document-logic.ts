@@ -27,7 +27,7 @@ export default async function getDocument(id: string): Promise<TextDocument> {
         // 4. Check if referred TextDocument exists
 
         const document = await db
-            .collection<TextDocumentEntity>('documents')
+            .collection<TextDocumentEntity>('textDocuments')
             .findOne({ _id: documentId })
 
         if (!document)

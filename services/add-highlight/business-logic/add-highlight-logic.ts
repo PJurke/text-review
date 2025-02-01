@@ -52,7 +52,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
         const textDocumentFilter = { _id: new ObjectId(args.textDocumentId) };
         const document = await db
-            .collection<TextDocumentEntity>('documents')
+            .collection<TextDocumentEntity>('textDocuments')
             .findOne(textDocumentFilter);
 
         if (!document)
@@ -75,7 +75,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
         // 5. Add new highlight
 
-        const result: UpdateResult = await db.collection<TextDocumentEntity>('documents').updateOne(textDocumentFilter, update)
+        const result: UpdateResult = await db.collection<TextDocumentEntity>('textDocuments').updateOne(textDocumentFilter, update)
 
         // 6. Return the new highlight
 

@@ -49,7 +49,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         const textDocumentFilter = { _id: removableHighlight.textDocumentId };
         const document = await db
-            .collection<TextDocumentEntity>('documents')
+            .collection<TextDocumentEntity>('textDocuments')
             .findOne(textDocumentFilter);
 
         if (!document)
@@ -74,7 +74,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         // 7. Remove highlight
 
-        const result: UpdateResult = await db.collection<TextDocumentEntity>('documents').updateOne(textDocumentFilter, update)
+        const result: UpdateResult = await db.collection<TextDocumentEntity>('textDocuments').updateOne(textDocumentFilter, update)
 
         if (result.acknowledged)
             return true;
