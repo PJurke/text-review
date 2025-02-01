@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import Highlight, { HighlightSchema } from './Highlight'
 import Paragraph, { ParagraphSchema } from "./Paragraph"
 
 export default interface TextDocument {
@@ -7,7 +6,6 @@ export default interface TextDocument {
     title: string
     author: string
     paragraphs: Paragraph[]
-    highlights: Highlight[]
 }
 
 export const TextDocumentSchema = z.object({
@@ -15,5 +13,4 @@ export const TextDocumentSchema = z.object({
     title: z.string(),
     author: z.string(),
     paragraphs: z.array(ParagraphSchema),
-    highlights: z.array(HighlightSchema)
 })
