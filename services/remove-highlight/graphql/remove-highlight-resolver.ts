@@ -9,6 +9,7 @@ import logger from '@/lib/logger';
 
 export interface ResolverRequest {
     textDocumentId: string
+    paragraphId: string
     highlightId: string
 }
 

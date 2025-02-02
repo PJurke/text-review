@@ -3,6 +3,7 @@ import { REMOVE_HIGHLIGHT } from "./remove-highlight-client-request";
 
 export interface RemoveHighlightVariables {
     textDocumentId: string;
+    paragraphId: string;
     highlightId: string;
 }
 
@@ -24,20 +25,20 @@ const useRemoveHighlight = () => {
                 return;
             }
 
-            const { textDocumentId, highlightId } = variables || {};
-            if (!textDocumentId || !highlightId) {
+            const { textDocumentId, paragraphId, highlightId } = variables || {};
+            if (!textDocumentId || !paragraphId || !highlightId) {
                 console.error("Invalid mutation variables:", variables);
                 return;
             }
 
-            const textDocumentCacheId = cache.identify({ __typename: 'TextDocument', id: textDocumentId });
-            if (!textDocumentCacheId) {
+            const paragraphCacheId = cache.identify({ __typename: 'Paragraph', id: paragraphId });
+            if (!paragraphCacheId) {
                 console.error("Cache identification not possible:", textDocumentId);
                 return;
             }
 
             cache.modify({
-                id: textDocumentCacheId,
+                id: paragraphCacheId,
                 fields: {
                     highlights(existingHighlights: readonly Reference[] = [], { readField }) {
                         return existingHighlights.filter(

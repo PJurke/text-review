@@ -9,19 +9,23 @@ import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError
 import { TextDocumentSchema } from "@/types/TextDocument"
 import { HighlightNotFoundError } from "@/services/shared/errors/HighlightNotFoundError"
 import logger from "@/lib/logger"
+import { ParagraphSchema } from "@/types/Paragraph"
 
 interface RemoveHighlightArgs {
     textDocumentId: string
+    paragraphId: string
     highlightId: string
 }
 
 interface RemoveHighlightEntity {
     textDocumentId: ObjectId
+    paragraphId: ObjectId
     highlightId: ObjectId
 }
 
 const RemoveHighlightArgsSchema = z.object({
     textDocumentId: TextDocumentSchema.shape.id,
+    paragraphId: ParagraphSchema.shape.id,
     highlightId: HighlightSchema.shape.id
 });
 
@@ -35,6 +39,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
     const removableHighlight: RemoveHighlightEntity = {
         textDocumentId: new ObjectId(args.textDocumentId),
+        paragraphId: new ObjectId(args.paragraphId),
         highlightId: new ObjectId(args.highlightId)
     }
 
@@ -55,9 +60,20 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
         if (!document)
             throw new DocumentNotFoundError('The given textDocumentId does not exist');
 
+        // 5. Check if referred Paragraph exists
+
+        const paragraph = document.paragraphs.find((p) =>
+            p._id.equals(removableHighlight.paragraphId)
+          );
+
+        if (!paragraph)
+            throw new Error('The given paragraphId does not exist');
+
         // 5. Check if referred HighlightId exists
 
-        const highlightExists = document.highlights.some(highlight => highlight._id.equals(removableHighlight.highlightId));
+        const highlightExists = paragraph.highlights.some((highlight) =>
+            highlight._id.equals(removableHighlight.highlightId)
+          );
 
         if (!highlightExists)
             throw new HighlightNotFoundError('The given highlightId does not exist');
@@ -66,15 +82,19 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
         
         const update = {
             $pull: {
-                highlights: {
+                "paragraphs.$[para].highlights": {
                     _id: removableHighlight.highlightId
                 }
             }
         }
 
+        const arrayFilters = [{ "para._id": removableHighlight.paragraphId }];
+
         // 7. Remove highlight
 
-        const result: UpdateResult = await db.collection<TextDocumentEntity>('textDocuments').updateOne(textDocumentFilter, update)
+        const result: UpdateResult = await db
+            .collection<TextDocumentEntity>('textDocuments')
+            .updateOne(textDocumentFilter, update, { arrayFilters });
 
         if (result.acknowledged)
             return true;

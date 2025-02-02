@@ -11,6 +11,7 @@ import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError
 import HighlightEntity from "@/services/shared/models/HighlightEntity"
 import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError"
 import logger from "@/lib/logger"
+import { ParagraphSchema } from "@/types/Paragraph"
 
 interface AddHighlightArgs {
     textDocumentId: string,
@@ -21,7 +22,7 @@ interface AddHighlightArgs {
 
 const AddHighlightArgsSchema = z.object({
     textDocumentId: TextDocumentSchema.shape.id,
-    paragraphId: HighlightSchema.shape.paragraphId,
+    paragraphId: ParagraphSchema.shape.id,
     start: HighlightSchema.shape.start,
     end: HighlightSchema.shape.end
 });
@@ -34,9 +35,10 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
     // 2. Mapping (GraphQL -> MongoDB)
 
+    const paragraphReference = new ObjectId(args.paragraphId);
+
     const newHighlight: HighlightEntity = {
         _id: new ObjectId(),
-        paragraphId: new ObjectId(args.paragraphId),
         start: args.start,
         end: args.end
     }
@@ -50,7 +52,11 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
         // 4. Check if referred TextDocument exists
 
-        const textDocumentFilter = { _id: new ObjectId(args.textDocumentId) };
+        const textDocumentFilter = {
+            _id: new ObjectId(args.textDocumentId),
+            "paragraphs._id": new ObjectId(args.paragraphId)
+        }
+        
         const document = await db
             .collection<TextDocumentEntity>('textDocuments')
             .findOne(textDocumentFilter);
@@ -60,7 +66,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
         // 4. Check if referred ParagraphId exists
 
-        const paragraphExists = document.paragraphs.some(paragraph => paragraph._id.equals(newHighlight.paragraphId));
+        const paragraphExists = document.paragraphs.some(paragraph => paragraph._id.equals(paragraphReference));
 
         if (!paragraphExists)
             throw new ParagraphNotFoundError('The given paragraphId does not exist');
@@ -69,7 +75,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
         
         const update = {
             $push: {
-                highlights: newHighlight
+                "paragraphs.$.highlights": newHighlight
             }
         }
 
@@ -82,7 +88,6 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
         if (result.acknowledged)
             return {
                 id: newHighlight._id.toHexString(),
-                paragraphId: newHighlight.paragraphId.toHexString(),
                 start: newHighlight.start,
                 end: newHighlight.end
             };

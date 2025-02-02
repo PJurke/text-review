@@ -24,7 +24,6 @@ export default async function addHighlightResolver(_parent: unknown, args: Resol
         // Map data structure (Mongo > GraphQL) and return it
         return {
             id: createdHighlight.id,
-            paragraphId: createdHighlight.paragraphId,
             start: createdHighlight.start,
             end: createdHighlight.end
         };

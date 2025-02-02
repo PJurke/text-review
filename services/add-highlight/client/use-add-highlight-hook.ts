@@ -23,14 +23,14 @@ const useAddHighlight = () => {
             if (!data) return;
             
             const newHighlight = data.addHighlight;
-            const textDocumentId = variables?.textDocumentId;
-            if (!textDocumentId) return;
+            const paragraphId = variables?.paragraphId;
+            if (!paragraphId) return;
 
-            const textDocumentCacheId = cache.identify({ __typename: 'TextDocument', id: textDocumentId });
-            if (!textDocumentCacheId) return;
+            const paragraphCacheId = cache.identify({ __typename: 'Paragraph', id: paragraphId });
+            if (!paragraphCacheId) return;
 
             cache.modify({
-                id: textDocumentCacheId,
+                id: paragraphCacheId,
                 fields: {
                     highlights(existingHighlights = []) {
                         const newHighlightRef = cache.writeFragment({
@@ -38,7 +38,6 @@ const useAddHighlight = () => {
                             fragment: gql`
                                 fragment NewHighlight on Highlight {
                                     id
-                                    paragraphId
                                     start
                                     end
                                     __typename
@@ -56,7 +55,7 @@ const useAddHighlight = () => {
 
     return {
         addHighlight,
-        highlight: data,
+        highlight: data?.addHighlight || null,
         loading,
         error
     };

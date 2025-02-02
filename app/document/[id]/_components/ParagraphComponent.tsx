@@ -18,10 +18,9 @@ import { useAddHighlightError, useRemoveHighlightError } from "../_hooks/useHand
 interface ParagraphProps {
     documentId: string;
     paragraph: Paragraph;
-    highlights: Highlight[];
 }
 
-export default function ParagraphComponent({ documentId, paragraph, highlights }: ParagraphProps): JSX.Element {
+export default function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Element {
 
     // Reference to paragraph - used for correct mouse highlighting location
     const paragraphRef = useRef<HTMLParagraphElement>(null);
@@ -32,12 +31,6 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
 
     useAddHighlightError(addError);
     useRemoveHighlightError(removeError);
-    
-    // All existing highlights in the paragraph
-
-    const paragraphHighlights = useMemo(() => {
-        return highlights.filter(highlight => highlight.paragraphId === paragraph.id);
-    }, [highlights, paragraph.id]);
 
     // Currently active highlight (ID = string)
 
@@ -45,8 +38,8 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
     
     // Segmenting mechanism for working active highlighting
     const segments: Segment[] = useMemo(() => {
-        return segmentParagraph(text, paragraphHighlights);
-    }, [text, paragraphHighlights]);
+        return segmentParagraph(text, paragraph.highlights);
+    }, [text, paragraph.highlights]);
 
     const handleMouseEnter = (segment: Segment) => {
         // Set the first existing highlight ID as active when the segment is hovered
@@ -68,6 +61,7 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
         const removeResult = await removeHighlight({
             variables: {
                 textDocumentId: documentId,
+                paragraphId: paragraph.id,
                 highlightId: highlightId
             },
             optimisticResponse: {
@@ -102,7 +96,6 @@ export default function ParagraphComponent({ documentId, paragraph, highlights }
             optimisticResponse: {
                 addHighlight: {
                     id: 'temp-id', // Provisional Id for optimistic UI
-                    paragraphId: paragraph.id,
                     start: indices.start,
                     end: indices.end,
                     __typename: 'Highlight',

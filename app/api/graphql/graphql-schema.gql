@@ -13,7 +13,7 @@ type Mutation {
     addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
 
     """ Remove an existing highlight from a text document """
-    removeHighlight(textDocumentId: ID!, highlightId: ID!): RemoveHighlightResponse!
+    removeHighlight(textDocumentId: ID!, paragraphId: ID!, highlightId: ID!): RemoveHighlightResponse!
 
 }
 

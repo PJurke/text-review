@@ -38,9 +38,8 @@ export default function TextDocumentComponent(): JSX.Element {
             {textDocument.paragraphs.map(paragraph => (
                 <ParagraphComponent
                     key={paragraph.id}
-                    paragraph={paragraph}
                     documentId={id}
-                    highlights={textDocument.highlights}
+                    paragraph={paragraph}
                 />
             ))}
 
