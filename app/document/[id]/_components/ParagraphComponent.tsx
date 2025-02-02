@@ -1,16 +1,17 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from "react";
+// Import React
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
-// Hooks
+// Import Hooks
 import useAddHighlight from "@/services/add-highlight/client/use-add-highlight-hook";
 import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
 
-// Types
+// Import Types
 import Paragraph from "@/types/Paragraph";
 import Highlight from "@/types/Highlight";
 
-// Utils
+// Import Utils
 import { getSelectionIndices } from "../_utils/selectionIndices";
 import segmentParagraph, { Segment } from "../_utils/segmentParagraph";
 import { useAddHighlightError, useRemoveHighlightError } from "../_hooks/useHandleClientError";
@@ -23,6 +24,7 @@ interface ParagraphProps {
 export default function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Element {
 
     // Reference to paragraph - used for correct mouse highlighting location
+
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
 
@@ -37,26 +39,27 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
     const [activeHighlight, setActiveHighlight] = useState<string>('');
     
     // Segmenting mechanism for working active highlighting
+
     const segments: Segment[] = useMemo(() => {
         return segmentParagraph(text, paragraph.highlights);
     }, [text, paragraph.highlights]);
 
-    const handleMouseEnter = (segment: Segment) => {
+    const handleMouseEnter = useCallback((segment: Segment) => {
         // Set the first existing highlight ID as active when the segment is hovered
         if (segment.highlightIds.length > 0)
             setActiveHighlight(segment.highlightIds[0]);
-    };
+    }, []);
 
-    const handleMouseLeave = () => {
+    const handleMouseLeave = useCallback(() => {
         setActiveHighlight('');
-    };
+    }, []);
 
-    const handleClick = (segment: Segment) => {
-        if (segment.highlightIds.includes(activeHighlight) && activeHighlight)
+    const handleClick = useCallback((segment: Segment) => {
+        if (activeHighlight && segment.highlightIds.includes(activeHighlight))
             handleRemoveHighlight(activeHighlight);
-    };
+    }, [activeHighlight]);
 
-    const handleRemoveHighlight = async (highlightId: string) => {
+    const handleRemoveHighlight = useCallback(async (highlightId: string) => {
 
         const removeResult = await removeHighlight({
             variables: {
@@ -75,9 +78,9 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
         if (!removeResult.errors)
             setActiveHighlight('');
         
-    };
+    }, [ documentId, paragraph.id, removeHighlight ]);
 
-    const handleMouseUp = async () => {
+    const handleMouseUp = useCallback(async () => {
         
         if (!paragraphRef.current)
             return;
@@ -106,7 +109,9 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
         if (!addResult.errors)
             window.getSelection()?.removeAllRanges();
 
-    };
+    }, [documentId, paragraph.id, addHighlight]);
+
+    // Render
 
     return (
 
