@@ -1,7 +1,5 @@
 'use client';
 
-import { useParams } from "next/navigation";
-
 import { TextDocumentSchema } from "@/types/TextDocument";
 import useTextDocument from "@/services/get-document/client/use-text-document-hook";
 
@@ -11,11 +9,14 @@ import InvalidIdMessage from "./InvalidIdMessage";
 import DocumentRetrievalErrorMessage from "./DocumentRetrievalErrorMessage";
 import LoadingSkeleton from "./LoadingSkeleton";
 
-export default function TextDocumentComponent(): JSX.Element {
+interface TextDocumentComponentProps {
+    id: string;
+}
 
-    // 1. Extract id and validate it
+export default function TextDocumentComponent({ id }: TextDocumentComponentProps): JSX.Element {
 
-    const { id } = useParams<{id: string}>();
+    // 1. Validate text document id
+
     const parseResult = TextDocumentSchema.shape.id.safeParse(id);
 
     // 2. Use text document and add highlight hooks
@@ -24,10 +25,14 @@ export default function TextDocumentComponent(): JSX.Element {
         parseResult.success ? id : ''
     );
 
+    // 3. Check parameters
+
     if (parseResult.error) return <InvalidIdMessage />
     if (loading) return <LoadingSkeleton />
     if (error) return <DocumentRetrievalErrorMessage />
     if (!textDocument) return <DocumentNotFoundMessage />
+
+    // 4. Render
 
     return (
         <div>
