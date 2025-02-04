@@ -29,10 +29,9 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
     const text = paragraph.text;
 
     const { addHighlight, error: addError } = useAddHighlight();
-    const { removeHighlight, error: removeError } = useRemoveHighlight();
+    const { removeHighlight } = useRemoveHighlight();
 
     useAddHighlightError(addError);
-    useRemoveHighlightError(removeError);
 
     // Currently active highlight (ID = string)
 
@@ -54,31 +53,23 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
         setActiveHighlight('');
     }, []);
 
-    const handleClick = useCallback((segment: Segment) => {
-        if (activeHighlight && segment.highlightIds.includes(activeHighlight))
-            handleRemoveHighlight(activeHighlight);
-    }, [activeHighlight]);
-
     const handleRemoveHighlight = useCallback(async (highlightId: string) => {
 
         const removeResult = await removeHighlight({
-            variables: {
-                textDocumentId: documentId,
-                paragraphId: paragraph.id,
-                highlightId: highlightId
-            },
-            optimisticResponse: {
-                removeHighlight: {
-                    success: true,
-                    __typename: 'RemoveHighlightResponse'
-                }
-            }
+            textDocumentId: documentId,
+            paragraphId: paragraph.id,
+            highlightId: highlightId
         });
 
-        if (!removeResult.errors)
+        if (!removeResult.success)
             setActiveHighlight('');
         
     }, [ documentId, paragraph.id, removeHighlight ]);
+
+    const handleClick = useCallback((segment: Segment) => {
+        if (activeHighlight && segment.highlightIds.includes(activeHighlight))
+            handleRemoveHighlight(activeHighlight);
+    }, [activeHighlight, handleRemoveHighlight]);
 
     const handleMouseUp = useCallback(async () => {
         
