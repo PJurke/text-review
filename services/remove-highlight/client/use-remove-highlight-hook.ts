@@ -1,7 +1,7 @@
 import { ApolloCache, Reference, useMutation } from "@apollo/client";
 import { REMOVE_HIGHLIGHT } from "./remove-highlight-client-request";
 
-// Types
+// Type definitions for variables and response
 
 export interface RemoveHighlightVariables {
     textDocumentId: string;
@@ -28,24 +28,28 @@ export interface UseRemoveHighlightReturn {
 // Helper Functions
 
 /**
- * Updates the Apollo Cache after successful removal of a highlight.
- * @param cache The ApolloCache.
- * @param variables The variables which have been used for the mutation.
+ * Updates the Apollo Cache after successfully removing a highlight.
+ * @param cache The ApolloCache
+ * @param variables The variables for the mutation
  */
 function updateCacheAfterRemove(cache: ApolloCache<RemoveHighlightResponse>, variables: RemoveHighlightVariables): void {
 
     const { textDocumentId, paragraphId, highlightId } = variables;
+
+    // Validation of the variables
     if (!textDocumentId || !paragraphId || !highlightId) {
         console.error("Invalid mutation variables:", variables);
         return;
     }
 
+    // Identify the cache entry for the corresponding paragraph object
     const paragraphCacheId = cache.identify({ __typename: 'Paragraph', id: paragraphId });
     if (!paragraphCacheId) {
         console.error("Cache identification not possible for textDocumentId:", textDocumentId);
         return;
     }
 
+    // Remove the highlight from the cache using the ID
     cache.modify({
         id: paragraphCacheId,
         fields: {
@@ -59,8 +63,9 @@ function updateCacheAfterRemove(cache: ApolloCache<RemoveHighlightResponse>, var
 
 }
 
-// Hook
-
+/**
+ * Custom hook for removing a highlight.
+ */
 export default function useRemoveHighlight(): UseRemoveHighlightReturn {
 
     const [removeHighlightMutation] = useMutation<RemoveHighlightResponse, RemoveHighlightVariables>(REMOVE_HIGHLIGHT, {
@@ -82,6 +87,12 @@ export default function useRemoveHighlight(): UseRemoveHighlightReturn {
         }
     });
 
+    /**
+     * Executes the mutation to remove a highlight.
+     *
+     * @param variables - The variables for the mutation
+     * @returns A Promise with the result of the mutation
+     */
     const removeHighlight = async (variables: RemoveHighlightVariables): Promise<RemoveHighlightResult> => {
         try {
             const { data } = await removeHighlightMutation({
