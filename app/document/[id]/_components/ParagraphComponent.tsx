@@ -28,10 +28,8 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
     const paragraphRef = useRef<HTMLParagraphElement>(null);
     const text = paragraph.text;
 
-    const { addHighlight, error: addError } = useAddHighlight();
+    const { addHighlight } = useAddHighlight();
     const { removeHighlight } = useRemoveHighlight();
-
-    useAddHighlightError(addError);
 
     // Currently active highlight (ID = string)
 
@@ -81,23 +79,13 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
             return;
 
         const addResult = await addHighlight({
-            variables: {
-                textDocumentId: documentId,
-                paragraphId: paragraph.id,
-                start: indices.start,
-                end: indices.end
-            },
-            optimisticResponse: {
-                addHighlight: {
-                    id: 'temp-id', // Provisional Id for optimistic UI
-                    start: indices.start,
-                    end: indices.end,
-                    __typename: 'Highlight',
-                }
-            }
+            textDocumentId: documentId,
+            paragraphId: paragraph.id,
+            start: indices.start,
+            end: indices.end
         });
         
-        if (!addResult.errors)
+        if (!addResult.success)
             window.getSelection()?.removeAllRanges();
 
     }, [documentId, paragraph.id, addHighlight]);

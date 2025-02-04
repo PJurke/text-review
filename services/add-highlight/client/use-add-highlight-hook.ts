@@ -1,7 +1,8 @@
-import { gql, useMutation } from "@apollo/client";
-
+import { ApolloCache, gql, useMutation } from "@apollo/client";
 import { ADD_HIGHLIGHT } from "./add-highlight-client-request";
 import Highlight from "@/types/Highlight";
+
+// Types
 
 export interface AddHighlightVariables {
     textDocumentId: string;
@@ -14,52 +15,82 @@ export interface AddHighlightResponse {
     addHighlight: Highlight;
 }
 
-const useAddHighlight = () => {
+interface AddHighlightResult {
+    highlight?: Highlight;
+    success: boolean;
+}
 
-    const [addHighlight, { data, loading, error }] = useMutation<AddHighlightResponse, AddHighlightVariables>(ADD_HIGHLIGHT, {
+export interface UseAddHighlightReturn {
+    addHighlight: (variables: AddHighlightVariables) => Promise<AddHighlightResult>;
+}
 
+function updateCacheAfterAdd(cache: ApolloCache<AddHighlightResponse>, variables: AddHighlightVariables, newHighlight: Highlight): void {
+
+    const paragraphCacheId = cache.identify({ __typename: 'Paragraph', id: variables.paragraphId });
+    if (!paragraphCacheId) {
+        console.error("Cache identification not possible for paragraphId:", variables.paragraphId);
+        return;
+    }
+
+    cache.modify({
+        id: paragraphCacheId,
+        fields: {
+            highlights(existingHighlights: readonly any[] = []) {
+            const newHighlightRef = cache.writeFragment({
+                data: newHighlight,
+                fragment: gql`
+                    fragment NewHighlight on Highlight {
+                    id
+                    start
+                    end
+                    __typename
+                    }
+                `
+            });
+            return [...existingHighlights, newHighlightRef];
+            }
+        }
+    });
+
+}
+
+export default function useAddHighlight(): UseAddHighlightReturn {
+
+    const [addHighlightMutation] = useMutation<AddHighlightResponse, AddHighlightVariables>(ADD_HIGHLIGHT, {
         update(cache, { data }, { variables }) {
-            
-            if (!data) return;
-            
-            const newHighlight = data.addHighlight;
-            const paragraphId = variables?.paragraphId;
-            if (!paragraphId) return;
 
-            const paragraphCacheId = cache.identify({ __typename: 'Paragraph', id: paragraphId });
-            if (!paragraphCacheId) return;
+            if (!data || !variables) return;
 
-            cache.modify({
-                id: paragraphCacheId,
-                fields: {
-                    highlights(existingHighlights = []) {
-                        const newHighlightRef = cache.writeFragment({
-                            data: newHighlight,
-                            fragment: gql`
-                                fragment NewHighlight on Highlight {
-                                    id
-                                    start
-                                    end
-                                    __typename
-                                }
-                            `
-                        });
-                        return [...existingHighlights, newHighlightRef];
+            updateCacheAfterAdd(cache, variables, data.addHighlight);
+        }
+    });
+
+    const addHighlight = async (variables: AddHighlightVariables): Promise<AddHighlightResult> => {
+        try {
+            const { data } = await addHighlightMutation({
+                variables,
+                optimisticResponse: {
+                    addHighlight: {
+                        id: "temp-id", // Provisorische ID für das optimistic UI
+                        start: variables.start,
+                        end: variables.end,
+                        __typename: "Highlight",
                     }
                 }
             });
-
+    
+        if (data && data.addHighlight) {
+            return { highlight: data.addHighlight, success: true };
         }
+    
+        return { success: false };
 
-    });
-
-    return {
-        addHighlight,
-        highlight: data?.addHighlight || null,
-        loading,
-        error
+        } catch (error) {
+            console.error("Error during the addHighlight mutation:", error);
+            return { success: false };
+        }
     };
+    
+    return { addHighlight };
 
-};
-
-export default useAddHighlight;
+}
