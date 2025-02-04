@@ -1,8 +1,17 @@
-import { ApolloCache, gql, useMutation } from "@apollo/client";
+import { ApolloCache, gql, Reference, useMutation } from "@apollo/client";
 import { ADD_HIGHLIGHT } from "./add-highlight-client-request";
 import Highlight from "@/types/Highlight";
 
 // Types
+
+const NEW_HIGHLIGHT_FRAGMENT = gql`
+    fragment NewHighlight on Highlight {
+        id
+        start
+        end
+        __typename
+    }
+`;
 
 export interface AddHighlightVariables {
     textDocumentId: string;
@@ -36,18 +45,11 @@ function updateCacheAfterAdd(cache: ApolloCache<AddHighlightResponse>, variables
         id: paragraphCacheId,
         fields: {
             highlights(existingHighlights: readonly any[] = []) {
-            const newHighlightRef = cache.writeFragment({
-                data: newHighlight,
-                fragment: gql`
-                    fragment NewHighlight on Highlight {
-                    id
-                    start
-                    end
-                    __typename
-                    }
-                `
-            });
-            return [...existingHighlights, newHighlightRef];
+                const newHighlightRef = cache.writeFragment({
+                    data: newHighlight,
+                    fragment: NEW_HIGHLIGHT_FRAGMENT
+                });
+                return [...existingHighlights, newHighlightRef];
             }
         }
     });
