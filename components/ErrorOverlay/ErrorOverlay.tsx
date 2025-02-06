@@ -1,19 +1,19 @@
 /**
- * Interface representing the content of the error overlay.
+ * Interface representing the data for the error overlay.
  */
-export interface ErrorOverlayContent {
+export interface ErrorOverlayData {
     title: string;
     message: string;
     action?: {
         label: string;
-        handler: () => void;
+        onAction: () => void;
     }
 }
 
 /**
  * Props for the ErrorOverlay component, extending the ErrorOverlayContent.
  */
-export interface ErrorOverlayProps extends ErrorOverlayContent {
+export interface ErrorOverlayProps extends ErrorOverlayData {
     onClose: () => void;
 }
 
@@ -34,7 +34,7 @@ export function ErrorOverlay({ title, message, action, onClose }: ErrorOverlayPr
             </div>
             {action &&
                 <div className="p-3">
-                    <button className="text-blue-600" onClick={action.handler}>{ action.label }</button>
+                    <button className="text-blue-600" onClick={action.onAction}>{ action.label }</button>
                 </div>
             }
         </div>

@@ -29,7 +29,7 @@ describe('ErrorOverlay Component', () => {
     it('renders the action button if an action is being passed on', () => {
         const action = {
             label: 'Retry',
-            handler: jest.fn(),
+            onAction: jest.fn(),
         };
 
         render(<ErrorOverlay {...defaultProps} action={action} />);
@@ -41,7 +41,7 @@ describe('ErrorOverlay Component', () => {
     it('calls the action handler if the action button is being clicked', () => {
         const action = {
             label: 'Retry',
-            handler: jest.fn(),
+            onAction: jest.fn(),
         };
 
         render(<ErrorOverlay {...defaultProps} action={action} />);
@@ -49,7 +49,7 @@ describe('ErrorOverlay Component', () => {
         const actionButton = screen.getByText('Retry');
         fireEvent.click(actionButton);
 
-        expect(action.handler).toHaveBeenCalledTimes(1);
+        expect(action.onAction).toHaveBeenCalledTimes(1);
     });
 
     it('does not render the action button, if no action is being passed on', () => {

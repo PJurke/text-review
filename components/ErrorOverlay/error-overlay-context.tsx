@@ -1,16 +1,16 @@
-import { ErrorOverlay, ErrorOverlayContent } from "@/components/ErrorOverlay/ErrorOverlay";
+import { ErrorOverlay, ErrorOverlayData } from "@/components/ErrorOverlay/ErrorOverlay";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface ErrorContextValue {
-    errorContent: ErrorOverlayContent | null;
-    setErrorContent: (content: ErrorOverlayContent | null) => void;
+    errorContent: ErrorOverlayData | null;
+    setErrorContent: (content: ErrorOverlayData | null) => void;
 }
 
 const ErrorOverlayContext = createContext<ErrorContextValue | undefined>(undefined);
 
 export const ErrorOverlayProvider = ({ children }: { children: ReactNode }) => {
     
-    const [errorContent, setErrorContent] = useState<ErrorOverlayContent | null>(null);
+    const [errorContent, setErrorContent] = useState<ErrorOverlayData | null>(null);
 
     // Close the error overlay by setting the error content to null
     const handleClose = () => setErrorContent(null);
