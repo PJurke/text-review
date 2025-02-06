@@ -8,7 +8,7 @@ interface ErrorContextValue {
 
 const ErrorOverlayContext = createContext<ErrorContextValue | undefined>(undefined);
 
-export const ErrorProvider = ({ children }: { children: ReactNode }) => {
+export const ErrorOverlayProvider = ({ children }: { children: ReactNode }) => {
     
     const [errorContent, setErrorContent] = useState<ErrorOverlayContent | null>(null);
 
