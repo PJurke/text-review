@@ -21,7 +21,7 @@ interface ParagraphProps {
     paragraph: Paragraph;
 }
 
-export default function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Element {
+function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Element {
 
     // Reference to paragraph - used for correct mouse highlighting location
 
@@ -122,3 +122,5 @@ export default function ParagraphComponent({ documentId, paragraph }: ParagraphP
 
     );
 }
+
+export default React.memo(ParagraphComponent);
