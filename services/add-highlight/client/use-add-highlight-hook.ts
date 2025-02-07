@@ -28,6 +28,7 @@ export interface AddHighlightResponse {
 interface AddHighlightResult {
     highlight?: Highlight;
     success: boolean;
+    error?: Error;
 }
 
 export interface UseAddHighlightReturn {
@@ -92,7 +93,7 @@ export default function useAddHighlight(): UseAddHighlightReturn {
      */
     const addHighlight = async (variables: AddHighlightVariables): Promise<AddHighlightResult> => {
         try {
-            const { data } = await addHighlightMutation({
+            const { data, errors } = await addHighlightMutation({
                 variables,
                 optimisticResponse: {
                     addHighlight: {
@@ -103,19 +104,26 @@ export default function useAddHighlight(): UseAddHighlightReturn {
                     }
                 }
             });
+
+            if (errors) {
+                return {
+                    success: false,
+                    error: new Error(errors[0].message)
+                }
+            }
     
-        if (data && data.addHighlight) {
-            return { highlight: data.addHighlight, success: true };
-        }
-    
-        return { success: false };
+            if (data && data.addHighlight)
+                return { highlight: data.addHighlight, success: true };
+
+            return { success: false, error: new Error('Unknown error') };
 
         } catch (error) {
-            console.error("Error during the addHighlight mutation:", error);
-            return { success: false };
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error("Error during the addHighlight mutation:", errorMessage);
+            return { success: false, error: new Error(errorMessage) };
         }
     };
     
     return { addHighlight };
-
+    
 }

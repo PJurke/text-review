@@ -2,28 +2,28 @@ import { ErrorOverlay, ErrorOverlayData } from "@/components/ErrorOverlay/ErrorO
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface ErrorContextValue {
-    errorContent: ErrorOverlayData | null;
-    setErrorContent: (content: ErrorOverlayData | null) => void;
+    errorData: ErrorOverlayData | null;
+    setErrorData: (content: ErrorOverlayData | null) => void;
 }
 
 const ErrorOverlayContext = createContext<ErrorContextValue | undefined>(undefined);
 
 export const ErrorOverlayProvider = ({ children }: { children: ReactNode }) => {
     
-    const [errorContent, setErrorContent] = useState<ErrorOverlayData | null>(null);
+    const [errorData, setErrorContent] = useState<ErrorOverlayData | null>(null);
 
     // Close the error overlay by setting the error content to null
     const handleClose = () => setErrorContent(null);
 
     return (
-        <ErrorOverlayContext.Provider value={{ errorContent, setErrorContent }}>
+        <ErrorOverlayContext.Provider value={{ errorData: errorData, setErrorData: setErrorContent }}>
             {children}
 
-            {errorContent && (
+            {errorData && (
                 <ErrorOverlay
-                    title={errorContent.title}
-                    message={errorContent.message}
-                    action={errorContent.action}
+                    title={errorData.title}
+                    message={errorData.message}
+                    action={errorData.action}
                     onClose={handleClose}
                 />
             )}

@@ -14,7 +14,7 @@ import Highlight from "@/types/Highlight";
 // Import Utils
 import { getSelectionIndices } from "../_utils/selectionIndices";
 import segmentParagraph, { Segment } from "../_utils/segmentParagraph";
-import { useAddHighlightError, useRemoveHighlightError } from "../_hooks/useHandleClientError";
+import { useErrorOverlay } from "@/components/ErrorOverlay/error-overlay-context";
 
 interface ParagraphProps {
     documentId: string;
@@ -22,6 +22,8 @@ interface ParagraphProps {
 }
 
 function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Element {
+
+    const { setErrorData } = useErrorOverlay();
 
     // Reference to paragraph - used for correct mouse highlighting location
 
@@ -84,6 +86,25 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
             start: indices.start,
             end: indices.end
         });
+
+        if (!addResult.success) {
+            switch (addResult.error?.message) {
+                case 'Document not found':
+                case 'Paragraph not found':
+                case 'Invalid input':
+                case 'An unexpected error occurred':
+                default: {
+                    setErrorData({
+                        title: 'Something went wrong',
+                        message: 'Our system encountered an error.',
+                        action: {
+                            label: 'Please refresh the page',
+                            onAction: () => window.location.reload()
+                        }
+                    });
+                }
+            }
+        }
         
         if (!addResult.success)
             window.getSelection()?.removeAllRanges();
