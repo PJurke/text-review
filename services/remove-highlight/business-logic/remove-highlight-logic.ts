@@ -4,12 +4,13 @@ import clientPromise from "@/app/lib/mongo/mongodb"
 import { ObjectId, UpdateResult } from "mongodb"
 
 import { HighlightSchema } from '@/types/Highlight'
+import { ParagraphSchema } from "@/types/Paragraph"
+import { TextDocumentSchema } from "@/types/TextDocument"
 import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
 import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError"
-import { TextDocumentSchema } from "@/types/TextDocument"
 import { HighlightNotFoundError } from "@/services/shared/errors/HighlightNotFoundError"
+import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError"
 import logger from "@/lib/logger"
-import { ParagraphSchema } from "@/types/Paragraph"
 
 interface RemoveHighlightArgs {
     textDocumentId: string
@@ -67,7 +68,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
           );
 
         if (!paragraph)
-            throw new Error('The given paragraphId does not exist');
+            throw new ParagraphNotFoundError('The given paragraphId does not exist');
 
         // 5. Check if referred HighlightId exists
 

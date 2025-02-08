@@ -18,7 +18,7 @@ export interface RemoveHighlightResponse {
 
 interface RemoveHighlightResult {
     success: boolean;
-    errorMessage?: string;
+    error?: Error;
 }
 
 export interface UseRemoveHighlightReturn {
@@ -74,7 +74,7 @@ export default function useRemoveHighlight(): UseRemoveHighlightReturn {
             if (errors) {
                 console.error("GraphQL-error during removeHighlight mutation:", errors);
                 return;
-            }      
+            }
 
             if (!data?.removeHighlight?.success) {
                 console.error("removeHighlight mutation failed:", errors);
@@ -95,7 +95,7 @@ export default function useRemoveHighlight(): UseRemoveHighlightReturn {
      */
     const removeHighlight = async (variables: RemoveHighlightVariables): Promise<RemoveHighlightResult> => {
         try {
-            const { data } = await removeHighlightMutation({
+            const { data, errors } = await removeHighlightMutation({
                 variables,
                 optimisticResponse: {
                     removeHighlight: {
@@ -105,20 +105,23 @@ export default function useRemoveHighlight(): UseRemoveHighlightReturn {
                 }
             });
 
+            if (errors) {
+                return {
+                    success: false,
+                    error: new Error(errors[0].message)
+                }
+            }
+
             if (data?.removeHighlight?.success) {
                 return { success: true };
             }
 
-            return {
-                success: false,
-                errorMessage: "The removal of the highlight was not successfully.",
-            };
+            return { success: false, error: new Error('Unknown error') };
+            
         } catch (error) {
-            console.error("Error during the removeHighlight mutation:", error);
-            return {
-                success: false,
-                errorMessage: error instanceof Error ? error.message : String(error)
-            };
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error("Error during the removeHighlight mutation:", errorMessage);
+            return { success: false, error: new Error(errorMessage) };
         }
     };
 

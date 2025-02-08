@@ -24,14 +24,11 @@ interface ParagraphProps {
 function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Element {
 
     const { setErrorData } = useErrorOverlay();
-
-    // Reference to paragraph - used for correct mouse highlighting location
-
-    const paragraphRef = useRef<HTMLParagraphElement>(null);
-    const text = paragraph.text;
-
+    const paragraphRef = useRef<HTMLParagraphElement>(null); // Reference to paragraph - used for correct mouse highlighting location
     const { addHighlight } = useAddHighlight();
     const { removeHighlight } = useRemoveHighlight();
+    
+    const { id: paragraphId, text, highlights } = paragraph;
 
     // Currently active highlight (ID = string)
 
@@ -39,9 +36,7 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
     
     // Segmenting mechanism for working active highlighting
 
-    const segments: Segment[] = useMemo(() => {
-        return segmentParagraph(text, paragraph.highlights);
-    }, [text, paragraph.highlights]);
+    const segments: Segment[] = useMemo(() => segmentParagraph(text, highlights), [highlights, text])
 
     const handleMouseEnter = useCallback((segment: Segment) => {
         // Set the first existing highlight ID as active when the segment is hovered
@@ -57,14 +52,32 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
 
         const removeResult = await removeHighlight({
             textDocumentId: documentId,
-            paragraphId: paragraph.id,
+            paragraphId: paragraphId,
             highlightId: highlightId
         });
 
-        if (!removeResult.success)
+        if (!removeResult.success) {
+            switch (removeResult.error?.message) {
+                case 'Document not found':
+                case 'Paragraph not found':
+                case 'Highlight not found':
+                case 'Invalid input':
+                case 'An unexpected error occurred':
+                default: {
+                    setErrorData({
+                        title: 'Something went wrong',
+                        message: 'Our system encountered an error.',
+                        action: {
+                            label: 'Please refresh the page',
+                            onAction: () => window.location.reload()
+                        }
+                    });
+                }
+            }
             setActiveHighlight('');
+        }
         
-    }, [ documentId, paragraph.id, removeHighlight ]);
+    }, [ documentId, paragraphId, removeHighlight ]);
 
     const handleClick = useCallback((segment: Segment) => {
         if (activeHighlight && segment.highlightIds.includes(activeHighlight))
@@ -82,7 +95,7 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
 
         const addResult = await addHighlight({
             textDocumentId: documentId,
-            paragraphId: paragraph.id,
+            paragraphId: paragraphId,
             start: indices.start,
             end: indices.end
         });
@@ -104,12 +117,10 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
                     });
                 }
             }
-        }
-        
-        if (!addResult.success)
             window.getSelection()?.removeAllRanges();
+        }
 
-    }, [documentId, paragraph.id, addHighlight]);
+    }, [documentId, paragraphId, addHighlight]);
 
     // Render
 

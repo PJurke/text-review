@@ -3,6 +3,7 @@ import { GraphQLError, GraphQLResolveInfo } from 'graphql';
 import removeHighlight from '../business-logic/remove-highlight-logic';
 
 import { DocumentNotFoundError } from '@/services/shared/errors/DocumentNotFoundError';
+import { ParagraphNotFoundError } from '@/services/shared/errors/ParagraphNotFoundError';
 import { HighlightNotFoundError } from '@/services/shared/errors/HighlightNotFoundError';
 import { ZodError } from 'zod';
 import logger from '@/lib/logger';
@@ -34,6 +35,12 @@ export default async function removeHighlightResolver(_parent: unknown, args: Re
         if (error instanceof DocumentNotFoundError) {
             throw new GraphQLError('Document not found', {
                 extensions: { code: 'DOCUMENT_NOT_FOUND', details: error.message },
+            });
+        }
+
+        if (error instanceof ParagraphNotFoundError) {
+            throw new GraphQLError('Paragraph not found', {
+                extensions: { code: 'PARAGRAPH_NOT_FOUND', details: error.message },
             });
         }
 
