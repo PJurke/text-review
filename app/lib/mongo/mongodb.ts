@@ -65,7 +65,7 @@ const gracefulShutdown = async () => {
 };
 
 // Graceful shutdown when application is terminated
-process.on('SIGINT', gracefulShutdown);
-process.on('SIGTERM', gracefulShutdown);
+process.once('SIGINT', gracefulShutdown);
+process.once('SIGTERM', gracefulShutdown);
 
 export default clientPromise;
