@@ -2,24 +2,27 @@
 
 type Query {
 
-    """ Get a text document by its ID """
+    """ Retrieve a text document by its ID. """
     textDocument(id: ID!): TextDocument
+
+    """ Retrieve a text analysis by its ID. """
+    textAnalysis(id: ID!): TextAnalysis
 
 }
 
 type Mutation {
 
-    """ Add a highlight to a text document """
-    addHighlight(textDocumentId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
+    """ Add a highlight to a text analysis. """
+    addHighlight(textAnalysisId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
 
-    """ Remove an existing highlight from a text document """
-    removeHighlight(textDocumentId: ID!, paragraphId: ID!, highlightId: ID!): RemoveHighlightResponse!
+    """ Remove an existing highlight from a text analysis. """
+    removeHighlight(textAnalysisId: ID!, paragraphId: ID!, highlightId: ID!): RemoveHighlightResponse!
 
 }
 
 # ----- MAIN TYPES
 
-""" A text document with paragraphs and highlights """
+""" A text document containing paragraphs. """
 type TextDocument {
     id: ID!
     title: String!
@@ -27,14 +30,28 @@ type TextDocument {
     paragraphs: [Paragraph!]!
 }
 
-""" A single paragraph of a text document """
+""" A single paragraph of a text document. """
 type Paragraph {
+    id: ID!
+    text: String!
+}
+
+""" An analysis of an existing text document. """
+type TextAnalysis {
+    id: ID!
+    title: String!
+    author: String
+    paragraphs: [ParagraphAnalysis!]!
+}
+
+""" A paragraph with the analysis of its text. """
+type ParagraphAnalysis {
     id: ID!
     text: String!
     highlights: [Highlight!]!
 }
 
-""" A highlighted text range within a paragraph """
+""" A highlighted range within a paragraph. """
 type Highlight {
     id: ID!
     start: Int!
@@ -43,7 +60,7 @@ type Highlight {
 
 # ----- RESPONSE TYPES
 
-""" Response for removing a highlight """
+""" Response returned after removing a highlight. """
 type RemoveHighlightResponse {
     success: Boolean!
 }
