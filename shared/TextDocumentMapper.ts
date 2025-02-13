@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import TextDocument from "@/types/TextDocument"
-import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
+import TextDocumentEntity from "@/entities/TextDocumentEntity"
 import { mapParagraphEntityToParagraph, mapParagraphToParagraphEntity } from "./ParagraphMapper"
 
 export function mapTextDocumentToTextDocumentEntity(textDocument: TextDocument): TextDocumentEntity {

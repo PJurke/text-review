@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import Highlight from "@/types/Highlight";
-import HighlightEntity from "@/services/shared/models/HighlightEntity";
+import HighlightEntity from "@/entities/HighlightEntity";
 
 export function mapHighlightToHighlightEntity(highlight: Highlight): HighlightEntity {
     return {
