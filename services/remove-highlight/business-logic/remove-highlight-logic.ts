@@ -4,29 +4,29 @@ import clientPromise from "@/app/lib/mongo/mongodb"
 import { ObjectId, UpdateResult } from "mongodb"
 
 import { HighlightSchema } from '@/types/Highlight'
-import { ParagraphSchema } from "@/types/Paragraph"
-import { TextDocumentSchema } from "@/types/TextDocument"
-import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
-import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError"
 import { HighlightNotFoundError } from "@/services/shared/errors/HighlightNotFoundError"
 import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError"
 import logger from "@/lib/logger"
+import { TextAnalysisSchema } from "@/types/TextAnalysis"
+import { ParagraphAnalysisSchema } from "@/types/ParagraphAnalysis"
+import TextAnalysisEntity from "@/entities/TextAnalysisEntity"
+import { TextAnalysisNotFoundError } from "@/services/shared/errors/TextAnalysisNotFoundError"
 
 interface RemoveHighlightArgs {
-    textDocumentId: string
+    textAnalysisId: string
     paragraphId: string
     highlightId: string
 }
 
 interface RemoveHighlightEntity {
-    textDocumentId: ObjectId
+    textAnalysisId: ObjectId
     paragraphId: ObjectId
     highlightId: ObjectId
 }
 
 const RemoveHighlightArgsSchema = z.object({
-    textDocumentId: TextDocumentSchema.shape.id,
-    paragraphId: ParagraphSchema.shape.id,
+    textAnalysisId: TextAnalysisSchema.shape.id,
+    paragraphId: ParagraphAnalysisSchema.shape.id,
     highlightId: HighlightSchema.shape.id
 });
 
@@ -39,7 +39,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
     // 2. Map data structure (GraphQL > Mongo)
 
     const removableHighlight: RemoveHighlightEntity = {
-        textDocumentId: new ObjectId(args.textDocumentId),
+        textAnalysisId: new ObjectId(args.textAnalysisId),
         paragraphId: new ObjectId(args.paragraphId),
         highlightId: new ObjectId(args.highlightId)
     }
@@ -51,51 +51,51 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
         const client = await clientPromise
         const db = client.db(env.DB_NAME || 'text-review-db')
 
-        // 4. Check if referred TextDocument exists
+        // 4. Check if referred TextAnalysis exists
 
-        const textDocumentFilter = { _id: removableHighlight.textDocumentId };
-        const document = await db
-            .collection<TextDocumentEntity>('textDocuments')
-            .findOne(textDocumentFilter);
+        const textAnalysisFilter = { _id: removableHighlight.textAnalysisId };
+        const textAnalysis = await db
+            .collection<TextAnalysisEntity>('textAnalysis')
+            .findOne(textAnalysisFilter);
 
-        if (!document)
-            throw new DocumentNotFoundError('The given textDocumentId does not exist');
+        if (!textAnalysis)
+            throw new TextAnalysisNotFoundError('The given textAnalysisId does not exist');
 
         // 5. Check if referred Paragraph exists
 
-        const paragraph = document.paragraphs.find((p) =>
-            p._id.equals(removableHighlight.paragraphId)
+        const paragraphAnalysis = textAnalysis.paragraphAnalyses.find((p) =>
+            p.paragraphId.equals(removableHighlight.paragraphId)
           );
 
-        if (!paragraph)
+        if (!paragraphAnalysis)
             throw new ParagraphNotFoundError('The given paragraphId does not exist');
 
-        // 5. Check if referred HighlightId exists
+        // 6. Check if referred HighlightId exists
 
-        const highlightExists = paragraph.highlights.some((highlight) =>
+        const highlightExists = paragraphAnalysis.highlights.some((highlight) =>
             highlight._id.equals(removableHighlight.highlightId)
           );
 
         if (!highlightExists)
             throw new HighlightNotFoundError('The given highlightId does not exist');
 
-        // 6. Design update filter
+        // 7. Design update filter
         
         const update = {
             $pull: {
-                "paragraphs.$[para].highlights": {
+                "paragraphAnalyses.$[para].highlights": {
                     _id: removableHighlight.highlightId
                 }
             }
         }
 
-        const arrayFilters = [{ "para._id": removableHighlight.paragraphId }];
+        const arrayFilters = [{ "para.paragraphId": removableHighlight.paragraphId }];
 
-        // 7. Remove highlight
+        // 8. Remove highlight
 
         const result: UpdateResult = await db
-            .collection<TextDocumentEntity>('textDocuments')
-            .updateOne(textDocumentFilter, update, { arrayFilters });
+            .collection<TextAnalysisEntity>('textAnalysis')
+            .updateOne(textAnalysisFilter, update, { arrayFilters });
 
         if (result.acknowledged)
             return true;

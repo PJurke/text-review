@@ -8,17 +8,17 @@ import { HighlightNotFoundError } from '@/services/shared/errors/HighlightNotFou
 import { ZodError } from 'zod';
 import logger from '@/lib/logger';
 
-export interface ResolverRequest {
+export interface RemoveHighlightRequest {
     textDocumentId: string
     paragraphId: string
     highlightId: string
 }
 
-interface ResolverResponse {
+interface RemoveHighlightResponse {
     success: boolean
 }
 
-export default async function removeHighlightResolver(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<ResolverResponse> {
+export default async function removeHighlightResolver(_parent: unknown, args: RemoveHighlightRequest, context: any, _info: GraphQLResolveInfo): Promise<RemoveHighlightResponse> {
 
     try {
 
