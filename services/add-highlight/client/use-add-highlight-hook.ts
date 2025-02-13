@@ -15,7 +15,7 @@ const NEW_HIGHLIGHT_FRAGMENT = gql`
 // Type definitions for the variables and response of the mutation
 
 export interface AddHighlightVariables {
-    textDocumentId: string;
+    textAnalysisId: string;
     paragraphId: string;
     start: number;
     end: number;
