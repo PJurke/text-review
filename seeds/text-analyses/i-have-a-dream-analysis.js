@@ -1,7 +1,6 @@
-import { ObjectId } from "mongodb"
-import TextAnalysisEntity from "@/entities/TextAnalysisEntity"
+import { ObjectId } from "mongodb";
 
-export const IHaveADreamAnalysis: TextAnalysisEntity = {
+const IHaveADreamAnalysis = {
     _id: new ObjectId('67acf4ce0cb163ff508c58e7'),
     textDocumentId: new ObjectId('6759beb8ce0eaf62c5a51c28'),
     paragraphAnalyses: [{
@@ -16,4 +15,6 @@ export const IHaveADreamAnalysis: TextAnalysisEntity = {
             end: 50
         }]
     }]
-}
+};
+
+export default IHaveADreamAnalysis;
