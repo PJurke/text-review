@@ -1,15 +1,17 @@
 import { GraphQLError, GraphQLResolveInfo } from "graphql";
-import getDocument from "@/services/get-document/business-logic/get-document-logic";
+import { ZodError } from "zod";
+
+import logger from "@/lib/logger";
 import TextDocument from "@/types/TextDocument";
 import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
-import { ZodError } from "zod";
-import logger from "@/lib/logger";
 
-export interface ResolverRequest {
+import getDocument from "@/services/get-document/business-logic/get-document-logic";
+
+export interface GetTextDocumentData {
     id: string
 }
 
-export default async function getTextDocumentResolver(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<TextDocument> {
+export default async function getTextDocumentResolver(_parent: unknown, args: GetTextDocumentData, context: any, _info: GraphQLResolveInfo): Promise<TextDocument> {
 
     try {
 

@@ -1,10 +1,11 @@
+import { env } from "process";
+import { ObjectId } from "mongodb";
+
 import clientPromise from "@/app/lib/mongo/mongodb";
-import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity";
+import TextDocumentEntity from "@/entities/TextDocumentEntity";
 import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
 import { mapTextDocumentEntityToTextDocument } from "@/shared/TextDocumentMapper";
 import TextDocument, { TextDocumentSchema } from "@/types/TextDocument";
-import { ObjectId } from "mongodb";
-import { env } from "process";
 import logger from "@/lib/logger";
 
 export default async function getDocument(id: string): Promise<TextDocument> {
