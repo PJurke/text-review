@@ -13,7 +13,7 @@ export default function TextAnalysisRetrievalErrorMessage(): JSX.Element {
             title='Text Analysis Retrieval Error'
             message='There has been an error retrieving the analysis. Please try again later.'
             action={{
-                label: 'Reload this Page',
+                label: 'Search for Analyses',
                 url: window.location.href
             }}
         />

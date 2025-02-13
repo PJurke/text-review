@@ -6,7 +6,7 @@ export default function TextAnalysisNotFoundMessage(): JSX.Element {
         <UserMessageComponent
             icon={{
                 alt: 'Text Analysis not found',
-                url: '/document-not-found.png'
+                url: '/analysis-not-found.png'
             }}
             title='Text Analysis not found'
             message='A text analysis with the given ID could not be found.'
