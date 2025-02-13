@@ -3,26 +3,28 @@ import { ObjectId, UpdateResult } from "mongodb"
 import { z } from "zod"
 
 import clientPromise from "@/app/lib/mongo/mongodb"
-import { TextDocumentSchema } from "@/types/TextDocument"
-import Highlight, { HighlightSchema } from '@/types/Highlight'
-
-import TextDocumentEntity from "@/services/shared/models/TextDocumentEntity"
-import { DocumentNotFoundError } from "../../shared/errors/DocumentNotFoundError"
-import HighlightEntity from "@/services/shared/models/HighlightEntity"
-import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError"
 import logger from "@/lib/logger"
-import { ParagraphSchema } from "@/types/Paragraph"
+
+import { ParagraphNotFoundError } from "../../shared/errors/ParagraphNotFoundError"
+
+import Highlight, { HighlightSchema } from '@/types/Highlight'
+import { TextAnalysisSchema } from "@/types/TextAnalysis"
+import { ParagraphAnalysisSchema } from "@/types/ParagraphAnalysis"
+import HighlightEntity from "@/entities/HighlightEntity"
+import TextAnalysisEntity from "@/entities/TextAnalysisEntity"
+import { TextAnalysisNotFoundError } from "@/services/shared/errors/TextAnalysisNotFoundError"
+
 
 interface AddHighlightArgs {
-    textDocumentId: string,
+    textAnalysisId: string,
     paragraphId: string,
     start: number,
     end: number
 }
 
 const AddHighlightArgsSchema = z.object({
-    textDocumentId: TextDocumentSchema.shape.id,
-    paragraphId: ParagraphSchema.shape.id,
+    textAnalysisId: TextAnalysisSchema.shape.id,
+    paragraphId: ParagraphAnalysisSchema.shape.id,
     start: HighlightSchema.shape.start,
     end: HighlightSchema.shape.end
 });
@@ -35,7 +37,8 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
     // 2. Mapping (GraphQL -> MongoDB)
 
-    const paragraphReference = new ObjectId(args.paragraphId);
+    const textAnalysisId = new ObjectId(args.textAnalysisId);
+    const paragraphId = new ObjectId(args.paragraphId);
 
     const newHighlight: HighlightEntity = {
         _id: new ObjectId(),
@@ -50,23 +53,23 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
         const client = await clientPromise
         const db = client.db(env.DB_NAME || 'text-review-db')
 
-        // 4. Check if referred TextDocument exists
+        // 4. Check if referred TextAnalysis exists
 
-        const textDocumentFilter = {
-            _id: new ObjectId(args.textDocumentId),
-            "paragraphs._id": new ObjectId(args.paragraphId)
+        const textAnalysisFilter = {
+            _id: textAnalysisId,
+            "paragraphAnalyses.paragraphId": paragraphId
         }
         
-        const document = await db
-            .collection<TextDocumentEntity>('textDocuments')
-            .findOne(textDocumentFilter);
+        const textAnalysis = await db
+            .collection<TextAnalysisEntity>('textAnalysis')
+            .findOne(textAnalysisFilter);
 
-        if (!document)
-            throw new DocumentNotFoundError('The given textDocumentId does not exist');
+        if (!textAnalysis)
+            throw new TextAnalysisNotFoundError('The given textAnalysisId does not exist');
 
         // 4. Check if referred ParagraphId exists
 
-        const paragraphExists = document.paragraphs.some(paragraph => paragraph._id.equals(paragraphReference));
+        const paragraphExists = textAnalysis.paragraphAnalyses.some(paragraphAnalysis => paragraphAnalysis.paragraphId.equals(paragraphId));
 
         if (!paragraphExists)
             throw new ParagraphNotFoundError('The given paragraphId does not exist');
@@ -75,13 +78,13 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
         
         const update = {
             $push: {
-                "paragraphs.$.highlights": newHighlight
+                "paragraphAnalyses.$.highlights": newHighlight
             }
         }
 
         // 5. Add new highlight
 
-        const result: UpdateResult = await db.collection<TextDocumentEntity>('textDocuments').updateOne(textDocumentFilter, update)
+        const result: UpdateResult = await db.collection<TextAnalysisEntity>('textAnalysis').updateOne(textAnalysisFilter, update)
 
         // 6. Return the new highlight
 
