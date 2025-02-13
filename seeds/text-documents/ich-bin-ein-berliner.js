@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
-import TextDocumentEntity from "@/entities/TextDocumentEntity";
 
-export const IchBinEinBerliner: TextDocumentEntity = {
+const IchBinEinBerliner = {
     "_id": new ObjectId("675aafd3d8d69ad111aca389"),
     "title": "Ich bin ein Berliner",
     "author": "John F. Kennedy",
@@ -43,4 +42,6 @@ export const IchBinEinBerliner: TextDocumentEntity = {
             "text": "All free men, wherever they may live, are citizens of Berlin, and, therefore, as a free man, I take pride in the words 'Ich bin ein Berliner.'",
         }
     ]
-}  
+};
+
+export default IchBinEinBerliner;
