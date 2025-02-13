@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 
 import Highlight from '@/types/Highlight';
 import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError";
-import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
+import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
 import addHighlight from '../business-logic/add-highlight-logic';
 import logger from '@/lib/logger';
 
@@ -32,9 +32,9 @@ export default async function addHighlightResolver(_parent: unknown, args: AddHi
 
     } catch (error) {
 
-        if (error instanceof DocumentNotFoundError) {
-            throw new GraphQLError('Text Analysis not found', {
-                extensions: { code: 'TEXT_ANALYSIS_NOT_FOUND', details: error.message },
+        if (error instanceof TextDocumentNotFoundError) {
+            throw new GraphQLError('Text document not found', {
+                extensions: { code: 'TEXT_DOCUMENT_NOT_FOUND', details: error.message },
             });
         }
 

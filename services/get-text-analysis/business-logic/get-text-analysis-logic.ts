@@ -1,10 +1,8 @@
-import { env, title } from "process";
+import { env } from "process";
 import { ObjectId } from "mongodb";
 
 import clientPromise from "@/app/lib/mongo/mongodb";
 import TextDocumentEntity from "@/entities/TextDocumentEntity";
-import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFoundError";
-import { mapTextDocumentEntityToTextDocument } from "@/shared/TextDocumentMapper";
 import logger from "@/lib/logger";
 import TextAnalysis, { TextAnalysisSchema } from "@/types/TextAnalysis";
 import TextAnalysisEntity from "@/entities/TextAnalysisEntity";
@@ -12,6 +10,7 @@ import { TextAnalysisNotFoundError } from "@/services/shared/errors/TextAnalysis
 import ParagraphAnalysisEntity from "@/entities/ParagraphAnalysisEntity";
 import Highlight from "@/types/Highlight";
 import ParagraphAnalysis from "@/types/ParagraphAnalysis";
+import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
 
 function mergeTextAnalysis(textDocumentEntity: TextDocumentEntity, textAnalysisEntity: TextAnalysisEntity): TextAnalysis {
 
@@ -74,19 +73,19 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
             .findOne({ _id: textAnalysis.textDocumentId });
 
         if (!textDocument)
-            throw new DocumentNotFoundError(`Text Document with id ${id} not found`);
+            throw new TextDocumentNotFoundError(`Text Document with id ${id} not found`);
 
         // 6. Merge TextAnalysisEntity and TextDocumentEntity into Text Analysis
 
         const response: TextAnalysis = mergeTextAnalysis(textDocument, textAnalysis);
 
-        // 7. Map Text Document (MongoDB -> GraphQL)
+        // 7. Return TextAnalysis
 
         return response;
 
     } catch (error) {
 
-        logger.error('Error retrieving document:', error);
+        logger.error('Error retrieving analysis:', error);
         throw error;
 
     }
