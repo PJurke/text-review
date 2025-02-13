@@ -7,14 +7,14 @@ import { DocumentNotFoundError } from "@/services/shared/errors/DocumentNotFound
 import addHighlight from '../business-logic/add-highlight-logic';
 import logger from '@/lib/logger';
 
-export interface ResolverRequest {
+export interface AddHighlightData {
     textDocumentId: string;
     paragraphId: string;
     start: number;
     end: number;
 }
 
-export default async function addHighlightResolver(_parent: unknown, args: ResolverRequest, context: any, _info: GraphQLResolveInfo): Promise<Highlight> {
+export default async function addHighlightResolver(_parent: unknown, args: AddHighlightData, context: any, _info: GraphQLResolveInfo): Promise<Highlight> {
 
     try {
 
