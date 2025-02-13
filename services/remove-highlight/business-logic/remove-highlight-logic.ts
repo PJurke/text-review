@@ -55,7 +55,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         const textAnalysisFilter = { _id: removableHighlight.textAnalysisId };
         const textAnalysis = await db
-            .collection<TextAnalysisEntity>('textAnalysis')
+            .collection<TextAnalysisEntity>('textAnalyses')
             .findOne(textAnalysisFilter);
 
         if (!textAnalysis)
@@ -65,7 +65,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         const paragraphAnalysis = textAnalysis.paragraphAnalyses.find((p) =>
             p.paragraphId.equals(removableHighlight.paragraphId)
-          );
+        );
 
         if (!paragraphAnalysis)
             throw new ParagraphNotFoundError('The given paragraphId does not exist');
@@ -74,7 +74,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         const highlightExists = paragraphAnalysis.highlights.some((highlight) =>
             highlight._id.equals(removableHighlight.highlightId)
-          );
+        );
 
         if (!highlightExists)
             throw new HighlightNotFoundError('The given highlightId does not exist');
@@ -94,7 +94,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
         // 8. Remove highlight
 
         const result: UpdateResult = await db
-            .collection<TextAnalysisEntity>('textAnalysis')
+            .collection<TextAnalysisEntity>('textAnalyses')
             .updateOne(textAnalysisFilter, update, { arrayFilters });
 
         if (result.acknowledged)

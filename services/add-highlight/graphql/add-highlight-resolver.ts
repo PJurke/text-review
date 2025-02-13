@@ -8,7 +8,7 @@ import addHighlight from '../business-logic/add-highlight-logic';
 import logger from '@/lib/logger';
 
 export interface AddHighlightData {
-    textDocumentId: string;
+    textAnalysisId: string;
     paragraphId: string;
     start: number;
     end: number;
@@ -19,9 +19,11 @@ export default async function addHighlightResolver(_parent: unknown, args: AddHi
     try {
 
         // Map data structure (GraphQL > Mongo) and call business logic
+
         const createdHighlight = await addHighlight(args);
 
         // Map data structure (Mongo > GraphQL) and return it
+
         return {
             id: createdHighlight.id,
             start: createdHighlight.start,
@@ -31,8 +33,8 @@ export default async function addHighlightResolver(_parent: unknown, args: AddHi
     } catch (error) {
 
         if (error instanceof DocumentNotFoundError) {
-            throw new GraphQLError('Document not found', {
-                extensions: { code: 'DOCUMENT_NOT_FOUND', details: error.message },
+            throw new GraphQLError('Text Analysis not found', {
+                extensions: { code: 'TEXT_ANALYSIS_NOT_FOUND', details: error.message },
             });
         }
 

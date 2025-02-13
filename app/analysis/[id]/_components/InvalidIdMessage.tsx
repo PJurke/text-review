@@ -8,10 +8,10 @@ export default function InvalidIdMessage(): JSX.Element {
                 alt: 'ID Invalid',
                 url: '/id-invalid.png'
             }}
-            title='Document ID invalid'
-            message='Each document is identified by a unique id. The given document id is invalid.'
+            title='Text Analysis ID invalid'
+            message='Each analysis is identified by a unique id. The given analyse id is invalid.'
             action={{
-                label: 'Search for Documents',
+                label: 'Search for Analyses',
                 url: '/'
             }}
         />

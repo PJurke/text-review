@@ -9,7 +9,7 @@ import { ZodError } from 'zod';
 import logger from '@/lib/logger';
 
 export interface RemoveHighlightRequest {
-    textDocumentId: string
+    textAnalysisId: string
     paragraphId: string
     highlightId: string
 }

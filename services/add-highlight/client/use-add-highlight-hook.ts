@@ -45,7 +45,7 @@ export interface UseAddHighlightReturn {
 function updateCacheAfterAdd(cache: ApolloCache<AddHighlightResponse>, variables: AddHighlightVariables, newHighlight: Highlight): void {
 
     // Identify the cache entry for the corresponding paragraph object
-    const paragraphCacheId = cache.identify({ __typename: 'Paragraph', id: variables.paragraphId });
+    const paragraphCacheId = cache.identify({ __typename: 'ParagraphAnalysis', id: variables.paragraphId });
     if (!paragraphCacheId) {
         console.error("Cache identification not possible for paragraphId:", variables.paragraphId);
         return;

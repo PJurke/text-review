@@ -1,34 +1,37 @@
 'use client';
 
 // Import React
+
 import React, { useCallback, useMemo, useRef, useState } from "react";
 
 // Import Hooks
+
 import useAddHighlight from "@/services/add-highlight/client/use-add-highlight-hook";
 import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
 
 // Import Types
-import Paragraph from "@/types/Paragraph";
-import Highlight from "@/types/Highlight";
+
+import ParagraphAnalysis from "@/types/ParagraphAnalysis";
 
 // Import Utils
+
 import { getSelectionIndices } from "../_utils/selectionIndices";
 import segmentParagraph, { Segment } from "../_utils/segmentParagraph";
 import { useErrorOverlay } from "@/components/ErrorOverlay/error-overlay-context";
 
-interface ParagraphProps {
-    documentId: string;
-    paragraph: Paragraph;
+interface ParagraphAnalysisProps {
+    textAnalysisId: string;
+    paragraphAnalysis: ParagraphAnalysis;
 }
 
-function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Element {
+function ParagraphAnalysisComponent({ textAnalysisId, paragraphAnalysis }: ParagraphAnalysisProps): JSX.Element {
 
     const { setErrorData } = useErrorOverlay();
     const paragraphRef = useRef<HTMLParagraphElement>(null); // Reference to paragraph - used for correct mouse highlighting location
     const { addHighlight } = useAddHighlight();
     const { removeHighlight } = useRemoveHighlight();
     
-    const { id: paragraphId, text, highlights } = paragraph;
+    const { id: paragraphId, text, highlights } = paragraphAnalysis;
 
     // Currently active highlight (ID = string)
 
@@ -51,7 +54,7 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
     const handleRemoveHighlight = useCallback(async (highlightId: string) => {
 
         const removeResult = await removeHighlight({
-            textDocumentId: documentId,
+            textAnalysisId: textAnalysisId,
             paragraphId: paragraphId,
             highlightId: highlightId
         });
@@ -77,7 +80,7 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
             setActiveHighlight('');
         }
         
-    }, [ documentId, paragraphId, removeHighlight ]);
+    }, [ textAnalysisId, paragraphId, removeHighlight ]);
 
     const handleClick = useCallback((segment: Segment) => {
         if (activeHighlight && segment.highlightIds.includes(activeHighlight))
@@ -94,7 +97,7 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
             return;
 
         const addResult = await addHighlight({
-            textDocumentId: documentId,
+            textAnalysisId: textAnalysisId,
             paragraphId: paragraphId,
             start: indices.start,
             end: indices.end
@@ -120,7 +123,7 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
             window.getSelection()?.removeAllRanges();
         }
 
-    }, [documentId, paragraphId, addHighlight]);
+    }, [textAnalysisId, paragraphId, addHighlight]);
 
     // Render
 
@@ -155,4 +158,4 @@ function ParagraphComponent({ documentId, paragraph }: ParagraphProps): JSX.Elem
     );
 }
 
-export default React.memo(ParagraphComponent);
+export default React.memo(ParagraphAnalysisComponent);

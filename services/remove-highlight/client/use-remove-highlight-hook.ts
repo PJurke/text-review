@@ -4,7 +4,7 @@ import { REMOVE_HIGHLIGHT } from "./remove-highlight-client-request";
 // Type definitions for variables and response
 
 export interface RemoveHighlightVariables {
-    textDocumentId: string;
+    textAnalysisId: string;
     paragraphId: string;
     highlightId: string;
 }
@@ -34,18 +34,18 @@ export interface UseRemoveHighlightReturn {
  */
 function updateCacheAfterRemove(cache: ApolloCache<RemoveHighlightResponse>, variables: RemoveHighlightVariables): void {
 
-    const { textDocumentId, paragraphId, highlightId } = variables;
+    const { textAnalysisId, paragraphId, highlightId } = variables;
 
     // Validation of the variables
-    if (!textDocumentId || !paragraphId || !highlightId) {
+    if (!textAnalysisId || !paragraphId || !highlightId) {
         console.error("Invalid mutation variables:", variables);
         return;
     }
 
     // Identify the cache entry for the corresponding paragraph object
-    const paragraphCacheId = cache.identify({ __typename: 'Paragraph', id: paragraphId });
+    const paragraphCacheId = cache.identify({ __typename: 'ParagraphAnalysis', id: paragraphId });
     if (!paragraphCacheId) {
-        console.error("Cache identification not possible for textDocumentId:", textDocumentId);
+        console.error("Cache identification not possible for textAnalysisId:", textAnalysisId);
         return;
     }
 
