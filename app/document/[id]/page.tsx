@@ -22,11 +22,9 @@ export default function Page(): JSX.Element {
     // 3. Render TextDocument component
 
     return (
-        <>
-            <button onClick={createTextAnalysisHandler}>Create Text Analysis</button>
-            <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
-                <TextDocumentComponent id={id} />
-            </section>
-        </>
+        <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
+            <button onClick={createTextAnalysisHandler} className='cursor-pointer hover:underline'>Create Text Analysis</button>
+            <TextDocumentComponent id={id} />
+        </section>
     );
 }
