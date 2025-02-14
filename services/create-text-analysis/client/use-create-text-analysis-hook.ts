@@ -1,4 +1,4 @@
-import { ApolloCache, gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { CREATE_TEXT_ANALYSIS } from "./create-text-analysis-request";
 
 // Type definitions for the variables and response of the mutation
