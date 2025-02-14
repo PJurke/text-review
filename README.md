@@ -16,7 +16,7 @@
 - **types** Data Structures
 
 ## API Sequence
-- GraphQL -> Service -> Database -> Service -> GraphQL
+- GraphQL -> Logic -> Database -> Logic -> GraphQL
 
 ### GraphQL
 - Is the GraphQL Resolver
@@ -25,7 +25,7 @@
 - Get business logic response (including exceptions)
 - Generate GraphQL response
 
-### Service
+### Logic
 - Is the business logic
 - Receive data from GraphQL
 - Validates the incoming data
