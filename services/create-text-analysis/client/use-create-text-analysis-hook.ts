@@ -8,16 +8,13 @@ export interface CreateTextAnalysisVariables {
 }
 
 export interface CreateTextAnalysisResponse {
-    textAnalysisId: string;
-}
-
-interface CreateTextAnalysisResult {
-    textAnalysisId?: string;
-    error?: Error;
+    createTextAnalysis: {
+        id: string;
+    }
 }
 
 export interface UseCreateTextAnalysisReturn {
-    createTextAnalysis: (variables: CreateTextAnalysisVariables) => Promise<CreateTextAnalysisResult>;
+    createTextAnalysis: (variables: CreateTextAnalysisVariables) => Promise<string>;
     loading: boolean;
 }
 
@@ -31,29 +28,19 @@ export default function useCreateTextAnalysis(): UseCreateTextAnalysisReturn {
     /**
      * Performs the mutation to create a new text analysis.
      *
-     * @param variables - The variables for the mutation
-     * @returns A Promise with the result of the mutation
+     * @param variables - The variables for the mutation.
+     * @returns A promise with the id of the newly created text analysis.
      */
-    const createTextAnalysis = async (variables: CreateTextAnalysisVariables): Promise<CreateTextAnalysisResult> => {
-        try {
-            const { data, errors } = await createTextAnalysisMutation({ variables });
+    const createTextAnalysis = async (variables: CreateTextAnalysisVariables): Promise<string> => {
+        const { data, errors } = await createTextAnalysisMutation({ variables });
 
-            if (errors) {
-                return {
-                    error: new Error(errors[0].message)
-                }
-            }
-    
-            if (data && data.textAnalysisId)
-                return { textAnalysisId: data.textAnalysisId };
+        if (errors)
+            throw new Error(errors[0].message);
 
-            return { error: new Error('Unknown error') };
+        if (data && data.createTextAnalysis)
+            return data.createTextAnalysis.id;
 
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            console.error("Error during the create text analysis mutation:", errorMessage);
-            return { error: new Error(errorMessage) };
-        }
+        throw new Error('Unknown error');
     };
     
     return { createTextAnalysis, loading };
