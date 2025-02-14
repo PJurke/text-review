@@ -13,7 +13,7 @@ export const resolvers: IResolvers = {
         textDocument: getTextDocumentResolver
     },
     Mutation: {
-        createTextAnalyis: createTextAnalysis,
+        createTextAnalysis: createTextAnalysis,
 
         addHighlight: addHighlightResolver,
         removeHighlight: removeHighlightResolver,
