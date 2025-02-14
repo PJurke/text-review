@@ -12,6 +12,9 @@ type Query {
 
 type Mutation {
 
+    """ Create a new text analysis based on an existing text document. """
+    createTextAnalyis(textDocumentId: ID!): CreateTextAnalyisResponse!
+
     """ Add a highlight to a text analysis. """
     addHighlight(textAnalysisId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
 
@@ -63,4 +66,8 @@ type Highlight {
 """ Response returned after removing a highlight. """
 type RemoveHighlightResponse {
     success: Boolean!
+}
+
+type CreateTextAnalyisResponse {
+    id: String
 }
