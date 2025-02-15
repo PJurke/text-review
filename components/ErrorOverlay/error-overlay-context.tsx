@@ -4,7 +4,7 @@ import { createContext, ReactNode, useContext, useState } from "react";
 
 interface ErrorOverlayContextProps {
     errorDetails: ErrorDetails | null;
-    showError: (data: ErrorDetails | null) => void;
+    showError: (data: ErrorDetails) => void;
     hideError: () => void;
 }
 
@@ -23,7 +23,7 @@ export const ErrorOverlayProvider = ({ children }: { children: ReactNode }) => {
     
     const [errorDetails, setErrorDetails] = useState<ErrorDetails | null>(null);
 
-    const showError = (data: ErrorDetails | null) => {
+    const showError = (data: ErrorDetails) => {
         setErrorDetails(data);
     };
 
