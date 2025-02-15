@@ -21,7 +21,7 @@ export default async function createTextAnalysis(textDocumentId: string): Promis
     const validationResult = TextDocumentSchema.shape.id.safeParse(textDocumentId);
 
     if (!validationResult.success)
-        throw new ValidationError('Invalid text document id');
+        throw new ValidationError('Invalid text document id', 'text document id');
 
     // 2. Mapping (GraphQL -> MongoDB)
 
