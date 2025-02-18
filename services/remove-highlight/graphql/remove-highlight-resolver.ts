@@ -7,6 +7,9 @@ import { ParagraphNotFoundError } from '@/services/shared/errors/ParagraphNotFou
 import { HighlightNotFoundError } from '@/services/shared/errors/HighlightNotFoundError';
 import { ZodError } from 'zod';
 import logger from '@/lib/logger';
+import { ValidationError } from '@/services/shared/errors/ValidationError';
+import { TextAnalysisNotFoundError } from '@/services/shared/errors/TextAnalysisNotFoundError';
+import { DatabaseError } from '@/services/shared/errors/DatabaseError';
 
 export interface RemoveHighlightRequest {
     textAnalysisId: string
@@ -32,34 +35,20 @@ export default async function removeHighlightResolver(_parent: unknown, args: Re
 
     } catch (error) {
 
-        if (error instanceof TextDocumentNotFoundError) {
-            throw new GraphQLError('Text document not found', {
-                extensions: { code: 'TEXT_DOCUMENT_NOT_FOUND', details: error.message },
-            });
+        if (error instanceof ValidationError)
+            throw new GraphQLError(error.message, { extensions: { code: 'BAD_USER_INPUT', details: error.message } });
+        else if (error instanceof TextAnalysisNotFoundError)
+            throw new GraphQLError(error.message, { extensions: { code: 'TEXT_DOCUMENT_NOT_FOUND', details: error.message } });
+        else if (error instanceof ParagraphNotFoundError)
+            throw new GraphQLError(error.message, { extensions: { code: 'PARAGRAPH_NOT_FOUND', details: error.message } });
+        else if (error instanceof HighlightNotFoundError)
+            throw new GraphQLError(error.message, { extensions: { code: 'HIGHLIGHT_NOT_FOUND', details: error.message } });
+        else if (error instanceof DatabaseError)
+            throw new GraphQLError('An unexpected error occurred', { extensions: { code: 'INTERNAL_SERVER_ERROR', details: error.message } });
+        else {
+            logger.error('remove-highlight-resolver.ts: ', error);
+            throw new GraphQLError('An unexpected error occurred', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
         }
-
-        if (error instanceof ParagraphNotFoundError) {
-            throw new GraphQLError('Paragraph not found', {
-                extensions: { code: 'PARAGRAPH_NOT_FOUND', details: error.message },
-            });
-        }
-
-        if (error instanceof HighlightNotFoundError) {
-            throw new GraphQLError('Highlight not found', {
-                extensions: { code: 'HIGHLIGHT_NOT_FOUND', details: error.message },
-            });
-        }
-
-        if (error instanceof ZodError) {
-            throw new GraphQLError('Invalid input', {
-                extensions: { code: 'INVALID_INPUT', details: error.errors },
-            });
-        }
-
-        logger.error('Error removing highlight:', error);
-        throw new GraphQLError('An unexpected error occurred', {
-            extensions: { code: 'INTERNAL_SERVER_ERROR' },
-        });
 
     }
 
