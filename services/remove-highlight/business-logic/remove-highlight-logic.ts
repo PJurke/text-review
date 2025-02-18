@@ -64,7 +64,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
             .findOne(textAnalysisFilter);
 
         if (!textAnalysis)
-            throw new TextAnalysisNotFoundError('Text analysis with id ${removableHighlight.textAnalysisId} not found');
+            throw new TextAnalysisNotFoundError(`Text analysis with id ${removableHighlight.textAnalysisId} not found`);
 
         // 5. Check if referred Paragraph exists
 
@@ -73,7 +73,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
         );
 
         if (!paragraphAnalysis)
-            throw new ParagraphNotFoundError('Paragraph with id ${removableHighlight.paragraphId} not found');
+            throw new ParagraphNotFoundError(`Paragraph with id ${removableHighlight.paragraphId} not found`);
 
         // 6. Check if referred HighlightId exists
 
@@ -82,7 +82,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
         );
 
         if (!highlightExists)
-            throw new HighlightNotFoundError('Paragraph with id ${removableHighlight.highlightId} not found');
+            throw new HighlightNotFoundError(`Paragraph with id ${removableHighlight.highlightId} not found`);
 
         // 7. Design update filter
         
