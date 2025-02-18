@@ -111,7 +111,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         if (error instanceof MongoError) {
             logger.error('remove-highlight-logic.ts: Database error ', error);
-            throw new DatabaseError('');
+            throw new DatabaseError('An internal server error occurred');
         } else if (error instanceof Error) {
             logger.error('remove-highlight-logic.ts: ', {
                 message: error.message,

@@ -92,7 +92,7 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
 
         if (error instanceof MongoError) {
             logger.error('get-text-analysis-logic.ts: Database error ', error);
-            throw new DatabaseError('');
+            throw new DatabaseError('An internal server error occurred');
         } else if (error instanceof Error) {
             logger.error('get-text-analysis-logic.ts: ', {
                 message: error.message,

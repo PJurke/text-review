@@ -34,7 +34,7 @@ export default async function createTextAnalysisResolver(_parent: unknown, args:
         } else if (error instanceof TextDocumentNotFoundError) {
             throw new GraphQLError(error.message, { extensions: { code: 'TEXT_DOCUMENT_NOT_FOUND' } });
         } else if (error instanceof DatabaseError) {
-            throw new GraphQLError('An internal server error occurred.', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
+            throw new GraphQLError(error.message, { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
         } else {
             logger.error('create-text-analysis-resolver.ts: ', error);
             throw new GraphQLError('An unexpected error occurred', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });

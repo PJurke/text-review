@@ -138,7 +138,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
         if (error instanceof MongoError) {
             logger.error('create-text-analysis-logic.ts: Database error ', error);
-            throw new DatabaseError('');
+            throw new DatabaseError('An internal server error occurred');
         } else {
             logger.error('add-highlight-logic.ts: ', error);
             throw error;

@@ -43,7 +43,7 @@ export default async function addHighlightResolver(_parent: unknown, args: AddHi
         else if (error instanceof ParagraphNotFoundError)
             throw new GraphQLError(error.message, { extensions: { code: 'PARAGRAPH_NOT_FOUND' } });
         else if (error instanceof DatabaseError)
-            throw new GraphQLError('An internal server error occurred.', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
+            throw new GraphQLError(error.message, { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
         else {
             logger.error('add-highlight-resolver.ts: ', error);
             throw new GraphQLError('An unexpected error occurred', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });

@@ -42,7 +42,7 @@ export default async function removeHighlightResolver(_parent: unknown, args: Re
         else if (error instanceof HighlightNotFoundError)
             throw new GraphQLError(error.message, { extensions: { code: 'HIGHLIGHT_NOT_FOUND', details: error.message } });
         else if (error instanceof DatabaseError)
-            throw new GraphQLError('An unexpected error occurred', { extensions: { code: 'INTERNAL_SERVER_ERROR', details: error.message } });
+            throw new GraphQLError(error.message, { extensions: { code: 'INTERNAL_SERVER_ERROR', details: error.message } });
         else {
             logger.error('remove-highlight-resolver.ts: ', error);
             throw new GraphQLError('An unexpected error occurred', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
