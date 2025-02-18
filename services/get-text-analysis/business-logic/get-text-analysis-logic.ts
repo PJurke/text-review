@@ -1,5 +1,5 @@
 import { env } from "process";
-import { ObjectId } from "mongodb";
+import { MongoError, ObjectId } from "mongodb";
 
 import clientPromise from "@/app/lib/mongo/mongodb";
 import TextDocumentEntity from "@/entities/TextDocumentEntity";
@@ -11,6 +11,8 @@ import ParagraphAnalysisEntity from "@/entities/ParagraphAnalysisEntity";
 import Highlight from "@/types/Highlight";
 import ParagraphAnalysis from "@/types/ParagraphAnalysis";
 import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
+import { ValidationError } from "@/services/shared/errors/ValidationError";
+import { DatabaseError } from "@/services/shared/errors/DatabaseError";
 
 function mergeTextAnalysis(textDocumentEntity: TextDocumentEntity, textAnalysisEntity: TextAnalysisEntity): TextAnalysis {
 
@@ -44,11 +46,14 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
 
     // 1. Validate all arguments
 
-    TextAnalysisSchema.shape.id.parse(id)
+    const validationResult = TextAnalysisSchema.shape.id.safeParse(id);
+
+    if (!validationResult.success)
+        throw new ValidationError('Invalid input', validationResult.error.issues.map(issue => issue.path.join('.')).join(', '));
 
     // 2. Mapping (GraphQL -> MongoDB)
 
-    const analysisId = new ObjectId(id);
+    const analysisOId = new ObjectId(id);
 
     try {
 
@@ -61,7 +66,7 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
 
         const textAnalysis = await db
             .collection<TextAnalysisEntity>('textAnalyses')
-            .findOne({ _id: analysisId })
+            .findOne({ _id: analysisOId });
 
         if (!textAnalysis)
             throw new TextAnalysisNotFoundError(`Text Analysis with id ${id} not found`);
@@ -83,10 +88,21 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
 
         return response;
 
-    } catch (error) {
+    } catch (error: unknown) {
 
-        logger.error('Error retrieving analysis:', error);
-        throw error;
+        if (error instanceof MongoError) {
+            logger.error('get-text-analysis-logic.ts: Database error ', error);
+            throw new DatabaseError('');
+        } else if (error instanceof Error) {
+            logger.error('get-text-analysis-logic.ts: ', {
+                message: error.message,
+                stack: error.stack
+            });
+            throw error;
+        } else {
+            logger.error('get-text-analysis-logic.ts: Unknown error ', error);
+            throw new Error('An unknown error occurred');
+        }
 
     }
 
