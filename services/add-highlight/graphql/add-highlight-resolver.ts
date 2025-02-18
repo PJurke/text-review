@@ -1,4 +1,4 @@
-import { GraphQLError, GraphQLResolveInfo } from 'graphql';
+import { graphql, GraphQLError, GraphQLResolveInfo } from 'graphql';
 import { ZodError } from 'zod';
 
 import Highlight from '@/types/Highlight';
@@ -6,6 +6,9 @@ import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFou
 import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
 import addHighlight from '../business-logic/add-highlight-logic';
 import logger from '@/lib/logger';
+import { ValidationError } from '@/services/shared/errors/ValidationError';
+import { TextAnalysisNotFoundError } from '@/services/shared/errors/TextAnalysisNotFoundError';
+import { DatabaseError } from '@/services/shared/errors/DatabaseError';
 
 export interface AddHighlightData {
     textAnalysisId: string;
@@ -30,30 +33,22 @@ export default async function addHighlightResolver(_parent: unknown, args: AddHi
             end: createdHighlight.end
         };
 
-    } catch (error) {
+    } catch(error: unknown) {
 
-        if (error instanceof TextDocumentNotFoundError) {
-            throw new GraphQLError('Text document not found', {
-                extensions: { code: 'TEXT_DOCUMENT_NOT_FOUND', details: error.message },
-            });
+        if (error instanceof ValidationError)
+            throw new GraphQLError(error.message, { extensions: { code: 'BAD_USER_INPUT', argumentName: error.field } });
+        else if (error instanceof TextAnalysisNotFoundError)
+            throw new GraphQLError(error.message, { extensions: { code: 'TEXT_ANALYSIS_NOT_FOUND' } });
+        else if (error instanceof TextDocumentNotFoundError)
+            throw new GraphQLError(error.message, { extensions: { code: 'TEXT_DOCUMENT_NOT_FOUND' } });
+        else if (error instanceof ParagraphNotFoundError)
+            throw new GraphQLError(error.message, { extensions: { code: 'PARAGRAPH_NOT_FOUND' } });
+        else if (error instanceof DatabaseError)
+            throw new GraphQLError('An internal server error occurred.', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
+        else {
+            logger.error('add-highlight-resolver.ts: ', error);
+            throw new GraphQLError('An unexpected error occurred', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
         }
-
-        if (error instanceof ParagraphNotFoundError) {
-            throw new GraphQLError('Paragraph not found', {
-                extensions: { code: 'PARAGRAPH_NOT_FOUND', details: error.message },
-            });
-        }
-
-        if (error instanceof ZodError) {
-            throw new GraphQLError('Invalid input', {
-                extensions: { code: 'INVALID_INPUT', details: error.errors },
-            });
-        }
-
-        logger.error('Error adding highlight:', error);
-        throw new GraphQLError('An unexpected error occurred', {
-            extensions: { code: 'INTERNAL_SERVER_ERROR' },
-        });
 
     }
 
