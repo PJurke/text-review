@@ -1,5 +1,4 @@
 import { GraphQLError, GraphQLResolveInfo } from "graphql";
-import { ZodError } from "zod";
 
 import logger from "@/lib/logger";
 

@@ -1,5 +1,4 @@
-import { graphql, GraphQLError, GraphQLResolveInfo } from 'graphql';
-import { ZodError } from 'zod';
+import { GraphQLError, GraphQLResolveInfo } from 'graphql';
 
 import Highlight from '@/types/Highlight';
 import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError";

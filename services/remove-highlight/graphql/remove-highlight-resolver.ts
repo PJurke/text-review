@@ -2,10 +2,8 @@ import { GraphQLError, GraphQLResolveInfo } from 'graphql';
 
 import removeHighlight from '../business-logic/remove-highlight-logic';
 
-import { TextDocumentNotFoundError } from '@/services/shared/errors/TextDocumentNotFoundError';
 import { ParagraphNotFoundError } from '@/services/shared/errors/ParagraphNotFoundError';
 import { HighlightNotFoundError } from '@/services/shared/errors/HighlightNotFoundError';
-import { ZodError } from 'zod';
 import logger from '@/lib/logger';
 import { ValidationError } from '@/services/shared/errors/ValidationError';
 import { TextAnalysisNotFoundError } from '@/services/shared/errors/TextAnalysisNotFoundError';
