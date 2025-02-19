@@ -5,6 +5,9 @@ type Query {
     """ Retrieve a text document by its ID. """
     textDocument(id: ID!): TextDocument
 
+    """ Retrieve a list of text documents """
+    textDocuments(): [TextDocumentSummary]
+
     """ Retrieve a text analysis by its ID. """
     textAnalysis(id: ID!): TextAnalysis
 
@@ -63,11 +66,18 @@ type Highlight {
 
 # ----- RESPONSE TYPES
 
+type CreateTextAnalysisResponse {
+    id: String
+}
+
 """ Response returned after removing a highlight. """
 type RemoveHighlightResponse {
     success: Boolean!
 }
 
-type CreateTextAnalysisResponse {
-    id: String
+""" A summary of a text document """
+type TextDocumentSummary {
+    id: ID!
+    title: String!
+    author: String
 }
