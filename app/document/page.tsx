@@ -1,5 +1,10 @@
 import listTextDocuments from "@/services/list-text-documents/business-logic/list-text-documents-logic";
 import TextDocumentItem from "./_components/TextDocumentItem";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'Text Review | List'
+};
 
 export default async function Page(): Promise<JSX.Element> {
 
