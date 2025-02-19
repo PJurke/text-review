@@ -11,6 +11,7 @@ import listTextDocumentsResolver from '@/services/list-text-documents/graphql/li
 export const resolvers: IResolvers = {
     Query: {
         textAnalysis: getTextAnalysisResolver,
+        
         textDocument: getTextDocumentResolver,
         textDocuments: listTextDocumentsResolver
     },

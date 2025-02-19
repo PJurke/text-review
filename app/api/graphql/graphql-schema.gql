@@ -6,7 +6,7 @@ type Query {
     textDocument(id: ID!): TextDocument
 
     """ Retrieve a list of text documents """
-    textDocuments(): [TextDocumentSummary]
+    textDocuments: [TextDocumentSummary]!
 
     """ Retrieve a text analysis by its ID. """
     textAnalysis(id: ID!): TextAnalysis
