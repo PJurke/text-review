@@ -6,11 +6,13 @@ import getTextDocumentResolver from '@/services/get-text-document/graphql/get-te
 import createTextAnalysis from '@/services/create-text-analysis/graphql/create-text-analysis-resolver';
 import addHighlightResolver from "@/services/add-highlight/graphql/add-highlight-resolver";
 import removeHighlightResolver from "@/services/remove-highlight/graphql/remove-highlight-resolver";
+import listTextDocumentsResolver from '@/services/list-text-documents/graphql/list-text-documents-resolver';
 
 export const resolvers: IResolvers = {
     Query: {
         textAnalysis: getTextAnalysisResolver,
-        textDocument: getTextDocumentResolver
+        textDocument: getTextDocumentResolver,
+        textDocuments: listTextDocumentsResolver
     },
     Mutation: {
         createTextAnalysis: createTextAnalysis,
