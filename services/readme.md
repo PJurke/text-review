@@ -10,6 +10,7 @@ React Service Hook <-> GraphQL Resolver <-> Business Logic
 - **Create Text Analysis** creates a new text based on a given text document
 - **Get Text Analysis** retrieves an existing text analysis
 - **Get Text Document** retrieves an existing text document
+- **List Text Documents** retrieves a list of all text documents
 - **Remove Highlight** removes a specific highlight of a text analysis document
 
 ## Errors
@@ -44,6 +45,11 @@ React Service Hook <-> GraphQL Resolver <-> Business Logic
 **Errors**
 - ValidationError
 - TextDocumentNotFoundError
+- DatabaseError
+
+### List Text Documents
+
+**Errors**
 - DatabaseError
 
 ### Remove Highlight
