@@ -24,6 +24,9 @@ type Mutation {
     """ Remove an existing highlight from a text analysis. """
     removeHighlight(textAnalysisId: ID!, paragraphId: ID!, highlightId: ID!): RemoveHighlightResponse!
 
+    """ Login and get a JWT for a session """
+    login(email: String!, password: String!): String!
+
 }
 
 # ----- MAIN TYPES
