@@ -1,9 +1,9 @@
+import { Metadata } from "next";
 import listTextDocuments from "@/services/list-text-documents/business-logic/list-text-documents-logic";
 import TextDocumentItem from "./_components/TextDocumentItem";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: 'Text Review | List'
+    title: 'Text Review | List of Texts'
 };
 
 export default async function Page(): Promise<JSX.Element> {
@@ -21,7 +21,9 @@ export default async function Page(): Promise<JSX.Element> {
 
             <ul className="mt-6">
                 { textDocumentSummaries.map(summary => 
-                    <TextDocumentItem key={summary.id} title={summary.title} id={summary.id} author={summary.author} />
+                    <li>
+                        <TextDocumentItem key={summary.id} title={summary.title} id={summary.id} author={summary.author} />
+                    </li>
                 )}
             </ul>
 

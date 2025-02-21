@@ -7,7 +7,6 @@ import { TextDocumentSummary } from "@/types/TextDocumentSummary";
 import { MongoError } from "mongodb";
 import { env } from "process";
 
-
 export default async function listTextDocuments(): Promise<TextDocumentSummary[]> {
 
     try {
