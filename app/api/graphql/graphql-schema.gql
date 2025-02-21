@@ -25,7 +25,7 @@ type Mutation {
     removeHighlight(textAnalysisId: ID!, paragraphId: ID!, highlightId: ID!): RemoveHighlightResponse!
 
     """ Login and get a JWT for a session """
-    login(email: String!, password: String!): String!
+    login(email: String!, password: String!): LoginResponse!
 
 }
 
@@ -76,6 +76,11 @@ type CreateTextAnalysisResponse {
 """ Response returned after removing a highlight. """
 type RemoveHighlightResponse {
     success: Boolean!
+}
+
+""" The generated JWT """
+type LoginResponse {
+    jwt: String!
 }
 
 """ A summary of a text document """

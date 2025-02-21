@@ -8,11 +8,18 @@ import { WrongCredentialsError } from "@/services/shared/errors/WrongCredentials
 
 interface Credentials extends Pick<User, 'email' | 'password'> {}
 
-export default async function listTextDocumentsResolver(_parent: unknown, args: Credentials, context: any, _info: GraphQLResolveInfo): Promise<string> {
+interface LoginResponse {
+    jwt: string
+}
+
+export default async function listTextDocumentsResolver(_parent: unknown, args: Credentials, context: any, _info: GraphQLResolveInfo): Promise<LoginResponse> {
     
     try {
 
-        return await login(args);        
+        const jwt = await login(args);
+        return {
+            jwt: jwt
+        };
 
     } catch(error) {
         
