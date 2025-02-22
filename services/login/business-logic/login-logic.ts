@@ -37,7 +37,7 @@ export default async function login(credential: Credentials): Promise<string> {
         const client = await clientPromise;
         const db = client.db(env.DB_NAME || 'text-review-db');
 
-        // 2. Get all text documents
+        // 2. Try to find a user with the given email and password
         
         const user = await db
             .collection<UserEntity>('users')
@@ -45,6 +45,8 @@ export default async function login(credential: Credentials): Promise<string> {
                 email: credential.email,
                 password: credential.password
             });
+
+        // 3. If there is no result, either the user is not registered or the password is wrong
 
         if (!user)
             throw new WrongCredentialsError('Email or password are wrong');
