@@ -5,9 +5,9 @@ export default function GoogleLoginComponent(): JSX.Element {
 
         <form action={async () => {
             "use server"
-            await signIn("google")}}
+            await signIn("google", { redirectTo: "/user"})}}
         >
-            <button type="submit">Signin with Google</button>
+            <button className="cursor-pointer" type="submit">Signin with Google</button>
         </form>
 
     );

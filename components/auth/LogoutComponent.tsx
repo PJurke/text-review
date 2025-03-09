@@ -7,7 +7,7 @@ export default function LogOut(): JSX.Element {
             "use server"
             await signOut({ redirectTo: '/'})
         }}>
-            <button type="submit">Sign Out</button>
+            <button className="cursor-pointer" type="submit">Sign Out</button>
         </form>
 
     );
