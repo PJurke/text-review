@@ -1,4 +1,4 @@
-import { MongoClient, MongoClientOptions } from 'mongodb'
+import { Db, MongoClient, MongoClientOptions } from 'mongodb'
 import logger from '@/lib/logger';
 
 declare global {
@@ -51,6 +51,11 @@ if (!globalThis._mongoClientPromise) {
 }
 
 const clientPromise: Promise<MongoClient> = globalThis._mongoClientPromise;
+
+export async function getDb(): Promise<Db> {
+    const client = await clientPromise;
+    return client.db(DB_NAME || 'text-review-db');
+}
 
 const gracefulShutdown = async () => {
     if (globalThis._mongoClientPromise) {
