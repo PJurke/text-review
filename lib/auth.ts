@@ -19,6 +19,9 @@ const client = await clientPromise;
 export const { handlers, signIn, signOut, auth } = NextAuth({
 
     adapter: MongoDBAdapter(client, { databaseName: env.DB_NAME || 'text-review-db' }),
-    providers: [Google]
+    providers: [Google],
+    pages: {
+        signIn: '/login'
+    }
 
 });
