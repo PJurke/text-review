@@ -10,8 +10,8 @@ export default function GoogleLoginComponent(): JSX.Element {
     return (
 
         <form action={signInWithGoogle} className="flex justify-center select-none">
-            <button className="bg-blue-600 hover:bg-blue-700 cursor-pointer font-bold mt-8 px-4 py-2 rounded text-white w-full max-w-xs" type="submit">
-                Sign in with Google
+            <button className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 cursor-pointer font-semibold p-3 rounded-lg text-white w-full" type="submit">
+                Log in with Google
             </button>
         </form>
 
