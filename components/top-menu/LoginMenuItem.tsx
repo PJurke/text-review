@@ -6,11 +6,11 @@ export default async function LoginMenuItem() {
 
     if (!session?.user) {
         return (
-            <a className="block p-3 hover:bg-gray-100" href="/login">Log in</a>
+            <a className="block p-3" href="/login">Log in</a>
         );
     }
 
     return (
-        <a className="block p-3 hover:bg-gray-100" href="/user">{ session.user.name || 'Account' }</a>
+        <a className="block p-3" href="/user">{ session.user.name || 'Account' }</a>
     );
 }
