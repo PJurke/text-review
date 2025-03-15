@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 
-export default async function LoginButton() {
+export default async function LoginMenuItem() {
     
     const session = await auth();
 
