@@ -11,6 +11,6 @@ export default async function LoginButton() {
     }
 
     return (
-        <a className="block p-3 hover:bg-gray-100" href="/user">{ session.user.name }</a>
+        <a className="block p-3 hover:bg-gray-100" href="/user">{ session.user.name || 'Account' }</a>
     );
 }
