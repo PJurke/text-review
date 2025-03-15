@@ -3,7 +3,7 @@ import listTextDocuments from "@/services/list-text-documents/business-logic/lis
 import TextDocumentItem from "./_components/TextDocumentItem";
 
 export const metadata: Metadata = {
-    title: 'Text Review | List of Texts'
+    title: 'Text Review | List of Documents'
 };
 
 export default async function Page(): Promise<JSX.Element> {
@@ -17,7 +17,7 @@ export default async function Page(): Promise<JSX.Element> {
     return (
         <section className="md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
             
-            <h1 className="text-3xl">List of Texts</h1>
+            <h1 className="text-3xl">List of Documents</h1>
 
             <ul className="mt-6">
                 { textDocumentSummaries.map(summary => 
