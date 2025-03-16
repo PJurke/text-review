@@ -21,8 +21,8 @@ export default async function Page(): Promise<JSX.Element> {
 
             <ul className="mt-6">
                 { textDocumentSummaries.map(summary => 
-                    <li>
-                        <TextDocumentItem key={summary.id} title={summary.title} id={summary.id} author={summary.author} />
+                    <li key={summary.id}>
+                        <TextDocumentItem title={summary.title} id={summary.id} author={summary.author} />
                     </li>
                 )}
             </ul>

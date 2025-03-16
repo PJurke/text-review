@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 
 export default async function LoginMenuItem() {
@@ -6,11 +7,11 @@ export default async function LoginMenuItem() {
 
     if (!session?.user) {
         return (
-            <a className="block p-3" href="/login">Log in</a>
+            <Link className="block p-3" href="/login">Log in</Link>
         );
     }
 
     return (
-        <a className="block p-3" href="/user">{ session.user.name || 'Account' }</a>
+        <Link className="block p-3" href="/user">{ session.user.name || 'Account' }</Link>
     );
 }
