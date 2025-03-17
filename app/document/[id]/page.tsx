@@ -3,7 +3,6 @@
 import { useParams } from 'next/navigation';
 import TextDocumentComponent from './_components/TextDocumentComponent';
 import { ErrorOverlayProvider } from '@/components/ErrorOverlay/error-overlay-context';
-import CreateTextAnalysisButton from './_components/CreateTextAnalysisButton';
 
 export default function Page(): JSX.Element {
 
@@ -16,7 +15,7 @@ export default function Page(): JSX.Element {
     return (
         <ErrorOverlayProvider>
             <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
-                <CreateTextAnalysisButton id={id}/>
+                {/*<CreateTextAnalysisButton id={id}/>*/}
                 <TextDocumentComponent id={id} />
             </section>
         </ErrorOverlayProvider>
