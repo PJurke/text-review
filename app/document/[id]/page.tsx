@@ -41,7 +41,7 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
             {/*<CreateTextAnalysisButton id={id}/>*/}
             
             <h1 className="text-3xl">{textDocument.title}</h1>
-            <div className="text-neutral-500">by {textDocument.author}</div>
+            <div className="text-neutral-600">by {textDocument.author}</div>
 
             { textDocument.paragraphs.map(paragraph =>
                 <ParagraphComponent key={paragraph.id} text={paragraph.text} />

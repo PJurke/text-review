@@ -11,7 +11,7 @@ export default function TextDocumentItem({ id, title, author }: TextDocumentSumm
                 <h2 className="text-xl">{title}</h2>
 
                 <Show when={!!author}>
-                    <div className="text-neutral-500 text-sm">by {author}</div>
+                    <div className="text-neutral-600 text-sm">by {author}</div>
                 </Show>
 
             </Link>
