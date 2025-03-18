@@ -8,7 +8,7 @@ export default function InvalidIdMessage(): JSX.Element {
                 alt: 'ID Invalid',
                 url: '/id-invalid.png'
             }}
-            title='Text Document ID invalid'
+            title='Text Document ID Invalid'
             message='Each document is identified by a unique id. The given document id is invalid.'
             action={{
                 label: 'Search for Documents',

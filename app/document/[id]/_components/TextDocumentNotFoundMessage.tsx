@@ -12,7 +12,7 @@ export default function TextDocumentNotFoundMessage(): JSX.Element {
             message='A text document with the given ID could not be found.'
             action={{
                 label: 'Search for Documents',
-                url: '/'
+                url: '/document'
             }}
         />
     );

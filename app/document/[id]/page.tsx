@@ -1,23 +1,51 @@
-'use client';
+import { TextDocumentSchema } from '@/types/TextDocument';
+import InvalidIdMessage from './_components/InvalidIdMessage';
+import getTextDocument from '@/services/get-text-document/business-logic/get-text-document-logic';
+import ParagraphComponent from './_components/ParagraphComponent';
+import TextDocumentNotFoundMessage from './_components/TextDocumentNotFoundMessage';
+import InternalErrorMessage from '@/components/errors/InternalErrorMessage';
+import { TextDocumentNotFoundError } from '@/services/shared/errors/TextDocumentNotFoundError';
 
-import { useParams } from 'next/navigation';
-import TextDocumentComponent from './_components/TextDocumentComponent';
-import { ErrorOverlayProvider } from '@/components/ErrorOverlay/error-overlay-context';
+interface PageProps {
+    params: { id: string }
+};
 
-export default function Page(): JSX.Element {
+export default async function Page({ params }: PageProps): Promise<JSX.Element> {
 
     // 1. Extract id from url
-    
-    const { id } = useParams<{ id: string }>();
 
-    // 2. Render TextDocument component
+    const { id } = await params;
+
+    // 2. Validate text analysis id
+        
+    const parseResult = TextDocumentSchema.shape.id.safeParse(id);
+    if (parseResult.error) return <InvalidIdMessage />
+
+    // 3. Get text document from db
+    
+    let textDocument;
+    
+    try {
+        textDocument = await getTextDocument(parseResult.data);
+    } catch (error) {
+        if (error instanceof TextDocumentNotFoundError) return <TextDocumentNotFoundMessage />;
+        return <InternalErrorMessage />;
+    }
+
+    if (!textDocument) return <TextDocumentNotFoundMessage />
+
+    // 4. Render paragraphs
 
     return (
-        <ErrorOverlayProvider>
-            <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
-                {/*<CreateTextAnalysisButton id={id}/>*/}
-                <TextDocumentComponent id={id} />
-            </section>
-        </ErrorOverlayProvider>
+        <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
+            {/*<CreateTextAnalysisButton id={id}/>*/}
+            
+            <h1 className="text-3xl">{textDocument.title}</h1>
+            <div className="text-neutral-500">by {textDocument.author}</div>
+
+            { textDocument.paragraphs.map(paragraph =>
+                <ParagraphComponent key={paragraph.id} text={paragraph.text} />
+            )}
+        </section>
     );
 }

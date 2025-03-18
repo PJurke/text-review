@@ -48,7 +48,9 @@ export default async function getTextDocument(id: string): Promise<TextDocument>
 
     } catch(error: unknown) {
 
-        if (error instanceof MongoError) {
+        if (error instanceof TextDocumentNotFoundError) {
+            throw error;
+        } else if (error instanceof MongoError) {
             logger.error('get-text-document-logic.ts: Database error ', error);
             throw new DatabaseError('An internal server error occurred');
         } else if (error instanceof Error) {
