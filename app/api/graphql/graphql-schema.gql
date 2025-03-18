@@ -8,23 +8,23 @@ type Query {
     """ Retrieve a list of text documents """
     textDocuments: [TextDocumentSummary]!
 
-    """ Retrieve a text analysis by its ID. """
-    textAnalysis(id: ID!): TextAnalysis
+    #""" Retrieve a text analysis by its ID. """
+    # textAnalysis(id: ID!): TextAnalysis
 
 }
 
-type Mutation {
+#type Mutation {
 
-    """ Create a new text analysis based on an existing text document. """
-    createTextAnalysis(textDocumentId: ID!): CreateTextAnalysisResponse!
+    #""" Create a new text analysis based on an existing text document. """
+    # createTextAnalysis(textDocumentId: ID!): CreateTextAnalysisResponse!
 
-    """ Add a highlight to a text analysis. """
-    addHighlight(textAnalysisId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
+    #""" Add a highlight to a text analysis. """
+    # addHighlight(textAnalysisId: ID!, paragraphId: ID!, start: Int!, end: Int!): Highlight
 
-    """ Remove an existing highlight from a text analysis. """
-    removeHighlight(textAnalysisId: ID!, paragraphId: ID!, highlightId: ID!): RemoveHighlightResponse!
+    #""" Remove an existing highlight from a text analysis. """
+    # removeHighlight(textAnalysisId: ID!, paragraphId: ID!, highlightId: ID!): RemoveHighlightResponse!
 
-}
+#}
 
 # ----- MAIN TYPES
 
