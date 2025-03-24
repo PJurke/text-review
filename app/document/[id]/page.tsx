@@ -1,4 +1,4 @@
-import { TextDocumentSchema } from '@/types/TextDocument';
+import TextDocument, { TextDocumentSchema } from '@/types/TextDocument';
 import InvalidIdMessage from './_components/InvalidIdMessage';
 import getTextDocument from '@/services/get-text-document/business-logic/get-text-document-logic';
 import ParagraphComponent from './_components/ParagraphComponent';
@@ -23,7 +23,7 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
 
     // 3. Get text document from db
     
-    let textDocument;
+    let textDocument: TextDocument;
     
     try {
         textDocument = await getTextDocument(parseResult.data);

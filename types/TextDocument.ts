@@ -9,7 +9,7 @@ export default interface TextDocument {
 }
 
 export const TextDocumentSchema = z.object({
-    id: z.string().refine((value) => /^[0-9a-fA-F]{24}$/.test(value), 'The id of a text document must be a valid object id'),
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'The id of a text document must be a valid object id'),
     title: z.string(),
     author: z.string(),
     paragraphs: z.array(ParagraphSchema),
