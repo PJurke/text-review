@@ -7,7 +7,7 @@ interface MenuToggleButtonProps {
 
 export default function TopMenuToggleButton({ isOpen, toggleMenu }: MenuToggleButtonProps): JSX.Element {
 
-    let icon = isOpen ? '/close-icon.svg' : '/hamburger-icon.svg';
+    const icon = isOpen ? '/close-icon.svg' : '/hamburger-icon.svg';
 
     return (
         <button

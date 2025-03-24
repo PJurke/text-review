@@ -9,11 +9,7 @@ import { TextDocumentNotFoundError } from '@/services/shared/errors/TextDocument
 // Cache the specific page for 7 days
 export const revalidate = 10080;
 
-interface PageProps {
-    params: { id: string }
-};
-
-export default async function Page({ params }: PageProps): Promise<JSX.Element> {
+export default async function Page({ params }: { params: Promise<{ id: string }> }): Promise<JSX.Element> {
 
     // 1. Extract id from url
 
