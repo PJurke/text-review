@@ -6,6 +6,9 @@ import TextDocumentNotFoundMessage from './_components/TextDocumentNotFoundMessa
 import InternalErrorMessage from '@/components/errors/InternalErrorMessage';
 import { TextDocumentNotFoundError } from '@/services/shared/errors/TextDocumentNotFoundError';
 
+// Cache the specific page for 7 days
+export const revalidate = 10080;
+
 interface PageProps {
     params: { id: string }
 };
