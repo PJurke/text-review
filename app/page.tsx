@@ -1,3 +1,5 @@
+import FunctionCard from "./_components/FunctionCard";
+
 export default function Home() {
   return (
     <div className="flex flex-col h-screen">
@@ -13,6 +15,14 @@ export default function Home() {
           Those who question can really help shape things. <br className="hidden sm:inline" />
           I have developed Text Review to help you do this.
         </p>
+      </section>
+
+      <section>
+        <div>
+          <FunctionCard image={{ alt: "", src: "/hamburger-icon.svg" }} title="Offizielle Texte" description="Wir holen Texte von offiziellen Quellen und sammeln sie hier." />
+          <FunctionCard image={{ alt: "", src: "/hamburger-icon.svg" }} title="Abschnitte hervorheben" description="Hebe für dich wichtige Textstellen hervor." />
+          <FunctionCard image={{ alt: "", src: "/hamburger-icon.svg" }} title="Kommentieren" description="Um deine Gedanken festzuhalten kannst du Textstellen kommentieren." />
+        </div>
       </section>
 
     </div>
