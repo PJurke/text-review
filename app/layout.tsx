@@ -6,21 +6,26 @@ import TopMenu from "@/components/top-menu/TopMenu";
 import Footer from "@/components/footer/Footer";
 
 export const metadata: Metadata = {
-  title: "Text Review"
+    title: "Text Review"
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 
-  return (
-    <html lang="en">
-      <body>
-        <Providers>
-          <TopMenu />
-          
-          {children}
-          <Footer />
-        </Providers>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+        <body>
+            <Providers>
+                <header>
+                    <TopMenu />
+                </header>
+                <main>
+                    {children}
+                </main>
+                <footer>
+                    <Footer />
+                </footer>
+            </Providers>
+        </body>
+        </html>
+    );
 }
