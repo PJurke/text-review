@@ -10,13 +10,11 @@ export default function TopMenu(): JSX.Element {
     const toggleMenu = () => setIsOpen(prev => !prev);
 
     return (
-        <nav aria-label="Main Navigation" className="backdrop-blur-md bg-white/75 sticky top-0">
-            <div className="flex flex-col sm:flex-row  gap-x-4 justify-center">
+        <nav aria-label="Main Navigation" className="backdrop-blur-md bg-white/75 flex flex-col sm:flex-row justify-center gap-x-4 sticky top-0">
 
-                <TopMenuToggleButton isOpen={isOpen} toggleMenu={toggleMenu} />
-                <TopMenuItems isOpen={isOpen} />
+            <TopMenuToggleButton isOpen={isOpen} toggleMenu={toggleMenu} />
+            <TopMenuItems isOpen={isOpen} />
                 
-            </div>
         </nav>
     );
 
