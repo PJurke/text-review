@@ -6,7 +6,11 @@ import TopMenu from "@/components/top-menu/TopMenu";
 import Footer from "@/components/footer/Footer";
 
 export const metadata: Metadata = {
-    title: "Text Review"
+  keywords: [ "comments", "document analysis", "highlighting", "official texts", "text analysis", "text review" ],
+  title: {
+    default: "Text Review",
+    template: "%s | Text Review"
+  }
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

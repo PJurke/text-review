@@ -15,7 +15,7 @@ export default async function Page(): Promise<JSX.Element> {
     // 2. Render
 
     return (
-        <section className="md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
+        <section className="md:max-w-[75ch] mx-auto p-4 pb-12 text-wrap transition-[max-width]">
             
             <h1 className="text-3xl">List of Documents</h1>
 
