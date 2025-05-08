@@ -1,5 +1,3 @@
-import FeatureSection from "./_components/FeatureSection";
-
 export default function Home() {
 
   return (
