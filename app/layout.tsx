@@ -6,6 +6,7 @@ import TopMenu from "@/components/top-menu/TopMenu";
 import Footer from "@/components/footer/Footer";
 
 export const metadata: Metadata = {
+  keywords: [ "comments", "document analysis", "highlighting", "official texts", "text analysis", "text review" ],
   title: {
     default: "Text Review",
     template: "%s | Text Review"
