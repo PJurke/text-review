@@ -3,7 +3,7 @@ import listTextDocuments from "@/services/list-text-documents/business-logic/lis
 import TextDocumentItem from "./_components/TextDocumentItem";
 
 export const metadata: Metadata = {
-    title: 'Text Review | List of Documents'
+    title: 'List of Documents'
 };
 
 export default async function Page(): Promise<JSX.Element> {
