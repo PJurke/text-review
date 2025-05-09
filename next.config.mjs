@@ -6,7 +6,8 @@ const nextConfig = {
                 hostname: '*.googleusercontent.com'
             }
         ]
-    }
+    },
+    output: 'standalone'
 };
 
 export default nextConfig;
