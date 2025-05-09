@@ -1,0 +1,143 @@
+name: Build & Push Text Review Docker Image to GHCR
+
+on:
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: "Deployment target (dev or prod)"
+                required: true
+                default: "dev"
+                type: choice
+                options:
+                    - dev
+                    - prod
+    push:
+        branches:
+            - main
+            - dev
+
+jobs:
+    build-and-push:
+        # Dynamic job name based on the environment
+        name: Build and Push text-review-${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || (github.ref == 'refs/heads/dev' && 'dev' || 'dev')) }} to GHCR
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: read    # To check out the repository code
+            packages: write   # To push the Docker image
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Determine Environment
+              id: set_env
+              run: |
+                TARGET_ENV=""
+                if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+                    TARGET_ENV="${{ github.event.inputs.environment }}"
+                elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+                    TARGET_ENV="prod"
+                elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+                    TARGET_ENV="dev"
+                else
+                    # Fallback for other branches if ‘push’ would be triggered for all branches
+                    # or if you want a different default value for unmatched branches
+                    echo "Warning: Branch not explicitly mapped to an environment. Defaulting to ‘dev’."
+                    TARGET_ENV="dev" 
+                fi
+                echo "environment=${TARGET_ENV}" >> $GITHUB_OUTPUT
+                shell: bash
+
+            - name: Lowercase Repository Owner
+              id: case_owner
+              # Converts the repository owner to lowercase if necessary for GHCR image paths
+              run: echo "repository_owner_lc=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+              shell: bash
+              
+            - name: Set up Docker Buildx
+              # Sets up Docker Buildx to use advanced build functions
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to GitHub Container Registry (GHCR)
+              # Log in to GHCR to be able to push images
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }} # The GitHub user who executes the action
+                password: ${{ secrets.GHCR_TOKEN }} # A PAT with 'write:packages' authorization
+
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                # Image naming convention: ghcr.io/OWNER/text-review-ENVIRONMENT
+                images: ghcr.io/${{ steps.case_owner.outputs.repository_owner_lc }}/text-review-${{ steps.set_env.outputs.environment }}
+                tags: |
+                    # Unique tag based on the commit SHA: e.g. sha-a1b2c3d
+                    type=sha,prefix=sha-
+                    # Tag that corresponds to the environment: 'dev' or 'prod'
+                    type=raw,value=${{ steps.set_env.outputs.environment }}
+                    # 'latest' tag only for production builds (if environment is 'prod')
+                    type=raw,value=latest,enable=${{ steps.set_env.outputs.environment == 'prod' }}
+
+            - name: Build and push Docker image
+              id: build_push
+              uses: docker/build-push-action@v5
+              with:
+                context: . # Uses the current directory as build context (where the Dockerfile is located)
+                # IMPORTANT: Adapt ‘platforms’ to the CPU architecture of your server!
+                # Your server v220... is probably ARM64 (linux/arm64).
+                # For x86-64 (Intel/AMD) servers: linux/amd64.
+                # If not specified, the architecture of the runner is used.
+                platforms: linux/arm64 # Example for ARM64
+                push: true # Pushes the image after the build
+                tags: ${{ steps.meta.outputs.tags }} # Uses the tags defined above
+                labels: ${{ steps.meta.outputs.labels }} # Uses the labels defined above
+                # Activates build cache via GHCR to speed up subsequent builds
+                cache-from: type=registry,ref=ghcr.io/${{ steps.case_owner.outputs.repository_owner_lc }}/text-review-${{ steps.set_env.outputs.environment }}:buildcache
+                cache-to: type=registry,ref=ghcr.io/${{ steps.case_owner.outputs.repository_owner_lc }}/text-review-${{ steps.set_env.outputs.environment }}:buildcache,mode=max
+
+            - name: Deploy to server via SSH
+              if: success() # Executes this step only if all previous steps were successful
+              uses: appleboy/ssh-action@v1.0.3 # Use of a stable version of the SSH action
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USER }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                port: ${{ secrets.SSH_PORT }}
+                script: |
+                    set -e # Aborts the script immediately in the event of errors
+    
+                    echo "===== DEPLOYMENT SCRIPT START ====="
+                    echo "Deployment Target Environment: ${{ steps.set_env.outputs.environment }}"
+                    
+                    echo "Logging in to GHCR on server..."
+                    echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+                    echo "GHCR login successful."
+    
+                    echo "Navigating to Docker Compose directory: /srv/reverse-proxy"
+                    cd /srv/reverse-proxy
+                    echo "Current directory: $(pwd)"
+    
+                    # Defines the service name based on the environment
+                    SERVICE_NAME="text-review-${{ steps.set_env.outputs.environment }}"
+                    echo "Target Docker Compose service: ${SERVICE_NAME}"
+    
+                    echo "Pulling latest image for service: ${SERVICE_NAME}"
+                    docker compose pull ${SERVICE_NAME}
+                    echo "Image pull complete."
+    
+                    echo "Updating service (docker compose up -d --no-deps): ${SERVICE_NAME}"
+                    # --no-deps: Ensures that only the specified service is updated
+                    # and not its dependencies (such as the database).
+                    # --remove-orphans: Removes containers for services that no longer exist (optional).
+                    docker compose up -d --no-deps ${SERVICE_NAME} # --remove-orphans
+                    echo "Service update initiated."
+    
+                    echo "Pruning unused Docker images..."
+                    # -a: All unused images (not just dangling)
+                    # -f: No confirmation required
+                    docker image prune -af
+                    echo "Image prune complete."
+                    echo "===== DEPLOYMENT SCRIPT END ====="
