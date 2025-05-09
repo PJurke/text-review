@@ -47,7 +47,7 @@ jobs:
                     TARGET_ENV="dev" 
                 fi
                 echo "environment=${TARGET_ENV}" >> $GITHUB_OUTPUT
-                shell: bash
+              shell: bash
 
             - name: Lowercase Repository Owner
               id: case_owner
