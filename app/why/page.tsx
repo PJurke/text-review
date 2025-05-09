@@ -16,7 +16,7 @@ export default function WhyPage(): JSX.Element {
             </p>
 
             <p className="leading-9 mt-8 text-lg">
-                That's why I centralize texts from various official sources in one place for you,
+                That&apos;s why I centralize texts from various official sources in one place for you,
                 have them automatically translated into your language and provide you with
                 intuitive tools with which you can access the content in a focused and individual way.
             </p>
