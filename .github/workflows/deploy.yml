@@ -88,6 +88,13 @@ jobs:
                 script: |
                   set -e # Aborts immediately in case of errors
 
+                  # --- Known hosts setup
+                  echo "Adding GitHub.com key to known_hosts..."
+                  mkdir -p ~/.ssh
+                  touch ~/.ssh/known_hosts
+                  ssh-keyscan github.com >> ~/.ssh/known_hosts
+                  echo "GitHub key added."
+
                   # --- Configuration from previous step ---
                   COMPOSE_FILE="/srv/reverse-proxy/docker-compose.yml"
                   CODE_DIR="${{ steps.set_env.outputs.code_dir }}"
