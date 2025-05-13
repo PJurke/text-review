@@ -10,6 +10,12 @@ COPY package*.json ./
 RUN npm ci
 
 # ----- STEP 3: Build the application
+
+# Arguments handed out by docker compose
+ARG MONGODB_URI_BUILD_ARG
+ARG DB_NAME_BUILD_ARG
+ARG NEXT_PUBLIC_GRAPHQL_ENDPOINT_BUILD_ARG
+
 FROM base AS builder
 WORKDIR /app
 
