@@ -112,6 +112,10 @@ jobs:
                   echo "Compose File: ${COMPOSE_FILE}"
                   echo "Repository URL: ${REPO_URL}"
 
+                  echo "Configuring git safe.directory for ${CODE_DIR}..."
+                  git config --global --add safe.directory ${CODE_DIR}
+                  echo "Git safe.directory configured."
+
                   # Change to the code directory
                   echo "Navigating to target directory: ${CODE_DIR}"
                   cd ${CODE_DIR}
