@@ -19,23 +19,14 @@ on:
 jobs:
     deploy-text-review:
         # Dynamic job name based on the environment
-        name: Deploy Text-Review to ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || (github.ref == 'refs/heads/dev' && 'dev' || 'dev')) }} Server
+        name: Deploy Text-Review to ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || (github.ref == 'refs/heads/main' && 'prod') || (github.ref == 'refs/heads/dev' && 'dev') }} Server
         runs-on: ubuntu-latest
 
-        permissions:
-            contents: read    # To check out the repository code
-
         steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-
-            - name: Determine Environment & Paths
+            - name: Step 1 - Determine Target Environment
               id: set_env
               run: |
                 TARGET_ENV=""
-                BRANCH_NAME=""
-                CODE_DIR=""
-                SERVICE_NAME=""
 
                 # Derive environment from manual trigger or branch name
                 if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -45,42 +36,17 @@ jobs:
                 elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
                   TARGET_ENV="dev"
                 else
-                  # Push to other branches: error and abort
-                  echo "::error::Unsupported trigger branch: ${{ github.ref }}. Aborting."
+                  echo "::error::Nicht unterstützte Trigger-Quelle: ${{ github.ref_name }} durch ${{ github.event_name }}. Abbruch."
                   exit 1
                 fi
 
-                # Set variables based on the environment
-                if [[ "${TARGET_ENV}" == "prod" ]]; then
-                  BRANCH_NAME="main"
-                  CODE_DIR="/srv/text-review-prod"
-                  SERVICE_NAME="text-review-prod"
-                elif [[ "${TARGET_ENV}" == "dev" ]]; then
-                  BRANCH_NAME="dev"
-                  CODE_DIR="/srv/text-review-dev"
-                  SERVICE_NAME="text-review-dev"
-                else
-                  # Sollte nicht passieren, aber sicher ist sicher
-                  echo "::error::Invalid TARGET_ENV determined. Aborting."
-                  exit 1
-                fi
-
-                # Make values available for later steps
                 echo "environment=${TARGET_ENV}" >> $GITHUB_OUTPUT
-                echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-                echo "code_dir=${CODE_DIR}" >> $GITHUB_OUTPUT
-                echo "service_name=${SERVICE_NAME}" >> $GITHUB_OUTPUT
-
               shell: bash
 
-            # Step 3: Deploy to server via SSH (get & build code)
-            - name: Deploy to Server via SSH, Pull Code & Build
-              # Only execute if previous steps were successful
+            - name: Step 2 - Deploy to Server via SSH, Execute Deployment Script
               if: success()
-              # Predefined action for SSH connections
               uses: appleboy/ssh-action@v1.0.3
               with:
-                # Get SSH connection data from GitHub Secrets
                 host: ${{ secrets.SSH_HOST }}
                 username: ${{ secrets.SSH_USER }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -88,73 +54,9 @@ jobs:
                 script: |
                   set -e # Aborts immediately in case of errors
 
-                  # --- Known hosts setup
-                  echo "Adding GitHub.com key to known_hosts..."
-                  mkdir -p ~/.ssh
-                  touch ~/.ssh/known_hosts
-                  ssh-keyscan github.com >> ~/.ssh/known_hosts
-                  echo "GitHub key added."
+                  DEPLOY_SCRIPT_PATH="/srv/textreview/deploy.sh"
+                  TARGET_ENV_FROM_WORKFLOW="${{ steps.set_env.outputs.environment }}"
 
-                  # --- Configuration from previous step ---
-                  COMPOSE_FILE="/srv/reverse-proxy/docker-compose.yml"
-                  CODE_DIR="${{ steps.set_env.outputs.code_dir }}"
-                  BRANCH="${{ steps.set_env.outputs.branch }}"
-                  SERVICE_NAME="${{ steps.set_env.outputs.service_name }}"
-
-                  # SSH URL of your repository (make sure that the SSH key has access!)
-                  REPO_URL="git@github.com:${{ github.repository }}.git"
-
-                  echo "===== DEPLOYMENT SCRIPT FOR TEXT-REVIEW (${{ steps.set_env.outputs.environment }}) START ====="
-                  echo "Target Environment: ${{ steps.set_env.outputs.environment }}"
-                  echo "Target Service: ${SERVICE_NAME}"
-                  echo "Source Code Directory: ${CODE_DIR}"
-                  echo "Target Branch: ${BRANCH}"
-                  echo "Compose File: ${COMPOSE_FILE}"
-                  echo "Repository URL: ${REPO_URL}"
-
-                  echo "Configuring git safe.directory for ${CODE_DIR}..."
-                  git config --global --add safe.directory ${CODE_DIR}
-                  echo "Git safe.directory configured."
-
-                  # Change to the code directory
-                  echo "Navigating to target directory: ${CODE_DIR}"
-                  cd ${CODE_DIR}
-                  echo "Current directory: $(pwd)"
-
-                  # Check whether repo is already cloned, otherwise clone
-                  if [ ! -d ".git" ]; then
-                    echo "First deployment detected. Cloning repository (${BRANCH} branch)..."
-                    # IMPORTANT: The SSH key (from secrets.SSH_PRIVATE_KEY) of the user (secrets.SSH_USER)
-                    # must have read access to the GitHub repo ${REPO_URL}!
-                    # It is best to set up a deploy key in the GitHub repo for this SSH key.
-                    git clone --branch ${BRANCH} ${REPO_URL} .
-                  else
-                    # Repo exists, so update
-                    echo "Updating existing repository..."
-                    # Ensure that the correct branch is active
-                    echo "Checking out branch ${BRANCH}..."
-                    git checkout ${BRANCH}
-                    
-                    # Optional, but safer for automation: Discard local changes
-                    # echo "Resetting local changes (git reset --hard)..."
-                    # git reset --hard HEAD
-
-                    # Get the latest code from the corresponding branch
-                    echo "Pulling latest code from origin/${BRANCH}..."
-                    git pull origin ${BRANCH}
-                  fi
-                  echo "Source code updated successfully."
-
-                  echo "Running Docker Compose build and restart for service ${SERVICE_NAME}..."
-                  # Explicitly specify the compose file (-f)
-                  # --build: Rebuilds the image for the service (uses build context from compose file)
-                  # --remove-orphans: Removes old containers if services have been renamed/removed
-                  # ${SERVICE_NAME}: Ensures that ONLY this service is built & restarted
-                  docker compose -f ${COMPOSE_FILE} up -d --build --remove-orphans ${SERVICE_NAME}
-                  echo "Docker Compose command executed."
-
-                  echo "Pruning unused Docker images (optional)..."
-                  docker image prune -af
-                  echo "Image prune complete."
-
-                  echo "===== DEPLOYMENT SCRIPT END ====="
+                  echo "Execute deployment script on server for TARGET_ENV=${TARGET_ENV_FROM_WORKFLOW}..."
+                  ${DEPLOY_SCRIPT_PATH} "${TARGET_ENV_FROM_WORKFLOW}"
+                  echo "Execution of the deployment script completed."
