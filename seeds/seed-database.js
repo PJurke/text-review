@@ -17,10 +17,10 @@ if (fs.existsSync('.env.local')) {
 
 async function seedDatabase() {
 
-    const { MONGODB_URI, DB_NAME } = process.env;
+    const { MONGODB_URI, MONGODB_DATABASE_NAME } = process.env;
 
-    if (!MONGODB_URI || !DB_NAME) {
-        console.error('MONGODB_URI and DB_NAME environment variables is not set');
+    if (!MONGODB_URI || !MONGODB_DATABASE_NAME) {
+        console.error('MONGODB_URI and MONGODB_DATABASE_NAME environment variables is not set');
         return;
     }
 
@@ -29,7 +29,7 @@ async function seedDatabase() {
     try {
         await client.connect();
         
-        const db = client.db(DB_NAME);
+        const db = client.db(MONGODB_DATABASE_NAME);
 
         const documentCollection = db.collection("textDocuments");
         const textAnalysesCollection = db.collection("textAnalyses");

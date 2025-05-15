@@ -6,16 +6,16 @@ declare global {
     var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-const { MONGODB_URI, DB_NAME } = process.env;
+const { MONGODB_URI, MONGODB_DATABASE_NAME } = process.env;
 
 if (!MONGODB_URI) {
     logger.error('MONGODB_URI environment variable is not set');
     throw new Error('Please add the MONGODB_URI variable to your environmental variables.');
 }
 
-if (!DB_NAME) {
-    logger.error('DB_NAME environment variable is not set');
-    throw new Error('Please add the DB_NAME variable to your environmental variables.');
+if (!MONGODB_DATABASE_NAME) {
+    logger.error('MONGODB_DATABASE_NAME environment variable is not set');
+    throw new Error('Please add the MONGODB_DATABASE_NAME variable to your environmental variables.');
 }
 
 const defaultOptions: MongoClientOptions = {
@@ -54,7 +54,7 @@ const clientPromise: Promise<MongoClient> = globalThis._mongoClientPromise;
 
 export async function getDb(): Promise<Db> {
     const client = await clientPromise;
-    return client.db(DB_NAME || 'text-review-db');
+    return client.db(MONGODB_DATABASE_NAME || 'text-review-db');
 }
 
 const gracefulShutdown = async () => {

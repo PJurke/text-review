@@ -14,7 +14,7 @@ export default async function listTextDocuments(): Promise<TextDocumentSummary[]
         // 1. Establish database connection
 
         const client = await clientPromise;
-        const db = client.db(env.DB_NAME || 'text-review-db');
+        const db = client.db(env.MONGODB_DATABASE_NAME || 'text-review-db');
 
         // 2. Get all text documents
         

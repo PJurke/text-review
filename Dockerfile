@@ -13,7 +13,7 @@ RUN npm ci
 
 # Arguments handed out by docker compose
 ARG MONGODB_URI
-ARG DB_NAME
+ARG MONGODB_DATABASE_NAME
 ARG GRAPHQL_ENDPOINT
 
 FROM base AS builder

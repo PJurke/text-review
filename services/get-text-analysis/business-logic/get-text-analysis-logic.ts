@@ -60,7 +60,7 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
         // 3. Establish database connection
 
         const client = await clientPromise
-        const db = client.db(env.DB_NAME || 'text-review-db')
+        const db = client.db(env.MONGODB_DATABASE_NAME || 'text-review-db')
 
         // 4. Check if referred TextAnalysis exists
 
