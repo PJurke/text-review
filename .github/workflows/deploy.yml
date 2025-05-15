@@ -1,62 +1,28 @@
-name: Deploy Text-Review (Build on Server)
+name: Deploy Text-Review to Production (Build on Server)
 
 on:
-    workflow_dispatch:
-        inputs:
-            environment:
-                description: "Deployment target (dev or prod)"
-                required: true
-                default: "dev"
-                type: choice
-                options:
-                    - dev
-                    - prod
-    push:
-        branches:
-            - main
-            - dev
+  push:
+    branches:
+      - main
 
 jobs:
-    deploy-text-review:
-        # Dynamic job name based on the environment
-        name: Deploy Text-Review to ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || (github.ref == 'refs/heads/main' && 'prod') || (github.ref == 'refs/heads/dev' && 'dev') }} Server
-        runs-on: ubuntu-latest
+  deploy-text-review-to-prod:
 
-        steps:
-            - name: Step 1 - Determine Target Environment
-              id: set_env
-              run: |
-                TARGET_ENV=""
+    name: Deploy Text-Review to Production Server via SSH
+    runs-on: ubuntu-latest
 
-                # Derive environment from manual trigger or branch name
-                if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-                  TARGET_ENV="${{ github.event.inputs.environment }}"
-                elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-                  TARGET_ENV="prod"
-                elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-                  TARGET_ENV="dev"
-                else
-                  echo "::error::Nicht unterstützte Trigger-Quelle: ${{ github.ref_name }} durch ${{ github.event_name }}. Abbruch."
-                  exit 1
-                fi
+    steps:
+      - name: Deploy to Production Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
 
-                echo "environment=${TARGET_ENV}" >> $GITHUB_OUTPUT
-              shell: bash
-
-            - name: Step 2 - Deploy to Server via SSH, Execute Deployment Script
-              if: success()
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                host: ${{ secrets.SSH_HOST }}
-                username: ${{ secrets.SSH_USER }}
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
-                port: ${{ secrets.SSH_PORT }}
-                script: |
-                  set -e # Aborts immediately in case of errors
-
-                  DEPLOY_SCRIPT_PATH="/srv/textreview/deploy.sh"
-                  TARGET_ENV_FROM_WORKFLOW="${{ steps.set_env.outputs.environment }}"
-
-                  echo "Execute deployment script on server for TARGET_ENV=${TARGET_ENV_FROM_WORKFLOW}..."
-                  ${DEPLOY_SCRIPT_PATH} "${TARGET_ENV_FROM_WORKFLOW}"
-                  echo "Execution of the deployment script completed."
+            echo "Executing deployment script on server..."
+            DEPLOY_SCRIPT_PATH="/srv/web-apps/textreview/deploy.sh"
+            ${DEPLOY_SCRIPT_PATH}
+            echo "Execution of the deployment script completed."
