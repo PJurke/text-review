@@ -10,14 +10,13 @@ COPY package*.json ./
 RUN npm ci
 
 # ----- STEP 3: Build the application
+FROM base AS builder
+WORKDIR /app
 
 # Arguments handed out by docker compose
 ARG MONGODB_URI
 ARG MONGODB_DATABASE_NAME
 ARG GRAPHQL_ENDPOINT
-
-FROM base AS builder
-WORKDIR /app
 
 # Copy the dependencies
 COPY --from=deps /app/node_modules ./node_modules
@@ -26,6 +25,9 @@ COPY . .
 # Environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_VERBOSE=1
+ENV MONGODB_URI=${MONGODB_URI}
+ENV MONGODB_DATABASE_NAME=${MONGODB_DATABASE_NAME}
+ENV GRAPHQL_ENDPOINT=${GRAPHQL_ENDPOINT}
 
 # Build the Next.js app
 RUN npm run build
