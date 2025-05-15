@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import listTextDocuments from "@/services/list-text-documents/business-logic/list-text-documents-logic";
 import TextDocumentItem from "./_components/TextDocumentItem";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'List of Documents'
 };
