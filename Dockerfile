@@ -15,6 +15,8 @@ WORKDIR /app
 
 # Arguments handed out by docker compose
 ARG ALLOWED_ORIGINS
+ARG MONGODB_DATABASE_NAME
+ARG MONGODB_URI
 ARG NEXT_PUBLIC_GRAPHQL_ENDPOINT
 
 # Copy the dependencies
