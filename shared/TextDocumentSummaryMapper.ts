@@ -1,5 +1,5 @@
 import { TextDocumentSummary } from "@/types/TextDocumentSummary"
-import TextDocumentSummaryEntity from "@/entities/TextDocumenSummaryEntity"
+import TextDocumentSummaryEntity from "@/entities/TextDocumentSummaryEntity"
 
 export function mapTextDocumentSummaryEntityToTextDocumentSummary(textDocumentSummary: TextDocumentSummaryEntity): TextDocumentSummary {
     return {

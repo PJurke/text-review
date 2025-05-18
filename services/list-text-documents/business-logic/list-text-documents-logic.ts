@@ -1,5 +1,5 @@
 import { getMongoDb } from "@/app/lib/mongo/mongodb";
-import TextDocumentSummaryEntity from "@/entities/TextDocumenSummaryEntity";
+import TextDocumentSummaryEntity from "@/entities/TextDocumentSummaryEntity";
 import logger from "@/lib/logger";
 import { DatabaseError } from "@/services/shared/errors/DatabaseError";
 import { mapTextDocumentSummaryEntityToTextDocumentSummary } from "@/shared/TextDocumentSummaryMapper";
