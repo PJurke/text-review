@@ -1,7 +1,6 @@
-import { env } from "process";
 import { MongoError, ObjectId } from "mongodb";
 
-import clientPromise from "@/app/lib/mongo/mongodb";
+import { getMongoDb } from "@/app/lib/mongo/mongodb";
 import { TextDocumentSchema } from "@/types/TextDocument";
 import TextAnalysisEntity from "@/entities/TextAnalysisEntity";
 import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
@@ -31,8 +30,7 @@ export default async function createTextAnalysis(textDocumentId: string): Promis
 
         // 3. Establish database connection
 
-        const client = await clientPromise;
-        const db = client.db(env.MONGODB_DATABASE_NAME || 'text-review-db');
+        const db = await getMongoDb();
 
         // 4. Check if referred TextDocument exists
 

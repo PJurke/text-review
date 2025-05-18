@@ -1,4 +1,4 @@
-import clientPromise from "@/app/lib/mongo/mongodb";
+import { getMongoDb } from "@/app/lib/mongo/mongodb";
 import TextDocumentSummaryEntity from "@/entities/TextDocumenSummaryEntity";
 import logger from "@/lib/logger";
 import { DatabaseError } from "@/services/shared/errors/DatabaseError";
@@ -13,8 +13,7 @@ export default async function listTextDocuments(): Promise<TextDocumentSummary[]
 
         // 1. Establish database connection
 
-        const client = await clientPromise;
-        const db = client.db(env.MONGODB_DATABASE_NAME || 'text-review-db');
+        const db = await getMongoDb();
 
         // 2. Get all text documents
         

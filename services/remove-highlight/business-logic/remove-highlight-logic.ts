@@ -1,6 +1,5 @@
-import { env } from "process"
 import { z } from "zod"
-import clientPromise from "@/app/lib/mongo/mongodb"
+import { getMongoDb } from "@/app/lib/mongo/mongodb";
 import { MongoError, ObjectId, UpdateResult } from "mongodb"
 
 import { HighlightSchema } from '@/types/Highlight'
@@ -53,8 +52,7 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
 
         // 3. Establish database connection
 
-        const client = await clientPromise
-        const db = client.db(env.MONGODB_DATABASE_NAME || 'text-review-db')
+        const db = await getMongoDb();
 
         // 4. Check if referred TextAnalysis exists
 

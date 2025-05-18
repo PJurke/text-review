@@ -1,7 +1,6 @@
-import { env } from "process";
 import { MongoError, ObjectId } from "mongodb";
 
-import clientPromise from "@/app/lib/mongo/mongodb";
+import { getMongoDb } from "@/app/lib/mongo/mongodb";
 import TextDocumentEntity from "@/entities/TextDocumentEntity";
 import logger from "@/lib/logger";
 import TextAnalysis, { TextAnalysisSchema } from "@/types/TextAnalysis";
@@ -59,8 +58,7 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
 
         // 3. Establish database connection
 
-        const client = await clientPromise
-        const db = client.db(env.MONGODB_DATABASE_NAME || 'text-review-db')
+        const db = await getMongoDb();
 
         // 4. Check if referred TextAnalysis exists
 
