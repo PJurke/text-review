@@ -6,6 +6,9 @@ import { ApolloServer } from "@apollo/server";
 import { resolvers } from "./graphql-resolver-hub";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 
+import { ApolloServerPluginLandingPageDisabled } from '@apollo/server/plugin/disabled';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+
 import logger from '@/lib/logger';
 
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS;
@@ -42,6 +45,12 @@ try {
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
+    plugins: [
+        process.env.NODE_ENV === 'production'
+            ? ApolloServerPluginLandingPageDisabled()
+            : ApolloServerPluginLandingPageLocalDefault({ embed: true })
+    ],
+    introspection: process.env.NODE_ENV !== 'production',
 });
 
 /* --- Create Next Handler --- */
