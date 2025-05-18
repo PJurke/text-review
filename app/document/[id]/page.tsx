@@ -6,8 +6,10 @@ import TextDocumentNotFoundMessage from './_components/TextDocumentNotFoundMessa
 import InternalErrorMessage from '@/components/errors/InternalErrorMessage';
 import { TextDocumentNotFoundError } from '@/services/shared/errors/TextDocumentNotFoundError';
 
-// Cache the specific page for 7 days
-export const revalidate = 10080;
+// Enable on-demand caching (no build-time requests)
+export async function generateStaticParams() {
+    return [];
+}
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }): Promise<JSX.Element> {
 
