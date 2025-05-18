@@ -17,7 +17,8 @@ if (fs.existsSync('.env.local')) {
 
 async function seedDatabase() {
 
-    const { MONGODB_URI, MONGODB_DATABASE_NAME } = process.env;
+    const MONGODB_URI = process.env.MONGODB_URI;
+    const MONGODB_DATABASE_NAME = process.env.MONGODB_DATABASE_NAME;
 
     if (!MONGODB_URI || !MONGODB_DATABASE_NAME) {
         console.error('MONGODB_URI and MONGODB_DATABASE_NAME environment variables is not set');

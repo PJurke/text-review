@@ -8,7 +8,7 @@ import { startServerAndCreateNextHandler } from "@as-integrations/next";
 
 import logger from '@/lib/logger';
 
-const { ALLOWED_ORIGINS } = process.env;
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS;
 
 logger.debug('route.ts: Allowed Origins: ' + ALLOWED_ORIGINS);
 
