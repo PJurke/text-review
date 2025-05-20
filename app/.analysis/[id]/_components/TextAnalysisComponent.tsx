@@ -1,6 +1,6 @@
 'use client';
 
-import useTextAnalysis from "@/services/get-text-analysis/client/use-text-analysis-hook";
+import useTextAnalysis from "@/services/get-text-analysis/client/useTextAnalysis";
 import { TextAnalysisSchema } from "@/types/TextAnalysis";
 
 import ParagraphAnalysisComponent from "./ParagraphAnalysisComponent";

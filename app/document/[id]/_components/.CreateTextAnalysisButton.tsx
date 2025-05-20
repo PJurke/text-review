@@ -1,5 +1,5 @@
 import { useErrorOverlay } from "@/components/ErrorOverlay/error-overlay-context";
-import useCreateTextAnalysis from "@/services/create-text-analysis/client/use-create-text-analysis-hook";
+import useCreateTextAnalysis from "@/services/create-text-analysis/client/useCreateTextAnalysis";
 import { redirect } from "next/navigation";
 
 interface CreateTextAnalysisProps {

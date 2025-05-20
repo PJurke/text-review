@@ -6,8 +6,8 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 
 // Import Hooks
 
-import useAddHighlight from "@/services/add-highlight/client/use-add-highlight-hook";
-import useRemoveHighlight from "@/services/remove-highlight/client/use-remove-highlight-hook";
+import useAddHighlight from "@/services/add-highlight/client/useAddHighlight";
+import useRemoveHighlight from "@/services/remove-highlight/client/useRemoveHighlight";
 
 // Import Types
 
