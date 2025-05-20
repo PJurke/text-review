@@ -119,6 +119,24 @@ const handleGetAndPostRequest = async (req: NextRequest) => {
     if (req.method === "OPTIONS")
       return handleOptionsRequest(origin, allowedOrigin);
   
+    // React to naked GET requests
+    if (req.method === "GET" && process.env.NODE_ENV === 'production') {
+        const url = new URL(req.url);
+
+        // If in production, differentiate whether the request is done by browser or an actual GraphQL request
+        if (!url.searchParams.has('query') && !url.searchParams.has('operationName')) {
+            const errorResponsePayload = {
+                errors: [{
+                    message: "This is a GraphQL API endpoint. Please use a GraphQL client to interact.",
+                    extensions: { code: "BAD_REQUEST" }
+                }]
+            };
+            const response = NextResponse.json(errorResponsePayload, { status: 400 });
+            setCORSHeaders(response, allowedOrigin);
+            return response;
+        }
+    }
+
     // Process GET/POST requests
     return handleGraphQLRequest(req, allowedOrigin);
 };
