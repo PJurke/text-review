@@ -13,11 +13,11 @@ export default function Home() {
       </section>
 
       { /* Purpose Section */ }
-      <section className="bg-gray-50 col-span-12 grid grid-cols-subgrid items-center min-h-[50vh] text-gray-800">
-        <p className="col-span-12 leading-relaxed text-center text-xl">
+      <section className="bg-gray-50 flex items-center justify-center min-h-[50vh] px-4 text-gray-800">
+        <p className="leading-relaxed text-center text-xl">
           Those who understand can question.<br />
-          Those who question can really help shape things.<br />
-          I have developed Text Review to help you do this.<br />
+          Those who question can really help shape things. <br className="hidden sm:block" />
+          I have developed Text Review to help you do this.
         </p>
       </section>
 
