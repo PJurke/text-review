@@ -2,12 +2,13 @@ import TopMenuItem from "./TopMenuItem";
 
 interface TopMenuItemsProps {
     isOpen: boolean;
+    closeMenu: () => void;
 }
 
 /**
  * Renders the list of menu items.
  */
-export default function TopMenuItems({ isOpen }: TopMenuItemsProps): JSX.Element {
+export default function TopMenuItems({ isOpen, closeMenu }: TopMenuItemsProps): JSX.Element {
 
     const menuItems = [
         { href: "/", label: "Homepage" },
@@ -16,9 +17,9 @@ export default function TopMenuItems({ isOpen }: TopMenuItemsProps): JSX.Element
     ];
 
     return (
-        <ul className={`flex flex-col sm:flex-row items-center sm:justify-center gap-x-4 sm:flex ${isOpen ? 'block' : 'hidden'}`}>
+        <ul className={`flex flex-col sm:flex-row items-center justify-center h-full sm:h-auto pt-16 sm:pt-0 sm:gap-x-4 w-full ${isOpen ? 'flex' : 'hidden sm:flex'}`}>
             { menuItems.map(item => (
-                <TopMenuItem key={item.href} href={item.href}>{item.label}</TopMenuItem>
+                <TopMenuItem key={item.href} href={item.href} onClick={closeMenu}>{item.label}</TopMenuItem>
             ))}
         </ul>
     );

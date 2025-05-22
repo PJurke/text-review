@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TopMenuToggleButton from "./TopMenuToggleButton";
 import TopMenuItems from "./TopMenuItems";
 
@@ -9,37 +9,55 @@ import TopMenuItems from "./TopMenuItems";
  */
 export default function TopMenu(): JSX.Element {
 
-    const menuRef = useRef<HTMLElement>(null);
-
     const [isOpen, setIsOpen] = useState(false);
+
     const toggleMenu = useCallback(() => {
         setIsOpen(prev => !prev);
     }, []);
 
-    const handleClickOutside = useCallback((event: MouseEvent) => {
-        if (isOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
-            setIsOpen(false);
-        }
-    }, [isOpen]);
+    const closeMenu = useCallback(() => {
+        setIsOpen(false);
+    }, []);
 
     useEffect(() => {
-        if (isOpen)
-            document.addEventListener('mousedown', handleClickOutside);
-        else
-            document.removeEventListener('mousedown', handleClickOutside);
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && isOpen) {
+                closeMenu();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = '';
+        }
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = '';
         };
-    }, [isOpen, handleClickOutside]);
+    }, [isOpen, closeMenu]);
 
     return (
-        <nav aria-label="Main Navigation" className="backdrop-blur-md bg-white/75 flex flex-col sm:flex-row justify-center gap-x-4 sticky top-0" ref={menuRef}>
+        <>
+            <div className="flex justify-end p-3 sticky right-0 top-0 z-50 sm:hidden">
+                <TopMenuToggleButton isOpen={isOpen} toggleMenu={toggleMenu} />
+            </div>
 
-            <TopMenuToggleButton isOpen={isOpen} toggleMenu={toggleMenu} />
-            <TopMenuItems isOpen={isOpen} />
-                
-        </nav>
+            <nav aria-label="Main Navigation" className={`
+                    bg-white fixed inset-0 z-40
+                    duration-300 ease-in-out transform transition-transform
+                    sm:bg-white/75 sm:backdrop-blur-md sm:flex sm:flex-row sm:justify-center sm:gap-x-4 sm:sticky sm:top-0 sm:z-auto
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'}
+                `}>
+
+                <TopMenuItems isOpen={isOpen} closeMenu={closeMenu} />
+                    
+            </nav>
+        </>
     );
 
 }

@@ -6,21 +6,22 @@ import { usePathname } from "next/navigation";
 interface TopMenuItemProps {
     href: string;
     children: React.ReactNode;
+    onClick?: () => void;
 }
 
 /**
  * Represents a single menu item as a link.
  */
-export default function TopMenuItem({ children, href }: TopMenuItemProps): JSX.Element {
+export default function TopMenuItem({ children, href, onClick }: TopMenuItemProps): JSX.Element {
 
     const pathname = usePathname();
     const isActive = pathname === href;
 
-    const cssClasses = `block font-medium px-3 py-2 ${isActive ? 'font-semibold' : ''}`;
-
     return (
-        <li>
-            <Link className={cssClasses} href={href}>{children}</Link>
+        <li className="w-full sm:w-auto">
+            <Link className={`block font-medium px-3 py-4 sm:py-2 text-center w-full sm:w-auto ${isActive ? 'font-semibold' : ''}`} href={href} onClick={onClick}>
+                {children}
+            </Link>
         </li>
     );
 
