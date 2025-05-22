@@ -5,6 +5,9 @@ interface MenuToggleButtonProps {
     toggleMenu: () => void;
 }
 
+/**
+ * Displays the button for opening and closing the menu on mobile devices.
+ */
 export default function TopMenuToggleButton({ isOpen, toggleMenu }: MenuToggleButtonProps): JSX.Element {
 
     const icon = isOpen ? '/close-icon.svg' : '/hamburger-icon.svg';

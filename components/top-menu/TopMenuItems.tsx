@@ -4,6 +4,9 @@ interface TopMenuItemsProps {
     isOpen: boolean;
 }
 
+/**
+ * Renders the list of menu items.
+ */
 export default function TopMenuItems({ isOpen }: TopMenuItemsProps): JSX.Element {
     return (
         <ul className={`flex flex-col sm:flex-row items-center sm:justify-center gap-x-4 sm:flex ${isOpen ? 'block' : 'hidden'}`}>

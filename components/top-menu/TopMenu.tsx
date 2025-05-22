@@ -4,6 +4,9 @@ import { useState } from "react";
 import TopMenuToggleButton from "./TopMenuToggleButton";
 import TopMenuItems from "./TopMenuItems";
 
+/**
+ * The main component that manages the status (open/closed) of the menu and renders the toggle button and the menu items.
+ */
 export default function TopMenu(): JSX.Element {
 
     const [isOpen, setIsOpen] = useState(false);
