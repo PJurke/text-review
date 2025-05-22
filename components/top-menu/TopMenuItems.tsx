@@ -8,11 +8,18 @@ interface TopMenuItemsProps {
  * Renders the list of menu items.
  */
 export default function TopMenuItems({ isOpen }: TopMenuItemsProps): JSX.Element {
+
+    const menuItems = [
+        { href: "/", label: "Homepage" },
+        { href: "/why", label: "Why" },
+        { href: "/document", label: "Documents" },
+    ];
+
     return (
         <ul className={`flex flex-col sm:flex-row items-center sm:justify-center gap-x-4 sm:flex ${isOpen ? 'block' : 'hidden'}`}>
-            <TopMenuItem href="/">Homepage</TopMenuItem>
-            <TopMenuItem href="/why">Why</TopMenuItem>
-            <TopMenuItem href="/document">Documents</TopMenuItem>
+            { menuItems.map(item => (
+                <TopMenuItem key={item.href} href={item.href}>{item.label}</TopMenuItem>
+            ))}
         </ul>
     );
 }
