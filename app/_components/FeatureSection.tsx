@@ -7,13 +7,13 @@ export default function FeatureSection(): JSX.Element {
             id: "text-hub",
             image: { alt: "Hub for Texts", src: "/centralization-icon.svg" },
             title: "Central Place",
-            description: "We collect varied texts in one place."
+            description: "I collect various texts in this place."
         },
         {
             id: "official-texts",
             image: { alt: "Official Documents Icon", src: "/official-icon.svg" },
             title: "Official Texts",
-            description: "We get texts from official sources and collect them here."
+            description: "The texts are from official sources."
         },
         /*{
             id: "highlighting",
