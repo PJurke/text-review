@@ -1,3 +1,4 @@
+import Link from "next/link";
 import FeatureSection from "./_components/FeatureSection";
 
 export default function Home() {
@@ -15,12 +16,13 @@ export default function Home() {
       </section>
 
       { /* Purpose Section */ }
-      <section className="bg-gray-50 flex items-center justify-center min-h-[50vh] px-4 text-gray-800">
-        <p className="leading-relaxed text-center text-xl">
-          Those who understand can question.<br />
-          Those who question can really help shape things. <br className="hidden sm:block" />
-          I have developed Text Review to help you do this.
+      <section className="bg-gray-50 flex flex-col items-center justify-center min-h-[50vh] px-4 text-gray-800">
+        <p className="leading-relaxed md:max-w-[75ch] text-center text-lg">
+          I give you direct access to important information from all over the world - in your language.
+          Analyze complex texts in a focused way and at your own pace.
+          Gain clarity and form an opinion that is truly your own.
         </p>
+        <Link className="mt-4 text-gray-500" href="/why">Read more about the why</Link>
       </section>
 
       <FeatureSection />

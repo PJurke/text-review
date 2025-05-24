@@ -10,9 +10,8 @@ export default function WhyPage(): JSX.Element {
             <h1 className="text-3xl">Why</h1>
 
             <p className="leading-9 mt-8 text-lg">
-                I firmly believe that everyone should have direct access to important information
+                I believe that everyone should have direct access to important information
                 and the opportunity to understand it in depth - regardless of language barriers.
-                This is my contribution to a global and networked knowledge society.
             </p>
 
             <p className="leading-9 mt-8 text-lg">
@@ -24,6 +23,7 @@ export default function WhyPage(): JSX.Element {
             <p className="leading-9 mt-8 text-lg">
                 With my application, I would like to enable you to gain clarity about a variety of texts,
                 to analyze them with focus and in peace, and thus to form your own well-founded opinion.
+                This is my contribution to a global and networked knowledge society.
             </p>
         </section>
     );
