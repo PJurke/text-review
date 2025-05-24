@@ -1,3 +1,5 @@
+import FeatureSection from "./_components/FeatureSection";
+
 export default function Home() {
 
   return (
@@ -20,6 +22,8 @@ export default function Home() {
           I have developed Text Review to help you do this.
         </p>
       </section>
+
+      <FeatureSection />
 
     </main>
 
