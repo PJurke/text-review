@@ -48,9 +48,9 @@ export default function TopMenu(): JSX.Element {
             </div>
 
             <nav aria-label="Main Navigation" className={`
-                    bg-white fixed inset-0 z-40
+                    bg-white/75 backdrop-blur-md fixed inset-0 z-40
                     duration-300 ease-in-out transform transition-transform
-                    sm:bg-white/75 sm:backdrop-blur-md sm:flex sm:flex-row sm:justify-center sm:gap-x-4 sm:sticky sm:top-0 sm:z-auto
+                    sm:flex sm:flex-row sm:justify-center sm:gap-x-4 sm:sticky sm:top-0 sm:z-auto
                     ${isOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'}
                 `}>
 
