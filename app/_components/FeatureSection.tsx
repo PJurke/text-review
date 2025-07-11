@@ -30,9 +30,9 @@ export default function FeatureSection(): JSX.Element {
     ];
 
     return (
-        <section className="px-4 py-20">
-            <h2 className="text-center text-3xl">Features</h2>
-            <ul className="flex flex-col md:flex-row gap-y-16 justify-evenly mt-12">
+        <section className="px-4 py-16">
+            <h2 className="mb-8 text-center text-3xl">Features</h2>
+            <ul className="flex flex-col md:flex-row items-center md:items-start gap-8 gap-x-16 justify-center">
 
                 {features.map((feature) => (
                     <li key={feature.id}>

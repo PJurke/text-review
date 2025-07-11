@@ -12,9 +12,9 @@ export interface FeatureCardData {
 export default function FeatureCard({ description, image, title }: FeatureCardData): JSX.Element {
 
     return (
-        <article className="text-center">
-            <Image alt={image.alt} className="mx-auto" height={75} src={image.src} width={75} />
-            <div className="mt-4 text-gray-900 text-xl">{title}</div>
+        <article className="flex flex-col items-center max-w-xs">
+            <Image alt={image.alt} className="mb-4" height={75} src={image.src} width={75} />
+            <div className="mb-1 text-gray-900 text-xl">{title}</div>
             <p className="leading-relaxed text-gray-600">{description}</p>
         </article>
     );
