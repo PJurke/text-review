@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     // 4. Render paragraphs
 
     return (
-        <section className="max-w-[50ch] md:max-w-[75ch] mx-auto p-4 text-wrap transition-[max-width]">
+        <section className="max-w-[50ch] md:max-w-[75ch] mx-auto px-4 my-8 text-wrap transition-[max-width]">
             {/*<CreateTextAnalysisButton id={id}/>*/}
             
             <h1 className="text-3xl">{textDocument.title}</h1>

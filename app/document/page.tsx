@@ -19,12 +19,12 @@ export default async function Page(): Promise<JSX.Element> {
     // 2. Render
 
     return (
-        <section className="md:max-w-[75ch] mx-auto p-4 pb-12 text-wrap transition-[max-width]">
+        <section className="md:max-w-[75ch] mx-auto px-4 my-8 text-wrap transition-[max-width]">
             
-            <h1 className="text-3xl">List of Documents</h1>
+            <h1 className="mb-8 text-3xl">List of Documents</h1>
 
             <Show when={textDocumentSummaries.length > 0}>
-                <ul className="mt-6 space-y-4">
+                <ul className="space-y-2">
                     { textDocumentSummaries.map(summary => 
                         <li key={summary.id}>
                             <TextDocumentItem title={summary.title} id={summary.id} author={summary.author} />
