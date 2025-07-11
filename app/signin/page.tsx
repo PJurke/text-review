@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import { signIn } from "@/lib/auth";
+
+export const metadata: Metadata = {
+    title: 'Sign in'
+};
 
 function GoogleIcon() {
   return (
