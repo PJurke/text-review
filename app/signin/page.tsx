@@ -16,7 +16,7 @@ export default function SignInPage(): JSX.Element {
 
     const signInWithGoogle = async() => {
         'use server';
-        await signIn('google', { redirectTo: '/' });
+        await signIn('google', { redirectTo: '/user' });
     };
 
     return (
