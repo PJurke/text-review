@@ -1,6 +1,9 @@
-import { z } from "zod";
+import { ObjectId } from 'mongodb';
+import { z } from 'zod';
 
 export const UserSchema = z.object({
-    email: z.string().email(),
-    password: z.string()
+    _id: z.instanceof(ObjectId),
+    role: z.enum(['user', 'admin']).optional(),
 });
+
+export type User = z.infer<typeof UserSchema>;
