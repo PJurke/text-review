@@ -1,15 +1,50 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Every change needs to be followed by a `npx prisma generate` command to update the Prisma Client.
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+model TextDocument {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  author     String
+  paragraphs Paragraph[]
+  analyses   TextAnalysis[]
+}
+
+model Paragraph {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  text       String
+  documentId String       @db.ObjectId
+  document   TextDocument @relation(fields: [documentId], references: [id])
+}
+
+model TextAnalysis {
+  id                String                @id @default(auto()) @map("_id") @db.ObjectId
+  textDocumentId    String                @db.ObjectId
+  textDocument      TextDocument          @relation(fields: [textDocumentId], references: [id])
+  paragraphAnalyses ParagraphAnalysis[]
+}
+
+model ParagraphAnalysis {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  paragraphId String      @db.ObjectId
+  highlights  Highlight[]
+  analysisId  String      @db.ObjectId
+  analysis    TextAnalysis @relation(fields: [analysisId], references: [id])
+}
+
+model Highlight {
+  id         String            @id @default(auto()) @map("_id") @db.ObjectId
+  start      Int
+  end        Int
+  analysisId String           @db.ObjectId
+  analysis   ParagraphAnalysis @relation(fields: [analysisId], references: [id])
 }
