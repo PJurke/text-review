@@ -14,7 +14,7 @@ export default function TopMenuItems({ isOpen, closeMenu }: TopMenuItemsProps): 
     const menuItems = [
         { href: "/why", label: "Why" },
         { href: "/document", label: "Documents" },
-        { href: "/signin", label: "Sign in" },
+        { href: "/signin", label: "Account" },
     ];
 
     return (
