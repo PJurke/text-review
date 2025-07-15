@@ -62,7 +62,6 @@ Text Review is a web application that allows users to analyze and highlight offi
 - **app/document** Text Document Page
 - **app/why** Purpose of Text Review
 - **components** Reusable UI Components
-- **entities** Database Data Structures
 - **lib** Auxiliary functions
 - **seeds** Scripts to seed a Database
 - **services** End-to-End Service
