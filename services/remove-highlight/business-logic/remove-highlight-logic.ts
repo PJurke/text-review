@@ -1,28 +1,18 @@
 import { z } from "zod"
-import { getMongoDb } from "@/app/lib/mongo/mongodb";
-import { MongoError, ObjectId, UpdateResult } from "mongodb"
+
+import logger from "@/lib/logger"
+import prisma from "@/lib/prisma";
 
 import { HighlightSchema } from '@/types/Highlight'
 import { HighlightNotFoundError } from "@/services/shared/errors/HighlightNotFoundError"
-import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError"
-import logger from "@/lib/logger"
 import { TextAnalysisSchema } from "@/types/TextAnalysis"
 import { ParagraphAnalysisSchema } from "@/types/ParagraphAnalysis"
-import TextAnalysisEntity from "@/entities/TextAnalysisEntity"
-import { TextAnalysisNotFoundError } from "@/services/shared/errors/TextAnalysisNotFoundError"
 import { ValidationError } from "@/services/shared/errors/ValidationError"
-import { DatabaseError } from "@/services/shared/errors/DatabaseError"
 
 interface RemoveHighlightArgs {
     textAnalysisId: string
     paragraphId: string
     highlightId: string
-}
-
-interface RemoveHighlightEntity {
-    textAnalysisId: ObjectId
-    paragraphId: ObjectId
-    highlightId: ObjectId
 }
 
 const RemoveHighlightArgsSchema = z.object({
@@ -40,86 +30,37 @@ export default async function removeHighlight(args: RemoveHighlightArgs): Promis
     if (!validationResult.success)
             throw new ValidationError('Invalid input', validationResult.error.issues.map(issue => issue.path.join('.')).join(', '));
 
-    // 2. Map data structure (GraphQL > Mongo)
-
-    const removableHighlight: RemoveHighlightEntity = {
-        textAnalysisId: new ObjectId(args.textAnalysisId),
-        paragraphId: new ObjectId(args.paragraphId),
-        highlightId: new ObjectId(args.highlightId)
-    }
+    const { textAnalysisId, paragraphId, highlightId } = validationResult.data;
 
     try {
 
-        // 3. Establish database connection
+        // deleteMany does not fail if the record has already been deleted
+        // where ensures that only delete the exact highlight in the correct context
 
-        const db = await getMongoDb();
+        const deleteResult = await prisma.highlight.deleteMany({
+            where: {
+                id: highlightId,
+                // Make sure that the highlight belongs to the correct ParagraphAnalysis,
+                // which in turn belongs to the correct TextAnalysis.
+                analysis: {
+                    paragraphId: paragraphId,
+                    analysisId: textAnalysisId,
+                },
+            },
+        });
 
-        // 4. Check if referred TextAnalysis exists
+        // Check whether a highlight has actually been deleted.
 
-        const textAnalysisFilter = { _id: removableHighlight.textAnalysisId };
-        const textAnalysis = await db
-            .collection<TextAnalysisEntity>('textAnalyses')
-            .findOne(textAnalysisFilter);
-
-        if (!textAnalysis)
-            throw new TextAnalysisNotFoundError(`Text analysis with id ${removableHighlight.textAnalysisId} not found`);
-
-        // 5. Check if referred Paragraph exists
-
-        const paragraphAnalysis = textAnalysis.paragraphAnalyses.find((p) =>
-            p.paragraphId.equals(removableHighlight.paragraphId)
-        );
-
-        if (!paragraphAnalysis)
-            throw new ParagraphNotFoundError(`Paragraph with id ${removableHighlight.paragraphId} not found`);
-
-        // 6. Check if referred HighlightId exists
-
-        const highlightExists = paragraphAnalysis.highlights.some((highlight) =>
-            highlight._id.equals(removableHighlight.highlightId)
-        );
-
-        if (!highlightExists)
-            throw new HighlightNotFoundError(`Paragraph with id ${removableHighlight.highlightId} not found`);
-
-        // 7. Design update filter
-        
-        const update = {
-            $pull: {
-                "paragraphAnalyses.$[para].highlights": {
-                    _id: removableHighlight.highlightId
-                }
-            }
+        if (deleteResult.count === 0) {
+            throw new HighlightNotFoundError(`Highlight with id ${highlightId} not found in the specified context.`);
         }
 
-        const arrayFilters = [{ "para.paragraphId": removableHighlight.paragraphId }];
+        return true;
 
-        // 8. Remove highlight
+    } catch (error) {
 
-        const result: UpdateResult = await db
-            .collection<TextAnalysisEntity>('textAnalyses')
-            .updateOne(textAnalysisFilter, update, { arrayFilters });
-
-        if (result.acknowledged)
-            return true;
-
-        throw new Error('An error occurred while removing a highlight');
-
-    } catch(error: unknown) {
-
-        if (error instanceof MongoError) {
-            logger.error('remove-highlight-logic.ts: Database error ', error);
-            throw new DatabaseError('An internal server error occurred');
-        } else if (error instanceof Error) {
-            logger.error('remove-highlight-logic.ts: ', {
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
-        } else {
-            logger.error('create-text-analysis-logic.ts: Unknown error ', error);
-            throw new Error('An unknown error occurred');
-        }
+        logger.error('remove-highlight-logic.ts:', error);
+        throw error;
 
     }
 
