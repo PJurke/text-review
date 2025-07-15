@@ -1,13 +1,9 @@
-import { MongoError, ObjectId } from "mongodb";
-
-import { getMongoDb } from "@/app/lib/mongo/mongodb";
-import { TextDocumentSchema } from "@/types/TextDocument";
-import TextAnalysisEntity from "@/entities/TextAnalysisEntity";
-import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
-import TextDocumentEntity from "@/entities/TextDocumentEntity";
 import logger from "@/lib/logger";
+import prisma from "@/lib/prisma";
+
+import { TextDocumentSchema } from "@/types/TextDocument";
+import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
 import { ValidationError } from "@/services/shared/errors/ValidationError";
-import { DatabaseError } from "@/services/shared/errors/DatabaseError";
 
 interface createTextAnalysisResponse {
     textAnalysisId: string;
@@ -22,56 +18,43 @@ export default async function createTextAnalysis(textDocumentId: string): Promis
     if (!validationResult.success)
         throw new ValidationError('Invalid text document id', 'textDocumentId');
 
-    // 2. Mapping (GraphQL -> MongoDB)
-
-    const textDocumentOid = new ObjectId(textDocumentId);
-
     try {
 
-        // 3. Establish database connection
+        // 2. Check if referred TextDocument exists
 
-        const db = await getMongoDb();
+        const textDocument = await prisma.textDocument.findUnique({
+            where: {
+                id: textDocumentId,
+            },
+            select: { id: true }
+        });
 
-        // 4. Check if referred TextDocument exists
-
-        const textDocument = await db
-            .collection<TextDocumentEntity>('textDocuments')
-            .findOne({ _id: textDocumentOid });
-        
-        if (!textDocument)
+        if (!textDocument) {
             throw new TextDocumentNotFoundError(`Text document with id ${textDocumentId} not found`);
+        }
 
-        // 5. Create and add new TextAnalysis
+        // 3. Create and add new TextAnalysis
 
-        const newTextAnalysis: TextAnalysisEntity = {
-            _id: new ObjectId(),
-            textDocumentId: textDocumentOid,
-            paragraphAnalyses: []
-        };
+        const newTextAnalysis = await prisma.textAnalysis.create({
+            data: {
+                textDocumentId: textDocumentId,
+                // paragraphAnalyses is empty by default
+                paragraphAnalyses: {
+                    create: []
+                }
+            }
+        });
 
-        const result = await db.collection<TextAnalysisEntity>('textAnalyses').insertOne(newTextAnalysis);
-
-        // 6. Return the newly created TextAnalysis id
+        // 4. Return the newly created TextAnalysis id
 
         return {
-            textAnalysisId: result.insertedId.toHexString()
+            textAnalysisId: newTextAnalysis.id
         };
 
-    } catch(error: unknown) {
+    } catch (error: unknown) {
 
-        if (error instanceof MongoError) {
-            logger.error('create-text-analysis-logic.ts: Database error ', error);
-            throw new DatabaseError('An internal server error occurred');
-        } else if (error instanceof Error) {
-            logger.error('create-text-analysis-logic.ts: ', {
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
-        } else {
-            logger.error('create-text-analysis-logic.ts: Unknown error ', error);
-            throw new Error('An unknown error occurred');
-        }
+        logger.error('create-text-analysis-logic.ts: Database error', error);
+        throw error;
 
     }
 
