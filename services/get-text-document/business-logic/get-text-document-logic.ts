@@ -1,13 +1,9 @@
-import { MongoError, ObjectId } from "mongodb";
 import logger from "@/lib/logger";
-import { getMongoDb } from "@/app/lib/mongo/mongodb";
-import TextDocumentEntity from "@/entities/TextDocumentEntity";
+import prisma from "@/lib/prisma";
+
 import TextDocument, { TextDocumentSchema } from "@/types/TextDocument";
 import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
-import { mapTextDocumentEntityToTextDocument } from "@/shared/TextDocumentMapper";
 import { ValidationError } from "@/services/shared/errors/ValidationError";
-import { DatabaseError } from "@/services/shared/errors/DatabaseError";
-import prisma from "@/lib/prisma";
 
 export default async function getTextDocument(id: string): Promise<TextDocument> {
     
@@ -20,18 +16,30 @@ export default async function getTextDocument(id: string): Promise<TextDocument>
 
     // 2. Database request with Prisma
 
-    const textDocument = await prisma.textDocument.findUnique({
-        where: {
-            id: id
-        },
-        include: {
-            paragraphs: true
-        }
-    });
+    try {
 
-    if (!textDocument)
+        // 3. Retrieve text document including the paragraphs with Prism
+
+        const textDocument = await prisma.textDocument.findUnique({
+            where: {
+                id: id,
+            },
+            include: {
+                paragraphs: true,
+            },
+        });
+
+        if (!textDocument) {
             throw new TextDocumentNotFoundError(`Text document with id ${id} not found`);
+        }
 
-    return textDocument;
+        return textDocument;
+
+    } catch (error) {
+
+        logger.error('get-text-document-logic.ts: Database error', error);
+        throw error;
+
+    }
 
 }
