@@ -77,7 +77,7 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
 
     } catch (error: unknown) {
 
-        logger.error('get-text-analysis-logic.ts: Unknown error ', error);
+        logger.error('get-text-analysis-logic.ts:', error);
         throw error;
 
     }

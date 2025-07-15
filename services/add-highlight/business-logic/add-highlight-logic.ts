@@ -98,7 +98,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
     } catch (error: unknown) {
 
-        logger.error('add-highlight-logic.ts: Database error', error);
+        logger.error('add-highlight-logic.ts:', error);
         throw error;
 
     }

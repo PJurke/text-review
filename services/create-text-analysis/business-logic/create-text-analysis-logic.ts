@@ -53,7 +53,7 @@ export default async function createTextAnalysis(textDocumentId: string): Promis
 
     } catch (error: unknown) {
 
-        logger.error('create-text-analysis-logic.ts: Database error', error);
+        logger.error('create-text-analysis-logic.ts:', error);
         throw error;
 
     }

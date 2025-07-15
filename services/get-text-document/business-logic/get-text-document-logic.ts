@@ -37,7 +37,7 @@ export default async function getTextDocument(id: string): Promise<TextDocument>
 
     } catch (error) {
 
-        logger.error('get-text-document-logic.ts: Database error', error);
+        logger.error('get-text-document-logic.ts:', error);
         throw error;
 
     }
