@@ -1,45 +1,11 @@
-import { MongoError, ObjectId } from "mongodb";
-
-import { getMongoDb } from "@/app/lib/mongo/mongodb";
-import TextDocumentEntity from "@/entities/TextDocumentEntity";
 import logger from "@/lib/logger";
+import prisma from "@/lib/prisma";
+
 import TextAnalysis, { TextAnalysisSchema } from "@/types/TextAnalysis";
-import TextAnalysisEntity from "@/entities/TextAnalysisEntity";
 import { TextAnalysisNotFoundError } from "@/services/shared/errors/TextAnalysisNotFoundError";
-import ParagraphAnalysisEntity from "@/entities/ParagraphAnalysisEntity";
-import Highlight from "@/types/Highlight";
 import ParagraphAnalysis from "@/types/ParagraphAnalysis";
 import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
 import { ValidationError } from "@/services/shared/errors/ValidationError";
-import { DatabaseError } from "@/services/shared/errors/DatabaseError";
-
-function mergeTextAnalysis(textDocumentEntity: TextDocumentEntity, textAnalysisEntity: TextAnalysisEntity): TextAnalysis {
-
-    const paragraphAnalysisMap = new Map<string, ParagraphAnalysisEntity>();
-
-    textAnalysisEntity.paragraphAnalyses.forEach(paragraphAnalysis => {
-        paragraphAnalysisMap.set(paragraphAnalysis.paragraphId.toHexString(), paragraphAnalysis)
-    });
-
-    const paragraphs: ParagraphAnalysis[] = textDocumentEntity.paragraphs.map(paragraph => {
-        const analysisForParagraph = paragraphAnalysisMap.get(paragraph._id.toHexString());
-
-        const highlights: Highlight[] = analysisForParagraph ? analysisForParagraph.highlights.map(h => ({ id: h._id.toString(), start: h.start, end: h.end })) : [];
-        
-        return {
-            id: paragraph._id.toHexString(),
-            text: paragraph.text,
-            highlights: highlights
-        };
-    });
-
-    return {
-        id: textDocumentEntity._id.toHexString(),
-        title: textDocumentEntity.title,
-        author: textDocumentEntity.author,
-        paragraphs: paragraphs
-    };
-}
 
 export default async function getTextAnalysis(id: string): Promise<TextAnalysis> {
 
@@ -50,57 +16,69 @@ export default async function getTextAnalysis(id: string): Promise<TextAnalysis>
     if (!validationResult.success)
         throw new ValidationError('Invalid input', validationResult.error.issues.map(issue => issue.path.join('.')).join(', '));
 
-    // 2. Mapping (GraphQL -> MongoDB)
-
-    const analysisOId = new ObjectId(id);
-
     try {
 
-        // 3. Establish database connection
+        // 2. Use Prisma to retrieve the Text Analysis and its related data
 
-        const db = await getMongoDb();
+        const analysisData = await prisma.textAnalysis.findUnique({
+            where: { id: id },
+            include: {
+                // Load the corresponding text document with all its paragraphs
+                textDocument: {
+                    include: {
+                        paragraphs: true,
+                    },
+                },
+                // Load the corresponding paragraph analyses with their highlights
+                paragraphAnalyses: {
+                    include: {
+                        highlights: true,
+                    },
+                },
+            },
+        });
 
-        // 4. Check if referred TextAnalysis exists
+        // 3. Check if the analysis data was found
 
-        const textAnalysis = await db
-            .collection<TextAnalysisEntity>('textAnalyses')
-            .findOne({ _id: analysisOId });
-
-        if (!textAnalysis)
+        if (!analysisData) {
             throw new TextAnalysisNotFoundError(`Text Analysis with id ${id} not found`);
+        }
 
-        // 5. Use Text Document Reference to retrieve Text Document
+        // 4. Check if the text document exists in the analysis data
 
-        const textDocument = await db
-            .collection<TextDocumentEntity>('textDocuments')
-            .findOne({ _id: textAnalysis.textDocumentId });
+        if (!analysisData.textDocument) {
+            // Should not happen thanks to schema constraints, but is a good safeguard
+            throw new TextDocumentNotFoundError(`Referred Text Document for analysis ${id} not found`);
+        }
 
-        if (!textDocument)
-            throw new TextDocumentNotFoundError(`Text Document with id ${id} not found`);
+        // 5. Convert the data retrieved by Prisma into the final response format
 
-        // 6. Merge TextAnalysisEntity and TextDocumentEntity into Text Analysis
+        const paragraphAnalysesMap = new Map(
+            analysisData.paragraphAnalyses.map(pa => [pa.paragraphId, pa.highlights])
+        );
 
-        const response: TextAnalysis = mergeTextAnalysis(textDocument, textAnalysis);
+        const paragraphs: ParagraphAnalysis[] = analysisData.textDocument.paragraphs.map(paragraph => {
+            const highlights = paragraphAnalysesMap.get(paragraph.id) || [];
+            return {
+                id: paragraph.id,
+                text: paragraph.text,
+                highlights: highlights.map(h => ({ id: h.id, start: h.start, end: h.end })),
+            };
+        });
 
-        // 7. Return TextAnalysis
+        const response: TextAnalysis = {
+            id: analysisData.id,
+            title: analysisData.textDocument.title,
+            author: analysisData.textDocument.author,
+            paragraphs: paragraphs
+        };
 
         return response;
 
     } catch (error: unknown) {
 
-        if (error instanceof MongoError) {
-            logger.error('get-text-analysis-logic.ts: Database error ', error);
-            throw new DatabaseError('An internal server error occurred');
-        } else if (error instanceof Error) {
-            logger.error('get-text-analysis-logic.ts: ', {
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
-        } else {
-            logger.error('get-text-analysis-logic.ts: Unknown error ', error);
-            throw new Error('An unknown error occurred');
-        }
+        logger.error('get-text-analysis-logic.ts: Unknown error ', error);
+        throw error;
 
     }
 
