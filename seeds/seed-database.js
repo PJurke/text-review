@@ -1,58 +1,61 @@
-import fs from "fs";
-import { MongoClient } from "mongodb";
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 import AbschiedsredeAlsBundeskanzlerin from "./text-documents/abschiedsrede-als-bundeskanzlerin.js";
 import IchBinEinBerliner from "./text-documents/ich-bin-ein-berliner.js";
 import IHaveADream from "./text-documents/i-have-a-dream.js";
 
-import IHaveADreamAnalysis from "./text-analyses/i-have-a-dream-analysis.js";
+const textDocuments = [
+    AbschiedsredeAlsBundeskanzlerin,
+    IchBinEinBerliner,
+    IHaveADream,
+];
 
-// Differentiate by environment
 if (fs.existsSync('.env.local')) {
     dotenv.config({ path: '.env.local' });
+    console.log("Loaded environment variables from .env.local");
 } else {
     dotenv.config();
+    console.log("Loaded environment variables from .env");
 }
 
-async function seedDatabase() {
+const { PrismaClient } = await import('@prisma/client');
+const prisma = new PrismaClient();
 
-    const MONGODB_URI = process.env.MONGODB_URI;
-    const MONGODB_DATABASE_NAME = process.env.MONGODB_DATABASE_NAME;
+async function main() {
+    console.log('Start seeding...');
 
-    if (!MONGODB_URI || !MONGODB_DATABASE_NAME) {
-        console.error('MONGODB_URI and MONGODB_DATABASE_NAME environment variables is not set');
-        return;
+    // 1. Remove existing data
+
+    console.log('Deleting existing data...');
+    await prisma.highlight.deleteMany();
+    await prisma.paragraphAnalysis.deleteMany();
+    await prisma.textAnalysis.deleteMany();
+    await prisma.paragraph.deleteMany();
+    await prisma.textDocument.deleteMany();
+
+    // 2. Create text documents
+
+    for (const doc of textDocuments) {
+        await prisma.textDocument.create({
+            data: {
+                title: doc.title,
+                author: doc.author,
+                paragraphs: {
+                    create: doc.paragraphs,
+                },
+            },
+        });
     }
 
-    const client = new MongoClient(MONGODB_URI);
-
-    try {
-        await client.connect();
-        
-        const db = client.db(MONGODB_DATABASE_NAME);
-
-        const documentCollection = db.collection("textDocuments");
-        const textAnalysesCollection = db.collection("textAnalyses");
-
-        const documentResult = await documentCollection.insertMany([
-            AbschiedsredeAlsBundeskanzlerin,
-            IHaveADream,
-            IchBinEinBerliner
-        ]);
-        console.info(`${documentResult.insertedCount} documents inserted`);
-
-        const analysisResult = await textAnalysesCollection.insertOne(IHaveADreamAnalysis);
-        const analysesInsertedCount = analysisResult.insertedId ? 1 : 0;
-        console.info(`${analysesInsertedCount} analyses inserted`);
-
-    }
-    catch (error) {
-        console.error("Error when inserting documents:", error);
-    }
-    finally {
-        await client.close();
-    }
+    console.log('Seeding finished.');
 }
 
-seedDatabase();
+main()
+    .catch((e) => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });

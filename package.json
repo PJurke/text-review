@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "db:seed": "node ./seeds/seed-database.js",
+    "dev": "next dev",
     "lint": "next lint",
-    "seed": "node ./seeds/seed-database.js",
     "start": "next start",
     "test": "jest",
     "test:watch": "jest --watch"
