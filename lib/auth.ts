@@ -1,16 +1,15 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { getMongoClient } from "@/app/lib/mongo/mongodb";
-import type { UserRole } from "@/types/UserRole";
+import prisma from "./prisma";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: MongoDBAdapter(getMongoClient()),
+    adapter: PrismaAdapter(prisma),
     callbacks: {
         async session({ session, user }) {
             if (session.user) {
                 session.user.id = user.id;
-                session.user.role = user.role || "User" as UserRole;
+                session.user.role = user.role || "USER";
             }
             return session;
         }
