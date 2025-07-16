@@ -28,7 +28,7 @@ export default async function UserPage(): Promise<JSX.Element> {
             </div>
 
             <form action={signout}>
-                <button className="border-2 border-red-600 cursor-pointer p-2 rounded-xl text-center text-red-800 w-full" type="submit">Sign out</button>
+                <button className="border-2 border-red-600 cursor-pointer p-2 rounded text-center text-red-800 w-full" type="submit">Sign out</button>
             </form>
         </section>
     );

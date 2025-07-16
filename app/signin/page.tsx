@@ -37,7 +37,7 @@ export default async function SignInPage(): Promise<JSX.Element> {
             <form action={signInWithGoogle}>
                 <h1 className="text-3xl mb-4">Sign in</h1>
 
-                <button className="cursor-pointer flex items-center p-2 rounded gap-2 text-center w-full" type="submit">
+                <button className="border-2 cursor-pointer flex gap-2 items-center justify-center p-2 rounded text-center w-full" type="submit">
                     <GoogleIcon />
                     <span>Sign in with Google</span>
                 </button>
