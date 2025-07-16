@@ -25,6 +25,7 @@ export default async function UserPage(): Promise<JSX.Element> {
             <div className="flex flex-col items-center mb-8">
                 <img alt="Your user picture" className="border-2 border-gray-400 p-1 mb-2 rounded-full" height={100} src={userIcon} width={100} />
                 <h2 className="text-xl">{session.user.name}</h2>
+                <p>{session.user.role.toLowerCase()}</p>
             </div>
 
             <form action={signout}>
