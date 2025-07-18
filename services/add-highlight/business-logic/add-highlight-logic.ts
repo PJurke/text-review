@@ -9,6 +9,7 @@ import { ParagraphAnalysisSchema } from "@/types/ParagraphAnalysis"
 import { TextAnalysisNotFoundError } from "@/services/shared/errors/TextAnalysisNotFoundError"
 import { ValidationError } from "@/services/shared/errors/ValidationError"
 import { ParagraphNotFoundError } from "@/services/shared/errors/ParagraphNotFoundError"
+import { Prisma } from "@prisma/client";
 
 interface AddHighlightArgs {
     textAnalysisId: string,
@@ -41,7 +42,7 @@ export default async function addHighlight(args: AddHighlightArgs): Promise<High
 
         // 3. Prepare and execute transaction
 
-        return await prisma.$transaction(async (tx) => {
+        return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             
             // 4. Check if referred TextAnalysis exists
 
