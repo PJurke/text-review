@@ -1,15 +1,21 @@
-name: Deploy Text-Review to Production (Build on Server)
+name: Deploy Text-Review to GitHub Container Registry (GHCR)
 
 on:
   push:
     branches:
       - main
 
-jobs:
-  deploy-text-review-to-prod:
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
 
-    name: Deploy Text-Review to Production Server via SSH
+jobs:
+  build_and_deploy:
+
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
 
@@ -20,11 +26,12 @@ jobs:
         id: package-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      - name: 3. Login to Docker Registry
+      - name: 3. Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 4. Build and Push Docker Image
         uses: docker/build-push-action@v5
