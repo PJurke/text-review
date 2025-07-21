@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
+import DefaultSession from "next-auth";
 import { UserRole } from "@/services/users/user-role.model.ts";
 
 declare module "next-auth" {

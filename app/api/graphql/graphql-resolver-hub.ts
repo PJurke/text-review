@@ -10,9 +10,9 @@ export const resolvers: IResolvers = {
         textDocuments: listTextDocumentsResolver
 
     },
-    Mutation: {
+    /*Mutation: {
 
         
 
-    }
+    }*/
 }
