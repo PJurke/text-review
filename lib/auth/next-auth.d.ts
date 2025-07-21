@@ -12,6 +12,6 @@ declare module "next-auth" {
 
     interface User {
         role: UserRole;
-    } & DefaultSession["user"];
+    }
 
 }
