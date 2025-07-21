@@ -58,12 +58,12 @@ model ParagraphAnalysis {
 }
 
 model Highlight {
-  id             String            @id @default(auto()) @map("_id") @db.ObjectId
-  start          Int
-  end            Int
+  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
+  start               Int
+  end                 Int
 
-  textAnalysisId String            @db.ObjectId
-  analysis       ParagraphAnalysis @relation(fields: [textAnalysisId], references: [id])
+  paragraphAnalysisId String            @db.ObjectId
+  analysis            ParagraphAnalysis @relation(fields: [paragraphAnalysisId], references: [id])
 }
 
 /*
