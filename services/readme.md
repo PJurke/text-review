@@ -1,73 +1,72 @@
-# Services
+# Architecture Guidelines
 
-## Communication
+This document describes the architecture, file system structure,
+and naming conventions for the web application to ensure consistency and maintainability.
 
-React Service Hook <-> GraphQL Resolver <-> Business Logic
+## 1. Layers
 
-## Services List
+The architecture is divided into five logical layers. Each layer has a clearly defined responsibility.
+Dependencies always point inwards (from UI towards Infrastructure).
 
-- **Add Highlight** adds a new highlight to an existing text analysis
-- **Create Text Analysis** creates a new text based on a given text document
-- **Get Text Analysis** retrieves an existing text analysis
-- **Get Text Document** retrieves an existing text document
-- **List Text Documents** retrieves a list of all text documents
-- **Remove Highlight** removes a specific highlight of a text analysis document
+| Name           | Description                                                |
+| -------------- | ---------------------------------------------------------- |
+| UI             | Renders the user interface (Pages & Components).           |
+| Hooks          | Encapsulates client-side state and interaction logic.      |
+| Endpoints      | Defines the public-facing API for clients (e.g., GraphQL). |
+| Domain         | Contains the core business logic, models, and rules (Zod). |
+| Infrastructure | Manages external concerns like the database.               |
 
-## Errors
+## 2. File System
 
-### Add Highlight
+We use a Vertical Slicing architecture. The code is not grouped by technical layers
+but by business features (Business Domains). It increases cohesion and simplifies maintainability.
 
-**Errors**
+Each feature lives in its own folder (e.g., `/services/text-documents/`).
+Within this folder, it is further divided by Use Cases (Actions) (e.g., `/get-text-document/`).
 
-- ValidationError
-- TextAnalysisNotFoundError
-- TextDocumentNotFoundError
-- ParagraphNotFoundError
-- DatabaseError
+- `/services/`
+  - `text-documents/`
+    - `text-document.model.ts`
+    - `get-text-document/`
+      - `get-text-document.service.ts`
+      - `get-text-document.infrastructure.ts`
+      - `get-text-document.resolver.ts`
+      - `ui/`
+        - `get-text-document.query.ts`
+        - `use-get-text-document.ts`
 
-### Create Text Analysis
+## 3. Naming Conventions
 
-**Errors**
-- ValidationError
-- TextDocumentNotFoundError
-- DatabaseError
+Consistent naming is crucial for the readability and discoverability of code.
 
-### Get Text Analysis
+### Files
 
-**Errors**
-- ValidationError
-- TextAnalysisNotFoundError
-- TextDocumentNotFoundError
-- DatabaseError
+Files within a use-case folder follow the pattern `[action]`.`[layer]`.ts.
 
-### Get Text Document
+- get-text-document.service.ts
+- get-text-document.infrastructure.ts
+- get-text-document.resolver.ts
 
-**Errors**
-- ValidationError
-- TextDocumentNotFoundError
-- DatabaseError
+### React Hooks
 
-### List Text Documents
+Hooks are named according to the pattern use`[Action]`.ts.
+- use-get-text-document.ts
+- use-create-text-document.ts
 
-**Errors**
-- DatabaseError
+### Domain Models
 
-### Remove Highlight
+Zod schemas and their inferred types live in files following the pattern `[resource]`.model.ts.
+- text-document.model.ts
+- user.model.ts
 
-**Errors**
-- ValidationError
-- TextAnalysisNotFoundError
-- ParagraphNotFoundError
-- HighlightNotFoundError
-- DatabaseError
+### Guiding Principle for Type
 
-## Error Mapping
+`type` is preferred over `interface` to ensure a consistent and flexible definition of data structures.
 
-| TypeScript | GraphQL Code |
-|------------|--------------|
-| ValidationError | BAD_USER_INPUT |
-| TextDocumentNotFoundError | TEXT_DOCUMENT_NOT_FOUND |
-| TextAnalysisNotFoundError | BAD_USER_INPUT |
-| ParagraphNotFoundError | PARAGRAPH_NOT_FOUND |
-| HighlightNotFoundError | HIGHLIGHT_NOT_FOUND |
-| DatabaseError | INTERNAL_SERVER_ERROR |
+## 4. Error Handling
+
+Error handling follows a clear, cross-layer pattern to ensure predictable and secure API responses.
+
+1. **Domain Layer:** Throws specific, custom error classes (e.g., `TextDocumentNotFoundError`) to clearly name business errors.
+2. **Endpoint Layer:** Catches these specific errors and uses a `createApiError` helper to translate them into standardized `GraphQLError` objects for the client.
+3. **Global Errors:** Unexpected system errors are caught by a global handler, logged, and returned to the client as a generic `INTERNAL_SERVER_ERROR` to avoid leaking internal details.

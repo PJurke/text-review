@@ -11,40 +11,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/*
+  ----- TEXT DOCUMENT -----
+*/
+
 model TextDocument {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  author     String
-  paragraphs Paragraph[]
-  analyses   TextAnalysis[]
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  author          String
+  paragraphs      Paragraph[]
+  textAnalyses    TextAnalysis[]
 }
 
 model Paragraph {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  text       String
-  documentId String       @db.ObjectId
-  document   TextDocument @relation(fields: [documentId], references: [id])
+  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  text                String
+
+  documentId          String       @db.ObjectId
+  textDocument        TextDocument @relation(fields: [documentId], references: [id])
+
+  paragraphAnalyses   ParagraphAnalysis[]
 }
+
+/*
+  ----- TEXT ANALYSIS -----
+*/
 
 model TextAnalysis {
   id                String                @id @default(auto()) @map("_id") @db.ObjectId
+
   textDocumentId    String                @db.ObjectId
   textDocument      TextDocument          @relation(fields: [textDocumentId], references: [id])
+
   paragraphAnalyses ParagraphAnalysis[]
 }
 
 model ParagraphAnalysis {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  paragraphId String      @db.ObjectId
-  highlights  Highlight[]
-  analysisId  String      @db.ObjectId
-  analysis    TextAnalysis @relation(fields: [analysisId], references: [id])
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  
+  paragraphId     String        @db.ObjectId
+  paragraph       Paragraph     @relation(fields: [paragraphId], references: [id])
+
+  textAnalysisId  String        @db.ObjectId
+  textAnalysis    TextAnalysis  @relation(fields: [textAnalysisId], references: [id])
+  
+  highlights      Highlight[]
 }
 
 model Highlight {
-  id         String            @id @default(auto()) @map("_id") @db.ObjectId
-  start      Int
-  end        Int
-  analysisId String           @db.ObjectId
-  analysis   ParagraphAnalysis @relation(fields: [analysisId], references: [id])
+  id              String             @id @default(auto()) @map("_id") @db.ObjectId
+  start           Int
+  end             Int
+  
+  textAnalysisId  String             @db.ObjectId
+  textAnalysis    ParagraphAnalysis  @relation(fields: [textAnalysisId], references: [id])
 }
