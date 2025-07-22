@@ -1,10 +1,10 @@
-import TextDocument, { TextDocumentSchema } from '@/types/TextDocument';
-import InvalidIdMessage from './_components/InvalidIdMessage';
-import getTextDocument from '@/services/get-text-document/business-logic/get-text-document-logic';
-import ParagraphComponent from './_components/ParagraphComponent';
-import TextDocumentNotFoundMessage from './_components/TextDocumentNotFoundMessage';
-import InternalErrorMessage from '@/components/errors/InternalErrorMessage';
-import { TextDocumentNotFoundError } from '@/services/shared/errors/TextDocumentNotFoundError';
+import logger from '@/lib/logger';
+
+import InvalidIdMessage from '@/services/text-documents/ui/components/InvalidIdMessage';
+import getTextDocument from '@/services/text-documents/get-text-document/get-text-document.service';
+import ParagraphComponent from '../../../services/text-documents/ui/components/ParagraphComponent';
+import TextDocumentNotFoundMessage from '../../../services/text-documents/ui/components/TextDocumentNotFoundMessage';
+import { TextDocumentSchema } from '@/services/text-documents/text-document.model';
 
 // Enable on-demand caching (no build-time requests)
 export async function generateStaticParams() {
@@ -13,9 +13,11 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }): Promise<JSX.Element> {
 
+    
     // 1. Extract id from url
-
+    
     const { id } = await params;
+    logger.info(`Document Id Page: Page invoked`, { id });
 
     // 2. Validate text analysis id
         
@@ -24,16 +26,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
     // 3. Get text document from db
     
-    let textDocument: TextDocument;
-    
-    try {
-        textDocument = await getTextDocument(parseResult.data);
-    } catch (error) {
-        if (error instanceof TextDocumentNotFoundError) return <TextDocumentNotFoundMessage />;
-        return <InternalErrorMessage />;
-    }
+    const textDocument = await getTextDocument(parseResult.data);
 
-    if (!textDocument) return <TextDocumentNotFoundMessage />
+    if (!textDocument)
+        return <TextDocumentNotFoundMessage />
 
     // 4. Render paragraphs
 

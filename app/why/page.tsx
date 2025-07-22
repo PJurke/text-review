@@ -1,10 +1,15 @@
 import { Metadata } from "next";
 
+import logger from "@/lib/logger";
+
 export const metadata: Metadata = {
     title: 'Why'
 };
 
 export default function WhyPage(): JSX.Element {
+
+    logger.info(`Why Page: Page invoked`);
+
     return (
         <section className="max-w-[50ch] md:max-w-[75ch] mx-auto px-4 my-8 text-wrap transition-[max-width]">
             <h1 className="text-3xl mb-8">Why</h1>

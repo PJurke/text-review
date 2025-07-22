@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@/lib/zod/extensions"
 import { ReactNode } from "react";
-import Providers from "./lib/apollo-provider";
+import Providers from "@/lib/apollo-client/apollo-provider";
 import TopMenu from "@/components/top-menu/TopMenu";
 import Footer from "@/components/footer/Footer";
 

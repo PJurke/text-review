@@ -1,8 +1,11 @@
 import { Metadata } from "next";
-import listTextDocuments from "@/services/list-text-documents/business-logic/list-text-documents-logic";
-import TextDocumentItem from "./_components/TextDocumentItem";
+
+import logger from "@/lib/logger";
 import Show from "@/components/Show";
-import NoDocumentsFoundMessage from "./_components/NoDocumentsFoundMessage";
+
+import listTextDocuments from "@/services/text-documents/list-text-documents/list-text-documents.service";
+import TextDocumentItem from "@/services/text-documents/ui/components/TextDocumentItem";
+import NoDocumentsFoundMessage from "@/services/text-documents/ui/components/NoDocumentsFoundMessage";
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page(): Promise<JSX.Element> {
+
+    logger.info(`Document Page: Page invoked`);
 
     // 1. Get the text documents directly from the database
 

@@ -36,6 +36,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "services/future",
+    "node_modules",
   ]
 }
