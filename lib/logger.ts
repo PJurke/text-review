@@ -11,24 +11,28 @@ const logger = createLogger({
         format.printf(({ timestamp, level, message }) => `${timestamp} [${level}]: ${message}`)
     ),
     transports: [
-        new transports.Console(),
-        new LokiCloudTransport({
-            
-            host: process.env.LOKI_HOST!,
-            user: process.env.LOKI_USERNAME!,
-            apiKey: process.env.LOKI_API_KEY!,
+        new transports.Console()
+    ]
+});
 
+export function initializeLokiTransport(): void {
+
+    if (env === 'production' && process.env.LOKI_HOST && process.env.LOKI_USERNAME && process.env.LOKI_API_KEY) {
+
+        logger.add(new LokiCloudTransport({
+            host: process.env.LOKI_HOST,
+            user: process.env.LOKI_USERNAME,
+            apiKey: process.env.LOKI_API_KEY,
             labels: {
                 app: 'text-review',
                 env: env
             },
+        }));
 
-        })
-    ]
-});
+        logger.info('Loki transport initialized.');
 
-// No Loki transport other than in production
-if (env !== 'production')
-  logger.remove(logger.transports[1]);
+    }
+
+}
 
 export default logger;
