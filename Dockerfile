@@ -37,32 +37,11 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-
 # Environmental Variables
 
 ENV NODE_ENV=production
-
-ENV AUTH_GOOGLE_ID=
-ENV AUTH_GOOGLE_SECRET=
-ENV AUTH_SECRET=
-ENV JWT_SECRET=
-
-# App
-ENV LOG_LEVEL=info
-
-# API
-ENV ALLOWED_ORIGINS=
-
-# Database
-ENV DATABASE_URL=
-
-# Grafana Loki
-ENV LOKI_HOST=
-ENV LOKI_USERNAME=
-ENV LOKI_API_KEY=
-
-# Port
 ENV PORT=3000
+
 EXPOSE 3000
 
 # Copy only the necessary files from the builder stage
