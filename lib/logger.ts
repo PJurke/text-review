@@ -1,5 +1,5 @@
 import { createLogger, format, transports } from 'winston';
-import LokiTransport from 'winston-loki';
+import LokiCloudTransport from './logging/loki-transport';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -12,18 +12,17 @@ const logger = createLogger({
     ),
     transports: [
         new transports.Console(),
-        new LokiTransport({
-            host: process.env.LOKI_HOST || '',
+        new LokiCloudTransport({
+            
+            host: process.env.LOKI_HOST!,
+            user: process.env.LOKI_USER !,
+            apiKey: process.env.LOKI_API_KEY!,
 
             labels: {
                 app: 'text-review',
                 env: env
             },
-            json: true,
-            
-            basicAuth: `${process.env.LOKI_USERNAME}:${process.env.LOKI_API_KEY}`,
 
-            onConnectionError: (err) => console.error(err),
         })
     ]
 });
