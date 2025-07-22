@@ -7,6 +7,8 @@ import { ValidationError } from "@/services/shared/errors/ValidationError";
 import { getTextDocumentFromPrisma, TextDocumentWithParagraphs } from "./get-text-document.infrastructure";
 
 export default async function getTextDocument(id: string): Promise<TextDocument> {
+
+    logger.info('getTextDocument: Service invoked', { id });
     
     // 1. Validate all arguments
 

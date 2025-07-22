@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo } from "graphql";
+import logger from "@/lib/logger";
 
 import getTextDocument from "./get-text-document.service";
 import { createApiError } from "@/services/shared/graphql/errors";
@@ -9,6 +10,8 @@ export type GetTextDocumentArgs = {
 };
 
 export default async function getTextDocumentResolver(_parent: unknown, args: GetTextDocumentArgs, context: any, _info: GraphQLResolveInfo): Promise<TextDocument> {
+
+    logger.info('getTextDocument: Resolver invoked', { args });
 
     try {
 

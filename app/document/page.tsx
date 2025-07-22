@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 
+import logger from "@/lib/logger";
 import Show from "@/components/Show";
 
 import listTextDocuments from "@/services/text-documents/list-text-documents/list-text-documents.service";
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page(): Promise<JSX.Element> {
+
+    logger.info(`Document Page: Page invoked`);
 
     // 1. Get the text documents directly from the database
 

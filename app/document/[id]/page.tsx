@@ -1,3 +1,5 @@
+import logger from '@/lib/logger';
+
 import InvalidIdMessage from '@/services/text-documents/ui/components/InvalidIdMessage';
 import getTextDocument from '@/services/text-documents/get-text-document/get-text-document.service';
 import ParagraphComponent from '../../../services/text-documents/ui/components/ParagraphComponent';
@@ -11,9 +13,11 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }): Promise<JSX.Element> {
 
+    
     // 1. Extract id from url
-
+    
     const { id } = await params;
+    logger.info(`Document Id Page: Page invoked`, { id });
 
     // 2. Validate text analysis id
         

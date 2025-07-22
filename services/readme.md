@@ -63,7 +63,16 @@ Zod schemas and their inferred types live in files following the pattern `[resou
 
 `type` is preferred over `interface` to ensure a consistent and flexible definition of data structures.
 
-## 4. Error Handling
+## 4. Logging
+
+A consistent logging strategy is essential for monitoring, debugging, and understanding the application's behavior.
+My approach follows the architectural layers to provide a clear trace of every request.
+
+### Log Message Conventions
+
+Log messages must follow the consistent pattern "[Context]: [Action]" to ensure readability and easy filtering.
+
+## 5. Error Handling
 
 Error handling follows a clear, cross-layer pattern to ensure predictable and secure API responses.
 

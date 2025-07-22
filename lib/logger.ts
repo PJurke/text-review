@@ -15,7 +15,7 @@ const logger = createLogger({
         new LokiCloudTransport({
             
             host: process.env.LOKI_HOST!,
-            user: process.env.LOKI_USER !,
+            user: process.env.LOKI_USERNAME!,
             apiKey: process.env.LOKI_API_KEY!,
 
             labels: {

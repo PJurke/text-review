@@ -2,11 +2,15 @@ import { auth, signOut } from "@/lib/auth";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+import logger from "@/lib/logger";
+
 export const metadata: Metadata = {
     title: 'User'
 };
 
 export default async function UserPage(): Promise<JSX.Element> {
+
+    logger.info(`User Page: Page invoked`);
 
     const session = await auth();
     const userIcon = session?.user?.image || '/user-icon.svg';

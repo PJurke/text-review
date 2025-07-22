@@ -5,6 +5,8 @@ import { TextDocumentSummarySchema, TextDocumentSummary } from "@/services/text-
 
 export default async function listTextDocuments(): Promise<TextDocumentSummary[]> {
 
+    logger.info('listTextDocuments: Service invoked');
+
     // 1. Database request with Prisma
 
     const rawSummaries = await listTextDocumentsFromPrisma();

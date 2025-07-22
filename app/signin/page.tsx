@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { auth, signIn } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
+import logger from "@/lib/logger";
+
 export const metadata: Metadata = {
     title: 'Sign in'
 };
@@ -19,6 +21,8 @@ function GoogleIcon() {
 }
 
 export default async function SignInPage(): Promise<JSX.Element> {
+
+    logger.info(`Sign In Page: Page invoked`);
 
     const session = await auth()
 
