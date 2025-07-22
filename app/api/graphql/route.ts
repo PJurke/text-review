@@ -11,16 +11,18 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 
 import logger from '@/lib/logger';
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS;
+const originsFromEnv = process.env.ALLOWED_ORIGINS || '';
+const allowedOriginsPatterns = originsFromEnv.split(',').map(o => o.trim()).filter(Boolean);
 
-logger.debug('route.ts: Allowed Origins: ' + ALLOWED_ORIGINS);
-
-if (!ALLOWED_ORIGINS) {
-    logger.error('ALLOWED_ORIGINS environment variable is not set');
-    throw new Error('Please add the ALLOWED_ORIGINS variable to your environmental variables.');
+// In development mode, a special identifier is added for later regex checking.
+if (process.env.NODE_ENV !== 'production') {
+    allowedOriginsPatterns.push('DEV_LOCALHOST_REGEX');
+    logger.info("Development mode: Allowing all localhost origins via regex.");
 }
 
-const allowedOrigins = new Set(ALLOWED_ORIGINS.split(','));;
+logger.debug(`Effective allowed origins patterns loaded: ${allowedOriginsPatterns.join(', ')}`);
+
+
 
 let typeDefs: string;
 
@@ -34,10 +36,8 @@ try {
     logger.info("Schema loaded successfully");
 
     } catch (error) {
-
     logger.error("Error loading schema:", error);
     throw error;
-
 }
 
 /* --- Create Apollo Server --- */
@@ -61,11 +61,36 @@ const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {
 
 /* --- Helper Functions --- */
 
-// Returns the origin if it is allowed, otherwise null
+/**
+ * Checks whether an origin is allowed. Supports exact matches and wildcards (*.example.com).
+ * In development mode, localhost is always allowed.
+ * @param origin - The origin header of the request.
+ * @returns The allowed origin or null.
+ */
 const getAllowedOrigin = (origin: string | null): string | null => {
 
-    if (origin && allowedOrigins.has(origin))
-      return origin;
+    if (!origin)
+        return null; // No Origin header present
+
+    for (const pattern of allowedOriginsPatterns) {
+
+        // Special check for development mode
+        if (pattern === 'DEV_LOCALHOST_REGEX' && /^http:\/\/localhost(:\d+)?$/.test(origin))
+            return origin;
+
+        // Wildcard check
+        if (pattern.startsWith('*.')) {
+            // If the origin ends with the domain after the wildcard
+            if (origin.endsWith(pattern.substring(1))) {
+                return origin;
+            }
+        }
+
+        // Exact match
+        if (pattern === origin)
+            return origin;
+
+    }
 
     logger.warn(`Blocked origin: ${origin}`);
     return null;
@@ -92,10 +117,10 @@ const handleOptionsRequest = (origin: string | null, allowedOrigin: string | nul
                 "Access-Control-Max-Age": "86400", // 24 hours in seconds
             },
         });
-    } else {
-        logger.warn("OPTIONS request forbidden for origin:", origin);
-        return new NextResponse(null, { status: 403 }); // Forbidden
     }
+
+    logger.warn("OPTIONS request forbidden for origin:", origin);
+    return new NextResponse(null, { status: 403 }); // Forbidden
 };
 
 // Common GET and POST request handling
@@ -112,6 +137,15 @@ const handleGraphQLRequest = async (req: NextRequest, allowedOrigin: string | nu
 
 // Main handler for GET and POST requests
 const handleGetAndPostRequest = async (req: NextRequest) => {
+
+    if (allowedOriginsPatterns.length === 0 && process.env.NODE_ENV === 'production') {
+        logger.error('FATAL: ALLOWED_ORIGINS is not configured at runtime.');
+        return new NextResponse(
+            JSON.stringify({ message: 'Server configuration incomplete.' }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
+
     const origin = req.headers.get("origin");
     const allowedOrigin = getAllowedOrigin(origin);
   
@@ -123,7 +157,7 @@ const handleGetAndPostRequest = async (req: NextRequest) => {
     if (req.method === "GET" && process.env.NODE_ENV === 'production') {
         const url = new URL(req.url);
 
-        // If in production, differentiate whether the request is done by browser or an actual GraphQL request
+        // Check if GraphQL-specific parameters are missing (e.g. browser vs actual GQL request)
         if (!url.searchParams.has('query') && !url.searchParams.has('operationName')) {
             const errorResponsePayload = {
                 errors: [{
