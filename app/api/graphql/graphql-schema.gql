@@ -26,6 +26,10 @@ type Query {
 
 #}
 
+# ----- SCALAR TYPES
+
+scalar JSON
+
 # ----- MAIN TYPES
 
 """ A text document containing paragraphs. """
@@ -33,7 +37,13 @@ type TextDocument {
     id: ID!
     title: String!
     author: String
+    type: TextDocumentType!
+    meta: JSON
     paragraphs: [Paragraph!]!
+}
+
+enum TextDocumentType {
+  SPEECH
 }
 
 """ A single paragraph of a text document. """
