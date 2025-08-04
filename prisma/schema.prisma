@@ -18,8 +18,14 @@ model TextDocument {
   id              String      @id @default(auto()) @map("_id") @db.ObjectId
   title           String
   author          String
+  type            TextDocumentType @default(SPEECH)
+  meta            Json
   paragraphs      Paragraph[]
   textAnalyses    TextAnalysis[]
+}
+
+enum TextDocumentType {
+  SPEECH
 }
 
 model Paragraph {
