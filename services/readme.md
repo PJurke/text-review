@@ -72,7 +72,15 @@ My approach follows the architectural layers to provide a clear trace of every r
 
 Log messages must follow the consistent pattern "[Context]: [Action]" to ensure readability and easy filtering.
 
-## 5. Error Handling
+## 5. Database Migrations
+
+1. Adapt code to be tolerant
+2. Deploy tolerant code
+3. Migrate database
+4. Adapt code to be strict again
+5. Deploy strict code
+
+## 6. Error Handling
 
 Error handling follows a clear, cross-layer pattern to ensure predictable and secure API responses.
 

@@ -2,14 +2,17 @@ import logger from '@/lib/logger';
 
 import InvalidIdMessage from '@/services/text-documents/ui/components/InvalidIdMessage';
 import getTextDocument from '@/services/text-documents/get-text-document/get-text-document.service';
-import ParagraphComponent from '../../../services/text-documents/ui/components/ParagraphComponent';
-import TextDocumentNotFoundMessage from '../../../services/text-documents/ui/components/TextDocumentNotFoundMessage';
+import ParagraphComponent from '@/services/text-documents/ui/components/ParagraphComponent';
+import TextDocumentNotFoundMessage from '@/services/text-documents/ui/components/TextDocumentNotFoundMessage';
 import { TextDocumentSchema } from '@/services/text-documents/text-document.model';
 
-// Enable on-demand caching (no build-time requests)
+// Disable build time generation
 export async function generateStaticParams() {
     return [];
 }
+
+// Cache this page forever
+export const revalidate = false;
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }): Promise<JSX.Element> {
 

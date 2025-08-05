@@ -15,11 +15,18 @@ datasource db {
 */
 
 model TextDocument {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
   title           String
   author          String
+  type            TextDocumentType  @default(UNKNOWN)
+  meta            Json?
   paragraphs      Paragraph[]
   textAnalyses    TextAnalysis[]
+}
+
+enum TextDocumentType {
+  SPEECH
+  UNKNOWN
 }
 
 model Paragraph {

@@ -1,4 +1,6 @@
 import { z } from 'zod'
+
+import { TextDocumentType } from '@prisma/client';
 import { ParagraphSchema } from "./paragraph.model"
 
 export const TextDocumentSchema = z.object({
@@ -6,6 +8,9 @@ export const TextDocumentSchema = z.object({
     title: z.string(),
     author: z.string(),
     paragraphs: z.array(ParagraphSchema),
-})
+
+    type: z.nativeEnum(TextDocumentType).optional().nullable(),
+    meta: z.any().optional().nullable(),
+});
 
 export type TextDocument = z.infer<typeof TextDocumentSchema>
