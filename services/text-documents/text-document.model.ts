@@ -10,6 +10,8 @@ export const BaseTextDocumentSchema = z.object({
     paragraphs: z.array(ParagraphSchema),
 });
 
+export const TextDocumentIdSchema = z.string().oid('The id of a text document must be a valid object id');
+
 const SpeechTextDocumentSchema = BaseTextDocumentSchema.extend({
     type: z.literal(TextDocumentType.SPEECH),
     meta: z.object({

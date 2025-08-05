@@ -1,7 +1,7 @@
 import logger from "@/lib/logger";
 
 import '@/lib/zod/extensions';
-import { TextDocument, TextDocumentSchema } from "@/services/text-documents/text-document.model";
+import { TextDocument, TextDocumentIdSchema, TextDocumentSchema } from "@/services/text-documents/text-document.model";
 import { TextDocumentNotFoundError } from "@/services/shared/errors/TextDocumentNotFoundError";
 import { ValidationError } from "@/services/shared/errors/ValidationError";
 import { getTextDocumentFromPrisma, TextDocumentWithParagraphs } from "./get-text-document.infrastructure";
@@ -12,7 +12,7 @@ export default async function getTextDocument(id: string): Promise<TextDocument>
     
     // 1. Validate all arguments
 
-    const validationResult = TextDocumentSchema.shape.id.safeParse(id);
+    const validationResult = TextDocumentIdSchema.safeParse(id);
 
     if (!validationResult.success)
             throw new ValidationError('Invalid text document id', 'textDocumentId');
