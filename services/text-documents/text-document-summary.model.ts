@@ -1,10 +1,9 @@
 import { z } from "zod";
-import { TextDocumentSchema } from "@/services/text-documents/text-document.model";
 
-export const TextDocumentSummarySchema = TextDocumentSchema.pick({
-    id: true,
-    title: true,
-    author: true,
+export const TextDocumentSummarySchema = z.object({
+    id: z.string().oid('The id of a text document must be a valid object id'),
+    title: z.string(),
+    author: z.string()
 });
 
 export type TextDocumentSummary = z.infer<typeof TextDocumentSummarySchema>;

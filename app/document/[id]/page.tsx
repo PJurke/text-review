@@ -4,7 +4,7 @@ import InvalidIdMessage from '@/services/text-documents/ui/components/InvalidIdM
 import getTextDocument from '@/services/text-documents/get-text-document/get-text-document.service';
 import ParagraphComponent from '@/services/text-documents/ui/components/ParagraphComponent';
 import TextDocumentNotFoundMessage from '@/services/text-documents/ui/components/TextDocumentNotFoundMessage';
-import { TextDocumentSchema } from '@/services/text-documents/text-document.model';
+import { TextDocumentIdSchema } from '@/services/text-documents/text-document.model';
 
 // Disable build time generation
 export async function generateStaticParams() {
@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
     // 2. Validate text analysis id
         
-    const parseResult = TextDocumentSchema.shape.id.safeParse(id);
+    const parseResult = TextDocumentIdSchema.safeParse(id);
     if (parseResult.error) return <InvalidIdMessage />
 
     // 3. Get text document from db
