@@ -29,11 +29,13 @@ export default async function UserPage(): Promise<JSX.Element> {
             <div className="flex flex-col items-center mb-8">
                 <img alt="Your user picture" className="border-2 border-gray-400 p-1 mb-2 rounded-full" height={100} src={userIcon} width={100} />
                 <h2 className="text-xl">{session.user.name}</h2>
-                <p>{session.user.role.toLowerCase()}</p>
+                <p className="text-gray-600">
+                    {session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1).toLowerCase()}
+                </p>
             </div>
 
             <form action={signout}>
-                <button className="border-2 border-red-600 cursor-pointer p-2 rounded text-center text-red-800 w-full" type="submit">Sign out</button>
+                <button className="hover:bg-red-50 border-2 border-red-600 hover:text-red-800 cursor-pointer font-semibold p-2 rounded text-center text-red-700 transition-colors w-full" type="submit">Sign out</button>
             </form>
         </section>
     );
