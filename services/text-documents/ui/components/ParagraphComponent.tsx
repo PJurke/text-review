@@ -5,7 +5,7 @@ interface ParagraphComponentProps {
 export default function ParagraphComponent({ text }: ParagraphComponentProps): JSX.Element {
 
     return (
-        <p className="leading-9 mt-8 text-lg">
+        <p className="leading-relaxed mt-8 text-lg">
             { text }
         </p>
     );

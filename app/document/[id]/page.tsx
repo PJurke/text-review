@@ -38,12 +38,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
     return (
         <section className="max-w-[50ch] md:max-w-[75ch] mx-auto px-4 my-8 text-wrap transition-[max-width]">
+
             {/*<CreateTextAnalysisButton id={id}/>*/}
             
-            <h1 className="text-3xl">{textDocument.title}</h1>
-            <div className="text-neutral-600">by {textDocument.author}</div>
+            { /* Be a little more generous (mb) in order to clarify the distinction between “metadata” (title, author) and the actual “content.” */  }
+            <div className="mb-16">
+                <h1 className="text-3xl">{textDocument.title}</h1>
+                <div className="text-neutral-600">by {textDocument.author}</div>
+            </div>
 
-            { textDocument.paragraphs.map(paragraph =>
+            { /* Slightly indent the first paragraph to create a visual anchor point */}
+            <p className="leading-relaxed mt-8 text-lg font-medium">
+                {textDocument.paragraphs[0].text}
+            </p>
+
+            {textDocument.paragraphs.slice(1).map(paragraph =>
                 <ParagraphComponent key={paragraph.id} text={paragraph.text} />
             )}
         </section>
