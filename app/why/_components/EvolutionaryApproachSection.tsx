@@ -22,6 +22,7 @@ export default function EvolutionaryApproachSection(): JSX.Element {
             <div className="container mx-auto px-6 md:px-8">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     
+                    {/* Textual content */}
                     <div className="order-2 md:order-1">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                             An Evolutionary Approach
@@ -42,6 +43,7 @@ export default function EvolutionaryApproachSection(): JSX.Element {
                         </p>
                     </div>
 
+                    {/* Visual representation of the evolutionary approach */}
                     <div className="order-1 md:order-2 flex justify-center">
                         <Image
                             alt="Illustration of the Evolutionary Approach"
