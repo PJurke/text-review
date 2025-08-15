@@ -28,7 +28,7 @@ export default function EvolutionaryApproachSection(): JSX.Element {
                             An Evolutionary Approach
                         </h2>
                         <p className="text-lg text-gray-600 mb-6">
-                            Wishes, requirements, and goals change over time. That's why Text Review is constantly evolving.
+                            Wishes, requirements, and goals change over time. That&apos;s why Text Review is constantly evolving.
                         </p>
                         <p className="text-lg text-gray-600 mb-6">
                             Instead of waiting for big, disruptive changes,
@@ -37,9 +37,9 @@ export default function EvolutionaryApproachSection(): JSX.Element {
                             but also allows it to adapt organically to changing needs.
                         </p>
                         <p className="text-lg text-gray-600">
-                            That's why we need you. We want to hear your perspective and
+                            That&apos;s why we need you. We want to hear your perspective and
                             use your feedback to gradually adapt Text Review.
-                            Let's work together to make Text Review the best possible tool for us.
+                            Let&apos;s work together to make Text Review the best possible tool for us.
                         </p>
                     </div>
 
