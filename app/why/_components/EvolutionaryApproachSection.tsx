@@ -21,6 +21,7 @@ export default function EvolutionaryApproachSection(): JSX.Element {
         <section className="py-12 md:py-20 bg-gray-50">
             <div className="container mx-auto px-6 md:px-8">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
+                    
                     <div className="order-2 md:order-1">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                             An Evolutionary Approach
@@ -40,15 +41,17 @@ export default function EvolutionaryApproachSection(): JSX.Element {
                             Let's work together to make Text Review the best possible tool for us.
                         </p>
                     </div>
+
                     <div className="order-1 md:order-2 flex justify-center">
                         <Image
                             alt="Illustration of the Evolutionary Approach"
                             className="rounded-lg shadow-lg"
-                            height={400}
+                            height={500}
                             src="/evolutionary-approach.svg"
                             width={500}
                         />
                     </div>
+                    
                 </div>
             </div>
         </section>
