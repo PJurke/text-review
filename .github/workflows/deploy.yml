@@ -60,7 +60,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 5. Build and push Docker image
+      - name: 5. Set up QEMU for ARM64 build emulation
+        uses: docker/setup-qemu-action@v3
+
+      - name: 6. Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
