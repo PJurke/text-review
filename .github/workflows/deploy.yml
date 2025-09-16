@@ -4,39 +4,63 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build_and_deploy:
-
+  test-and-lint:
     runs-on: ubuntu-latest
+    steps:
+      - name: 1. Check out code
+        uses: actions/checkout@v4
 
+      - name: 2. Setting up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+          cache: 'npm'
+
+      - name: 3. Install dependencies
+        run: npm ci
+
+      - name: 4. Run Linter
+        run: npm run lint
+
+      - name: 5. Execute tests
+        run: npm run test
+
+  build-and-push:
+    needs: test-and-lint
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
     steps:
-
-      - name: 1. Checkout Code
+      - name: 1. Check out code
         uses: actions/checkout@v4
 
-      - name: 2. Change to Lowercase Repository Name
+      - name: 2. Convert repository name to lowercase
         id: prep
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "IMAGE_NAME=ghcr.io/$REPO" >> $GITHUB_ENV
 
-      - name: 3. Read App Version Number
+      - name: 3. Read app version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      - name: 4. Login to GitHub Container Registry
+      - name: 4. Sign up for GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 5. Build and Push Docker Image
+      - name: 5. Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -46,3 +70,43 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
+
+  deploy-staging:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: 1. Deployment to Staging Environment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_VPS_HOST }}
+          username: ${{ secrets.STAGING_VPS_USER }}
+          key: ${{ secrets.STAGING_VPS_SSH_KEY }}
+          script: |
+            cd /opt/textreview/staging
+
+            podman-compose pull
+            podman-compose up -d --force-recreate
+
+            podman image prune -f
+
+  deploy-production:
+    needs: build-and-push
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: 1. Deployment to Production Environment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_VPS_HOST }}
+          username: ${{ secrets.PROD_VPS_USER }}
+          key: ${{ secrets.PROD_VPS_SSH_KEY }}
+          script: |
+            cd /opt/textreview/production
+
+            podman-compose pull
+            podman-compose up -d --force-recreate
+
+            podman image prune -f
