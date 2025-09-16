@@ -85,6 +85,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.STAGING_VPS_HOST }}
+          port: ${{ secrets.STAGING_VPS_PORT }}
           username: ${{ secrets.STAGING_VPS_USER }}
           key: ${{ secrets.STAGING_VPS_SSH_KEY }}
           script: |
@@ -105,6 +106,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PROD_VPS_HOST }}
+          port: ${{ secrets.PROD_VPS_PORT }}
           username: ${{ secrets.PROD_VPS_USER }}
           key: ${{ secrets.PROD_VPS_SSH_KEY }}
           script: |
