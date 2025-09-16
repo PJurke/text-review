@@ -32,8 +32,8 @@ FROM base AS runner
 WORKDIR /app
 
 # Create a user and a group for the application
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup -S -g 1001 nodejs
+RUN adduser -S -u 1001 -G nodejs nextjs
 
 # Environmental Variables
 
